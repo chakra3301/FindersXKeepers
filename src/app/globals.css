@@ -5,10 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ----------------------------------------------------------------------------
-   Finders × Keepers — "Quiet Concierge" design tokens
-   Fintech-calm with a Japanese ink sensibility:
-   warm washi paper ground · 藍 indigo trust accent · editorial serif display.
-   This token layer is intentionally swappable when the real design lands.
+   Finders × Keepers — design-handoff tokens
+   Clean near-white ground · blue-700 (#1D4ED8) indigo trust accent ·
+   emerald (#047857) escrow/trust · amber (#B45309) action-needed.
+   Geist (UI) + Geist Mono (ledger figures); no serif face.
+   Reference: design/handoff/Finders Keepers.dc.html
 ---------------------------------------------------------------------------- */
 
 @theme inline {
