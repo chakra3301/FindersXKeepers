@@ -30,7 +30,7 @@ export default async function AppLayout({
       <Sidebar escrowTotal={escrowTotal} activeCount={activeCount} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar email={user.email ?? "you"} />
-        <main className="flex-1 min-w-0 max-h-screen overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
+        <main className="flex-1 min-w-0 px-5 py-7 sm:px-8 sm:py-9">
           {children}
         </main>
       </div>

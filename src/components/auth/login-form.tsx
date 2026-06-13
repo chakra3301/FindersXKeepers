@@ -133,7 +133,7 @@ export function LoginForm() {
 
         <Button
           type="submit"
-          className="h-11 w-full bg-primary text-primary-foreground text-[0.9rem] hover:bg-primary/80"
+          className="h-11 w-full text-[0.9rem]"
           disabled={loading}
         >
           {loading && <Loader2 className="size-4 animate-spin" />}

@@ -10,7 +10,7 @@ export function Topbar({ email }: { email: string }) {
     <header className="sticky top-0 z-20 border-b border-border/70 bg-background/80 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between gap-4 px-5 sm:px-8">
         <div className="lg:hidden">
-          <Link href="/dashboard">
+          <Link href="/dashboard" aria-label="Finders Keepers — home">
             <Logo showWordmark={false} />
           </Link>
         </div>
