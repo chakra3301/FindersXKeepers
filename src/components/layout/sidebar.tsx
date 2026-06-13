@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Plus, ShieldCheck, ArrowRight } from "lucide-react";
+import {
+  LayoutDashboard,
+  Plus,
+  ShieldCheck,
+  ArrowRight,
+  MessageSquare,
+  Clock,
+  Settings,
+} from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { buttonVariants } from "@/components/ui/button";
 import { formatJpy } from "@/lib/pricing";
@@ -10,6 +18,9 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/messages", label: "Messages", icon: MessageSquare },
+  { href: "/history", label: "Order history", icon: Clock },
+  { href: "/account", label: "Account", icon: Settings },
 ];
 
 interface SidebarProps {
