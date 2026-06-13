@@ -13,6 +13,12 @@ describe("formatLocalApprox", () => {
     expect(out).toContain("≈");
     expect(out).toContain("$");
     expect(out).toContain("indicative");
+    // Pin the exact output: 10_000 × 0.0064 = 64
+    expect(out).toBe("≈ $64 USD (indicative)");
+  });
+  it("formats with a thousands separator", () => {
+    // 5_000_000 × 0.0064 = 32000
+    expect(formatLocalApprox(5_000_000, "USD")).toBe("≈ $32,000 USD (indicative)");
   });
   it("exposes the supported set", () => {
     expect(SUPPORTED_CURRENCIES).toContain("USD");
