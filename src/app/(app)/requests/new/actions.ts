@@ -120,5 +120,5 @@ export async function createRequest(
   }
 
   revalidatePath("/dashboard");
-  redirect(`/requests/${data.id}`);
+  redirect(`/requests/${data.id}/checkout`);
 }
