@@ -262,10 +262,10 @@ export default async function RequestDetailPage({
             <p className="text-[13px] leading-relaxed text-success/90">
               {escrowState === "none" && (
                 <>
-                  You&apos;ll deposit into escrow when you approve a match.
-                  Funds are then held by Finders Keepers and released only once
-                  your item ships — or refunded in full if we can&apos;t find it
-                  by the deadline.
+                  You&apos;ll deposit into escrow to start the hunt. Funds are
+                  then held by Finders Keepers and released to us only once your
+                  item ships — or refunded in full if we can&apos;t find it by
+                  the deadline.
                 </>
               )}
               {escrowState === "pending" && (
@@ -277,7 +277,7 @@ export default async function RequestDetailPage({
               {escrowState === "held" && (
                 <>
                   Your {formatJpy(headlineJpy)} is held by Finders Keepers and
-                  released to the seller only when your item ships. Not found by
+                  released to us only when your item ships. Not found by
                   the deadline? Refunded in full.
                 </>
               )}

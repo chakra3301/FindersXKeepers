@@ -2,7 +2,14 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
 import { buttonVariants } from "@/components/ui/button";
+import { formatJpy } from "@/lib/pricing";
+import { formatLocalApprox } from "@/lib/currency";
 import { cn } from "@/lib/utils";
+
+// Illustrative sample figure for the hero proof card — badged "Sample" in the
+// UI. Driven through the real formatters so it can't drift from how we display
+// money/indicative FX elsewhere.
+const SAMPLE_HELD_JPY = 48_000;
 
 function ShieldCheck({ className }: { className?: string }) {
   return (
@@ -123,8 +130,8 @@ export function Hero() {
                     Sample
                   </span>
                 </div>
-                <div className="tnum text-lg font-semibold tracking-tight">¥48,000</div>
-                <div className="tnum text-[11px] text-muted-foreground/70">≈ $307.20</div>
+                <div className="tnum text-lg font-semibold tracking-tight">{formatJpy(SAMPLE_HELD_JPY)}</div>
+                <div className="tnum text-[11px] text-muted-foreground/70">{formatLocalApprox(SAMPLE_HELD_JPY, "USD")}</div>
               </div>
               <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
                 <ShieldCheck />
