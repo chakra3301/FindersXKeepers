@@ -5,7 +5,7 @@ import { Logo } from "@/components/brand/logo";
 import { LoginForm } from "@/components/auth/login-form";
 
 export const metadata = {
-  title: "Sign in — Finders × Keepers",
+  title: "Sign in — Finders Keepers",
 };
 
 const POINTS = [
@@ -45,7 +45,7 @@ export default function LoginPage() {
               <span className="font-sans text-[15px] leading-none">探</span>
             </span>
             <span className="font-sans text-[15px] font-medium tracking-tight">
-              Finders <span className="opacity-70">×</span> Keepers
+              Finders Keepers
             </span>
           </span>
         </Link>

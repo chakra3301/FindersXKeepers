@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  title: "Finders × Keepers — sourced from Japan, held in escrow",
+  title: "Finders Keepers — sourced from Japan, held in escrow",
   description:
     "Post what you want from Japan. We source it, send proof, and ship on approval. Funds held in escrow, released only once your item is in transit.",
 };

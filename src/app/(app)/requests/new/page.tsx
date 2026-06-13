@@ -1,6 +1,6 @@
 import { RequestForm } from "@/components/requests/request-form";
 
-export const metadata = { title: "New request — Finders × Keepers" };
+export const metadata = { title: "New request — Finders Keepers" };
 
 export default function NewRequestPage() {
   return (

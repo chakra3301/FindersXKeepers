@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 
 export const metadata = {
-  title: "特定商取引法に基づく表記 — Finders × Keepers",
+  title: "特定商取引法に基づく表記 — Finders Keepers",
   description:
     "Disclosure required under Japan's Specified Commercial Transactions Act (特定商取引法).",
 };
@@ -90,7 +90,7 @@ export default function TokushohoPage() {
           Disclosure required under Japan&rsquo;s Specified Commercial
           Transactions Act (
           <span className="font-medium text-foreground">特定商取引法</span>).
-          Finders × Keepers operates as a sourcing <em>agent</em> — purchasing on
+          Finders Keepers operates as a sourcing <em>agent</em> — purchasing on
           your behalf, never reselling.
         </p>
       </header>

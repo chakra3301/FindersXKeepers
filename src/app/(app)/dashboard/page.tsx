@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { RequestCard } from "@/components/dashboard/request-card";
 import { EmptyState } from "@/components/dashboard/empty-state";
 
-export const metadata = { title: "Dashboard — Finders × Keepers" };
+export const metadata = { title: "Dashboard — Finders Keepers" };
 
 export default async function DashboardPage() {
   const requests = await getDashboardRequests();
