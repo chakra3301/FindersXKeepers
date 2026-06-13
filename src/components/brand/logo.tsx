@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Finders × Keepers wordmark. The seal carries a 探 ("search / seek out") glyph —
- * a quiet nod to the sourcing craft — and the × in the wordmark is the indigo accent.
+ * Finders × Keepers wordmark. The circular emblem is the design-handoff mark —
+ * a ring with a filled centre dot, rendered in the primary indigo via currentColor.
  */
 export function Logo({
   className,
@@ -13,15 +13,20 @@ export function Logo({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <span
+      <svg
         aria-hidden
-        className="grid size-8 place-items-center rounded-[0.5rem] bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20"
+        width="26"
+        height="26"
+        viewBox="0 0 28 28"
+        fill="none"
+        className="shrink-0 text-primary"
       >
-        <span className="font-sans text-[15px] leading-none">探</span>
-      </span>
+        <circle cx="14" cy="14" r="11" stroke="currentColor" strokeWidth="2" />
+        <circle cx="14" cy="14" r="3.6" fill="currentColor" />
+      </svg>
       {showWordmark && (
-        <span className="font-sans text-[15px] font-medium tracking-tight text-foreground">
-          Finders <span className="text-primary">×</span> Keepers
+        <span className="font-sans text-[15px] font-[600] tracking-tight text-foreground">
+          Finders&nbsp;Keepers
         </span>
       )}
     </span>
