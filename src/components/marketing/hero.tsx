@@ -117,7 +117,12 @@ export function Hero() {
             </div>
             <div className="mt-4 flex items-end justify-between border-t border-border pt-4">
               <div>
-                <div className="text-[11px] text-muted-foreground">Held in escrow</div>
+                <div className="flex items-center gap-1.5">
+                  <div className="text-[11px] text-muted-foreground">Held in escrow</div>
+                  <span className="rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-muted-foreground">
+                    Sample
+                  </span>
+                </div>
                 <div className="tnum text-lg font-semibold tracking-tight">¥48,000</div>
                 <div className="tnum text-[11px] text-muted-foreground/70">≈ $307.20</div>
               </div>
