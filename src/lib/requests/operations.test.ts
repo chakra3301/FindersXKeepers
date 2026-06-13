@@ -3,7 +3,7 @@ import { depositForRequest, approveCandidate, keepHunting, shipApprovedOrder } f
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 
 /* ---------- in-memory fake of the Supabase admin client ---------- */
-type Row = Record<string, any>;
+type Row = Record<string, unknown>;
 type Tables = Record<string, Row[]>;
 
 function makeId(prefix: string, store: { n: number }) {
@@ -20,16 +20,17 @@ function createFakeAdmin(seed: Tables) {
     let op: "select" | "insert" | "update" = "select";
     let payload: Row | null = null;
     let wantReturn = false;
-    const filters: [string, any][] = [];
-    let inFilter: [string, any[]] | null = null;
+    const filters: [string, unknown][] = [];
+    let inFilter: [string, unknown[]] | null = null;
     let limitN: number | null = null;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- self-returning chainable query-builder fake; its recursive shape can't be statically typed without obscuring the harness
     const builder: any = {
       select() { wantReturn = true; return builder; },
       insert(p: Row) { op = "insert"; payload = p; return builder; },
       update(p: Row) { op = "update"; payload = p; return builder; },
-      eq(col: string, val: any) { filters.push([col, val]); return builder; },
-      in(col: string, vals: any[]) { inFilter = [col, vals]; return builder; },
+      eq(col: string, val: unknown) { filters.push([col, val]); return builder; },
+      in(col: string, vals: unknown[]) { inFilter = [col, vals]; return builder; },
       order() { return builder; },
       limit(n: number) { limitN = n; return builder; },
       match(rows: Row[]) {
@@ -49,7 +50,10 @@ function createFakeAdmin(seed: Tables) {
           // Mirrors the generated total_jpy column in supabase/migrations/0001_init.sql.
           if (table === "orders") {
             row.total_jpy =
-              row.item_cost_jpy + row.finder_fee_jpy + row.shipping_jpy + row.tax_jpy;
+              (row.item_cost_jpy as number) +
+              (row.finder_fee_jpy as number) +
+              (row.shipping_jpy as number) +
+              (row.tax_jpy as number);
           }
           tables[table].push(row);
           return { data: wantReturn ? row : null, error: null };
@@ -75,13 +79,14 @@ function createFakeAdmin(seed: Tables) {
         return Promise.resolve({ data: row, error: null });
       },
       // {data,error}-resolving thenable — never rejects; run() returns {data,error} rather than throwing.
-      then(resolve: (v: any) => void) {
+      then(resolve: (v: unknown) => void) {
         resolve(builder.run());
       },
     };
     return builder;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the fake builder duck-types the AdminClient surface the operations use; full typing would mean reproducing supabase-js generics
   return { tables, client: { from } as any };
 }
 
