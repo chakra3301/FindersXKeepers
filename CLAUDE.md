@@ -76,10 +76,15 @@ RLS: a user only touches rows tied to their `user_id`; the service-role client
   server actions that delegate to `operations.ts`.
 - Secrets only via env (`src/lib/supabase/env.ts` validates them). Never commit
   `.env.local`.
-- **Design tokens** ("fintech-calm", warm washi paper + 藍 indigo) live in
-  `src/app/globals.css` and are intentionally swappable when the real design
-  file lands. Display serif = Fraunces; UI = Geist; ledger figures = Geist Mono
-  with the `.tnum` utility.
+- **Design tokens** (handoff system) live in `src/app/globals.css`: clean
+  near-white ground (`#FCFCFD`), white cards, near-black ink, blue-700 indigo
+  (`#1D4ED8`) as the single trust accent, emerald (`#047857`) for escrow/trust
+  and amber (`#B45309`/`#D97706`) for action-needed — exposed as `--success`
+  and `--warning` token families alongside the stock shadcn slots. Type is
+  **Geist** (UI) + **Geist Mono** (ledger figures/codes/tracking) with the
+  `.tnum` utility; there is no serif face. Status/escrow colors flow through
+  the tone maps in `src/lib/requests/status.ts`. The locked reference prototype
+  is `design/handoff/Finders Keepers.dc.html`.
 
 ## Not built yet (roadmap)
 
