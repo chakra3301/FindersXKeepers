@@ -56,8 +56,9 @@ export default async function RequestDetailPage({
     timestamps.shipped = formatRelativeTime(latestShipment.shipped_at);
   }
 
-  // Action banner: only for action_needed bucket
-  const showActionBanner = meta.bucket === "action_needed";
+  // Action banner: action_needed bucket OR received (customer final-check moment)
+  const showActionBanner =
+    meta.bucket === "action_needed" || request.status === "received";
   const actionMessage =
     request.status === "candidate_sent"
       ? "Candidate found — review it"
