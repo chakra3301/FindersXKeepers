@@ -17,15 +17,11 @@ export default async function DashboardPage() {
     (r) => STATUS_META[r.status].rail !== null,
   );
 
-  const totalEscrow = activeRequests
-    .filter(
-      (r) => r.escrowState === "held" || r.escrowState === "pending",
-    )
-    .reduce((sum, r) => sum + (r.headline.amountJpy ?? 0), 0);
-
-  const activeCount = activeRequests.filter(
+  const fundedRequests = activeRequests.filter(
     (r) => r.escrowState === "held" || r.escrowState === "pending",
-  ).length;
+  );
+  const totalEscrow = fundedRequests.reduce((sum, r) => sum + (r.headline.amountJpy ?? 0), 0);
+  const activeCount = fundedRequests.length;
 
   const actionReqs = requests.filter(
     (r) => STATUS_META[r.status].bucket === "action_needed",
@@ -61,30 +57,32 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <>
-          {/* Trust banner */}
-          <div className="mb-3.5 mt-7 flex items-center gap-[18px] rounded-2xl border border-success-border bg-card px-[22px] py-[18px] shadow-[0_1px_2px_rgba(15,17,21,.04)]">
-            <span className="grid size-[46px] shrink-0 place-items-center rounded-xl bg-success-muted">
-              <ShieldCheck className="size-[22px] text-success" />
-            </span>
-            <div className="flex-1">
-              <div className="text-[15px] font-[560] tracking-tight">
-                <span className="tnum">{formatJpy(totalEscrow)}</span> held safely across{" "}
-                {activeCount} {activeCount === 1 ? "hunt" : "hunts"}
+          {/* Trust banner — only shown when funds are actually held */}
+          {activeCount > 0 && (
+            <div className="mb-3.5 mt-7 flex items-center gap-[18px] rounded-2xl border border-success-border bg-card px-[22px] py-[18px] shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+              <span className="grid size-[46px] shrink-0 place-items-center rounded-xl bg-success-muted">
+                <ShieldCheck className="size-[22px] text-success" />
+              </span>
+              <div className="flex-1">
+                <div className="text-[15px] font-[560] tracking-tight">
+                  <span className="tnum">{formatJpy(totalEscrow)}</span> held safely across{" "}
+                  {activeCount} {activeCount === 1 ? "hunt" : "hunts"}
+                </div>
+                <div className="mt-0.5 text-[13px] text-muted-foreground">
+                  Released only when each item ships. Refunded in full if we can&apos;t find it by the deadline.
+                </div>
               </div>
-              <div className="mt-0.5 text-[13px] text-muted-foreground">
-                Released only when each item ships. Refunded in full if we can&apos;t find it by the deadline.
-              </div>
+              <span className="shrink-0 rounded-full bg-success-muted px-2.5 py-1 text-xs font-[540] text-success">
+                Escrow active
+              </span>
             </div>
-            <span className="shrink-0 rounded-full bg-success-muted px-2.5 py-1 text-xs font-[540] text-success">
-              Escrow active
-            </span>
-          </div>
+          )}
 
           {/* Action-needed strip */}
           {actionReqs.length > 0 && (
             <>
               <div className="mb-3.5 mt-6 flex items-center gap-2.5">
-                <span className="size-[7px] rounded-full bg-amber-600" />
+                <span className="pulse-dot size-[7px] rounded-full bg-amber-600" />
                 <h2 className="m-0 text-[13px] font-[600] uppercase tracking-[.02em] text-warning">
                   Your action needed
                 </h2>
