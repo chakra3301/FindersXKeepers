@@ -46,42 +46,42 @@ export const STATUS_META: Record<RequestStatus, StatusMeta> = {
   sourcing: {
     label: "Sourcing",
     blurb: "Our finders are searching Japan.",
-    tone: "amber",
+    tone: "blue",
     bucket: "in_progress",
     rail: 1,
   },
   candidate_sent: {
     label: "Candidate sent",
     blurb: "A match is waiting for your approval.",
-    tone: "blue",
+    tone: "amber",
     bucket: "action_needed",
     rail: 2,
   },
   approved: {
     label: "Approved",
     blurb: "You approved it — purchasing next.",
-    tone: "indigo",
+    tone: "blue",
     bucket: "in_progress",
     rail: 3,
   },
   purchased: {
     label: "Purchased",
     blurb: "Bought and en route to our hub.",
-    tone: "indigo",
+    tone: "blue",
     bucket: "in_progress",
     rail: 4,
   },
   received: {
     label: "Received",
     blurb: "In hand at our hub, prepping to ship.",
-    tone: "cyan",
+    tone: "amber",
     bucket: "in_progress",
     rail: 5,
   },
   shipped: {
     label: "Shipped",
     blurb: "In transit to you — escrow released.",
-    tone: "teal",
+    tone: "blue",
     bucket: "in_transit",
     rail: 6,
   },
@@ -95,14 +95,14 @@ export const STATUS_META: Record<RequestStatus, StatusMeta> = {
   refunded: {
     label: "Refunded",
     blurb: "Escrow returned to you.",
-    tone: "rose",
+    tone: "slate",
     bucket: "closed",
     rail: null,
   },
   cancelled: {
     label: "Cancelled",
     blurb: "Request closed.",
-    tone: "zinc",
+    tone: "slate",
     bucket: "closed",
     rail: null,
   },
@@ -154,35 +154,26 @@ export const BUCKET_META: Record<
 // Calm, low-saturation badge tints (Tailwind palette). Light theme first;
 // dark variants keep contrast without shouting.
 export const TONE_BADGE: Record<Tone, string> = {
-  slate:
-    "bg-slate-50 text-slate-700 ring-slate-600/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
-  amber:
-    "bg-amber-50 text-amber-800 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
-  blue:
-    "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
-  indigo:
-    "bg-indigo-50 text-indigo-700 ring-indigo-600/20 dark:bg-indigo-400/10 dark:text-indigo-300 dark:ring-indigo-400/25",
-  cyan:
-    "bg-cyan-50 text-cyan-800 ring-cyan-600/20 dark:bg-cyan-400/10 dark:text-cyan-300 dark:ring-cyan-400/20",
-  teal:
-    "bg-teal-50 text-teal-800 ring-teal-600/20 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-400/20",
-  emerald:
-    "bg-emerald-50 text-emerald-800 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
-  rose:
-    "bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/25",
-  zinc:
-    "bg-zinc-100 text-zinc-600 ring-zinc-500/15 dark:bg-zinc-400/10 dark:text-zinc-400 dark:ring-zinc-400/20",
+  slate:   "bg-slate-100 text-slate-600 ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
+  zinc:    "bg-slate-100 text-slate-600 ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
+  blue:    "bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
+  indigo:  "bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
+  cyan:    "bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
+  amber:   "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
+  emerald: "bg-emerald-50 text-emerald-700 ring-emerald-600/15 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
+  teal:    "bg-emerald-50 text-emerald-700 ring-emerald-600/15 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
+  rose:    "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-300 dark:ring-red-400/25",
 };
 
 // Solid dot colors for the lifecycle rail nodes.
 export const TONE_DOT: Record<Tone, string> = {
   slate: "bg-slate-400",
-  amber: "bg-amber-500",
-  blue: "bg-blue-500",
-  indigo: "bg-indigo-500",
-  cyan: "bg-cyan-500",
-  teal: "bg-teal-500",
-  emerald: "bg-emerald-500",
-  rose: "bg-rose-500",
-  zinc: "bg-zinc-400",
+  zinc: "bg-slate-400",
+  blue: "bg-blue-700",
+  indigo: "bg-blue-700",
+  cyan: "bg-blue-700",
+  amber: "bg-amber-600",
+  emerald: "bg-emerald-600",
+  teal: "bg-emerald-600",
+  rose: "bg-red-600",
 };
