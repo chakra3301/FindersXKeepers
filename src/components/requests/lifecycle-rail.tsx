@@ -8,10 +8,17 @@ import { cn } from "@/lib/utils";
  * request currently sits. Off-rail closures (cancelled / refunded) are shown as
  * a banner above the (dimmed) rail.
  */
-export function LifecycleRail({ status }: { status: RequestStatus }) {
+export function LifecycleRail({
+  status,
+  timestamps,
+}: {
+  status: RequestStatus;
+  timestamps?: Partial<Record<RequestStatus, string>>;
+}) {
   const meta = STATUS_META[status];
   const offRail = meta.rail === null;
   const currentRail = meta.rail ?? -1;
+  const usesSuccess = status === "released";
 
   return (
     <div>
@@ -20,8 +27,8 @@ export function LifecycleRail({ status }: { status: RequestStatus }) {
           className={cn(
             "mb-4 rounded-lg border px-3 py-2 text-sm",
             status === "refunded"
-              ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-300"
-              : "border-zinc-200 bg-zinc-50 text-zinc-600 dark:border-zinc-400/20 dark:bg-zinc-400/10 dark:text-zinc-300",
+              ? "border-warning-border bg-warning-muted text-warning"
+              : "border-border bg-slate-100 text-slate-600",
           )}
         >
           {meta.label} — {meta.blurb}
@@ -42,9 +49,14 @@ export function LifecycleRail({ status }: { status: RequestStatus }) {
                 <span
                   className={cn(
                     "z-10 grid size-6 place-items-center rounded-full border-2 transition-colors",
-                    done && "border-primary bg-primary text-primary-foreground",
+                    done &&
+                      (usesSuccess
+                        ? "border-success bg-success text-success-foreground"
+                        : "border-primary bg-primary text-primary-foreground"),
                     current &&
-                      "border-primary bg-card text-primary ring-4 ring-primary/15",
+                      (usesSuccess
+                        ? "border-success bg-card text-success ring-4 ring-success/15"
+                        : "border-primary bg-card text-primary ring-4 ring-primary/15"),
                     !done && !current && "border-border bg-card",
                   )}
                 >
@@ -54,7 +66,11 @@ export function LifecycleRail({ status }: { status: RequestStatus }) {
                     <span
                       className={cn(
                         "size-1.5 rounded-full",
-                        current ? "bg-primary" : "bg-muted-foreground/40",
+                        current
+                          ? usesSuccess
+                            ? "bg-success"
+                            : "bg-primary"
+                          : "bg-muted-foreground/40",
                       )}
                     />
                   )}
@@ -63,25 +79,39 @@ export function LifecycleRail({ status }: { status: RequestStatus }) {
                   <span
                     className={cn(
                       "absolute top-6 h-[calc(100%-12px)] w-0.5",
-                      done ? "bg-primary/40" : "bg-border",
+                      done
+                        ? usesSuccess
+                          ? "bg-success/40"
+                          : "bg-primary/40"
+                        : "bg-border",
                     )}
                   />
                 )}
               </div>
 
-              {/* label */}
-              <div className={cn("pt-0.5", !done && !current && "opacity-70")}>
-                <div
-                  className={cn(
-                    "text-sm font-medium",
-                    current ? "text-foreground" : "text-foreground/90",
-                  )}
-                >
-                  {stepMeta.label}
+              {/* label + timestamp */}
+              <div
+                className={cn(
+                  "flex flex-1 items-start justify-between gap-2.5 pt-0.5",
+                  !done && !current && "opacity-70",
+                )}
+              >
+                <div>
+                  <div
+                    className={cn(
+                      "text-sm font-medium",
+                      current ? "text-foreground" : "text-foreground/90",
+                    )}
+                  >
+                    {stepMeta.label}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {stepMeta.blurb}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {stepMeta.blurb}
-                </div>
+                <span className="tnum whitespace-nowrap text-xs text-muted-foreground">
+                  {timestamps?.[step] ?? (done || current ? "" : "pending")}
+                </span>
               </div>
             </li>
           );
