@@ -18,6 +18,16 @@ export const FINDER_FEE_RATE = 0.1; // 10% of item cost
 export const FINDER_FEE_MIN_JPY = 1500;
 export const CONSUMPTION_TAX_RATE = 0.1; // 10% — applied to our taxable service fee
 
+/**
+ * FLAGGED STUB. Pre-sourcing we cannot know real Japan→customer shipping, so the
+ * escrow hold and the displayed estimate are both sized with this single
+ * constant (shown to the customer as "estimated"). The hold covers it; the real
+ * figure is reconciled when an order is locked. Real shipping quotes are a later
+ * phase. Both the checkout page and `depositForRequest` import THIS so the
+ * displayed estimate and the actual hold are always built from the same input.
+ */
+export const SHIPPING_ESTIMATE_JPY = 4_000;
+
 // Rush multiplies our service effort, so it surcharges the finder's fee only.
 export const RUSH_FEE_MULTIPLIER: Record<RushTier, number> = {
   standard: 1,
