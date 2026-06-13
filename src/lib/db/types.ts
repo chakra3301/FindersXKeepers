@@ -1,0 +1,145 @@
+/**
+ * Hand-maintained types mirroring supabase/migrations/0001_init.sql.
+ * Kept in sync by hand for this slice; can be replaced by
+ * `supabase gen types typescript` once the CLI is linked.
+ */
+
+export type RequestStatus =
+  | "open"
+  | "sourcing"
+  | "candidate_sent"
+  | "approved"
+  | "purchased"
+  | "received"
+  | "shipped"
+  | "released"
+  | "refunded"
+  | "cancelled";
+
+export type MinCondition = "new" | "like_new" | "good" | "acceptable" | "any";
+export type RushTier = "standard" | "priority" | "express";
+export type CandidateStatus = "proposed" | "approved" | "rejected";
+export type ReceiptStatus = "pending" | "accepted" | "rejected";
+export type PaymentStatus =
+  | "pending"
+  | "held"
+  | "released"
+  | "refunded"
+  | "failed";
+export type MessageSender = "customer" | "team";
+
+export type Profile = {
+  id: string;
+  shipping_country: string | null;
+  currency_pref: string;
+  created_at: string;
+}
+
+export type Request = {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  reference_image_url: string | null;
+  reference_url: string | null;
+  min_condition: MinCondition;
+  must_haves: string[];
+  nice_to_haves: string[];
+  budget_cap_jpy: number | null;
+  rush_tier: RushTier;
+  status: RequestStatus;
+  deadline_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type Candidate = {
+  id: string;
+  request_id: string;
+  listing_url: string | null;
+  listing_images: string[];
+  price_jpy: number | null;
+  notes: string | null;
+  status: CandidateStatus;
+  created_at: string;
+}
+
+export type Order = {
+  id: string;
+  request_id: string;
+  candidate_id: string | null;
+  item_cost_jpy: number;
+  finder_fee_jpy: number;
+  shipping_jpy: number;
+  tax_jpy: number;
+  total_jpy: number;
+  received_image_urls: string[];
+  receipt_status: ReceiptStatus;
+  created_at: string;
+}
+
+export type Shipment = {
+  id: string;
+  order_id: string;
+  carrier: string | null;
+  tracking_number: string | null;
+  shipped_at: string | null;
+  created_at: string;
+}
+
+export type Message = {
+  id: string;
+  request_id: string;
+  sender: MessageSender;
+  body: string;
+  created_at: string;
+}
+
+export type Payment = {
+  id: string;
+  request_id: string;
+  stripe_payment_intent_id: string | null;
+  amount_jpy: number;
+  status: PaymentStatus;
+  created_at: string;
+}
+
+/** Generic table shape for the typed Supabase client. */
+type Table<Row, Insert = Partial<Row>, Update = Partial<Row>> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Update;
+  Relationships: [];
+};
+
+export type Database = {
+  public: {
+    Tables: {
+      profiles: Table<Profile, Partial<Profile> & { id: string }>;
+      requests: Table<
+        Request,
+        Omit<Request, "id" | "created_at" | "updated_at" | "status"> & {
+          id?: string;
+          status?: RequestStatus;
+        }
+      >;
+      candidates: Table<Candidate, Omit<Candidate, "id" | "created_at">>;
+      orders: Table<Order, Omit<Order, "id" | "created_at" | "total_jpy">>;
+      shipments: Table<Shipment, Omit<Shipment, "id" | "created_at">>;
+      messages: Table<Message, Omit<Message, "id" | "created_at">>;
+      payments: Table<Payment, Omit<Payment, "id" | "created_at">>;
+    };
+    Views: { [_ in never]: never };
+    Functions: { [_ in never]: never };
+    Enums: {
+      request_status: RequestStatus;
+      min_condition: MinCondition;
+      rush_tier: RushTier;
+      candidate_status: CandidateStatus;
+      receipt_status: ReceiptStatus;
+      payment_status: PaymentStatus;
+      message_sender: MessageSender;
+    };
+    CompositeTypes: { [_ in never]: never };
+  };
+};
