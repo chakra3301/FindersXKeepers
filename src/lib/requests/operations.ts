@@ -1,15 +1,56 @@
 import { createAdminClient, type AdminClient } from "@/lib/supabase/admin";
 import { escrow } from "@/lib/escrow";
-import { assertTransition } from "./state-machine";
+import { assertTransition, IllegalTransitionError } from "./state-machine";
 import type { PriceLines } from "@/lib/pricing";
-import { totalJpy } from "@/lib/pricing";
-import type { RequestStatus } from "@/lib/db/types";
+import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
+import type { RequestStatus, RushTier } from "@/lib/db/types";
 
 /**
  * Team/system operations on a request. These run with the service-role client
  * and are the ONLY place request status changes — always through the state
  * machine (`assertTransition`). Customer-facing server actions delegate here.
  */
+
+/**
+ * The single money-moment. Sizes an escrow hold to the budget cap (a four-line
+ * ESTIMATE), then moves the request open → sourcing. If the checkout rush
+ * selector changed the tier, persist it first so the stored request and the
+ * estimate agree. Guards status === "open" explicitly: `sourcing` is reachable
+ * from several states, so a bare assertTransition would let candidate_sent →
+ * sourcing through and double-charge.
+ */
+export async function depositForRequest(
+  requestId: string,
+  rushTier: RushTier,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error } = await admin
+    .from("requests")
+    .select("status, budget_cap_jpy, rush_tier")
+    .eq("id", requestId)
+    .single();
+  if (error || !req) throw new Error(`Request ${requestId} not found.`);
+  if (req.status !== "open") {
+    throw new IllegalTransitionError(req.status, "sourcing");
+  }
+
+  if (rushTier !== req.rush_tier) {
+    const { error: rushErr } = await admin
+      .from("requests")
+      .update({ rush_tier: rushTier })
+      .eq("id", requestId);
+    if (rushErr) throw rushErr;
+  }
+
+  const lines = computeQuote({
+    itemCostJpy: req.budget_cap_jpy ?? 0,
+    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    rushTier,
+  });
+
+  await createEscrowHold(requestId, lines, admin);
+  await setRequestStatus(requestId, "sourcing", admin);
+}
 
 /** Move a request to a new status, enforcing the legal transition. */
 export async function setRequestStatus(
