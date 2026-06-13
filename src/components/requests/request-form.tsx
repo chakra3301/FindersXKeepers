@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Plus, ShieldAlert, X } from "lucide-react";
 import {
   createRequest,
@@ -61,16 +62,30 @@ export function RequestForm() {
   const [step, setStep] = useState(0);
   const TOTAL_STEPS = 6;
 
-  // Controlled state for serialized / computed fields
-  const [title, setTitle] = useState("");
-  const [minCondition, setMinCondition] =
-    useState<(typeof MIN_CONDITIONS)[number]>("any");
-  const [rushTier, setRushTier] =
-    useState<(typeof RUSH_TIERS)[number]>("standard");
+  // Controlled state for serialized / computed fields.
+  // Reorder prefill: lazy initializers read query params once on mount.
+  const params = useSearchParams();
+  const [title, setTitle] = useState(() => params.get("title") ?? "");
+  const [minCondition, setMinCondition] = useState<
+    (typeof MIN_CONDITIONS)[number]
+  >(() => {
+    const c = params.get("condition");
+    return (MIN_CONDITIONS as readonly string[]).includes(c ?? "")
+      ? (c as (typeof MIN_CONDITIONS)[number])
+      : "any";
+  });
+  const [rushTier, setRushTier] = useState<(typeof RUSH_TIERS)[number]>(() => {
+    const r = params.get("rush");
+    return (RUSH_TIERS as readonly string[]).includes(r ?? "")
+      ? (r as (typeof RUSH_TIERS)[number])
+      : "standard";
+  });
   const [mustHaves, setMustHaves] = useState<string[]>([]);
   const [niceToHaves, setNiceToHaves] = useState<string[]>([]);
   // budgetCapJpy lifted to controlled state for live fee preview
-  const [budgetCapRaw, setBudgetCapRaw] = useState("");
+  const [budgetCapRaw, setBudgetCapRaw] = useState(
+    () => params.get("budget") ?? "",
+  );
 
   const err = state.fieldErrors ?? {};
 
