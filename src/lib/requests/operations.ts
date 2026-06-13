@@ -52,6 +52,85 @@ export async function depositForRequest(
   await setRequestStatus(requestId, "sourcing", admin);
 }
 
+/**
+ * Confirm-only: lock the REAL four-line order from the candidate's price (no new
+ * money moves — the hold from checkout already covers it whenever price ≤ cap),
+ * mark the candidate approved, advance candidate_sent → approved. Asserts
+ * legality BEFORE any write so an illegal state leaves no orphan order.
+ */
+export async function approveCandidate(
+  requestId: string,
+  candidateId: string,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error: reqErr } = await admin
+    .from("requests")
+    .select("status, rush_tier")
+    .eq("id", requestId)
+    .single();
+  if (reqErr || !req) throw new Error(`Request ${requestId} not found.`);
+  assertTransition(req.status, "approved");
+
+  const { data: cand, error: candErr } = await admin
+    .from("candidates")
+    .select("id, price_jpy")
+    .eq("id", candidateId)
+    .single();
+  if (candErr || !cand) throw new Error(`Candidate ${candidateId} not found.`);
+
+  const lines = computeQuote({
+    itemCostJpy: cand.price_jpy ?? 0,
+    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    rushTier: req.rush_tier,
+  });
+
+  const { error: orderErr } = await admin.from("orders").insert({
+    request_id: requestId,
+    candidate_id: candidateId,
+    item_cost_jpy: lines.itemCostJpy,
+    finder_fee_jpy: lines.finderFeeJpy,
+    shipping_jpy: lines.shippingJpy,
+    tax_jpy: lines.taxJpy,
+    received_image_urls: [],
+    receipt_status: "pending",
+  });
+  if (orderErr) throw orderErr;
+
+  const { error: markErr } = await admin
+    .from("candidates")
+    .update({ status: "approved" })
+    .eq("id", candidateId);
+  if (markErr) throw markErr;
+
+  await setRequestStatus(requestId, "approved", admin);
+}
+
+/**
+ * Reject this candidate and go back to sourcing. No money moves — the hold
+ * stays put while we keep looking.
+ */
+export async function keepHunting(
+  requestId: string,
+  candidateId: string,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error } = await admin
+    .from("requests")
+    .select("status")
+    .eq("id", requestId)
+    .single();
+  if (error || !req) throw new Error(`Request ${requestId} not found.`);
+  assertTransition(req.status, "sourcing");
+
+  const { error: markErr } = await admin
+    .from("candidates")
+    .update({ status: "rejected" })
+    .eq("id", candidateId);
+  if (markErr) throw markErr;
+
+  await setRequestStatus(requestId, "sourcing", admin);
+}
+
 /** Move a request to a new status, enforcing the legal transition. */
 export async function setRequestStatus(
   requestId: string,

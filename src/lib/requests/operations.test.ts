@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { depositForRequest } from "./operations";
+import { depositForRequest, approveCandidate, keepHunting } from "./operations";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 
 /* ---------- in-memory fake of the Supabase admin client ---------- */
@@ -46,6 +46,7 @@ function createFakeAdmin(seed: Tables) {
             created_at: new Date(2026, 0, 1 + counter.n).toISOString(),
             ...payload,
           };
+          // Mirrors the generated total_jpy column in supabase/migrations/0001_init.sql.
           if (table === "orders") {
             row.total_jpy =
               row.item_cost_jpy + row.finder_fee_jpy + row.shipping_jpy + row.tax_jpy;
@@ -73,6 +74,7 @@ function createFakeAdmin(seed: Tables) {
         const row = Array.isArray(data) ? (data[0] ?? null) : data;
         return Promise.resolve({ data: row, error: null });
       },
+      // {data,error}-resolving thenable — never rejects; run() returns {data,error} rather than throwing.
       then(resolve: (v: any) => void) {
         resolve(builder.run());
       },
@@ -141,5 +143,63 @@ describe("depositForRequest", () => {
     await expect(depositForRequest("req_seed", "standard", client)).rejects.toThrow();
     expect(tables.payments).toHaveLength(0);
     expect(tables.requests[0].status).toBe("candidate_sent");
+  });
+});
+
+describe("approveCandidate", () => {
+  it("locks a four-line order ≤ the hold and moves candidate_sent → approved", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "candidate_sent", budget_cap_jpy: 50_000, rush_tier: "standard" })],
+      candidates: [{ id: "c1", request_id: "r1", price_jpy: 33_500, status: "proposed", created_at: "2026-01-02T00:00:00Z" }],
+      orders: [],
+    });
+
+    await approveCandidate("r1", "c1", client);
+
+    const order = tables.orders[0];
+    const hold = totalJpy(computeQuote({ itemCostJpy: 50_000, shippingJpy: SHIPPING_ESTIMATE_JPY, rushTier: "standard" }));
+    const expectedOrder = computeQuote({ itemCostJpy: 33_500, shippingJpy: SHIPPING_ESTIMATE_JPY, rushTier: "standard" });
+
+    expect(order.item_cost_jpy).toBe(33_500);
+    expect(order.finder_fee_jpy).toBe(expectedOrder.finderFeeJpy);
+    expect(order.shipping_jpy).toBe(SHIPPING_ESTIMATE_JPY);
+    expect(order.tax_jpy).toBe(expectedOrder.taxJpy);
+    expect(order.total_jpy).toBe(totalJpy(expectedOrder));
+    expect(order.total_jpy).toBeLessThanOrEqual(hold);
+    expect(order.candidate_id).toBe("c1");
+    expect(tables.candidates[0].status).toBe("approved");
+    expect(tables.requests[0].status).toBe("approved");
+  });
+
+  it("throws on a non-candidate_sent request and writes no order", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "open" })],
+      candidates: [{ id: "c1", request_id: "r1", price_jpy: 10_000, status: "proposed", created_at: "2026-01-02T00:00:00Z" }],
+      orders: [],
+    });
+    await expect(approveCandidate("r1", "c1", client)).rejects.toThrow();
+    expect(tables.orders).toHaveLength(0);
+    expect(tables.candidates[0].status).toBe("proposed");
+  });
+});
+
+describe("keepHunting", () => {
+  it("rejects the candidate and moves candidate_sent → sourcing", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "candidate_sent" })],
+      candidates: [{ id: "c1", request_id: "r1", price_jpy: 10_000, status: "proposed", created_at: "2026-01-02T00:00:00Z" }],
+    });
+    await keepHunting("r1", "c1", client);
+    expect(tables.candidates[0].status).toBe("rejected");
+    expect(tables.requests[0].status).toBe("sourcing");
+  });
+
+  it("throws on a non-candidate_sent request", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "sourcing" })],
+      candidates: [{ id: "c1", request_id: "r1", price_jpy: 10_000, status: "proposed", created_at: "2026-01-02T00:00:00Z" }],
+    });
+    await expect(keepHunting("r1", "c1", client)).rejects.toThrow();
+    expect(tables.candidates[0].status).toBe("proposed");
   });
 });
