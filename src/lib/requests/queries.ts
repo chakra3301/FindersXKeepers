@@ -138,3 +138,91 @@ export async function getRequestDetail(
     messages: messagesRes.data ?? [],
   };
 }
+
+export interface MessageThread {
+  requestId: string;
+  title: string;
+  lastBody: string;
+  lastAt: string;
+  lastSender: "customer" | "team";
+}
+
+type ThreadMessage = {
+  request_id: string;
+  body: string;
+  sender: "customer" | "team";
+  created_at: string;
+};
+
+/** One row per request that has messages, newest activity first. */
+export async function getMessageThreads(): Promise<MessageThread[]> {
+  const supabase = await createClient();
+  const [reqRes, msgRes] = await Promise.all([
+    supabase.from("requests").select("id, title"),
+    supabase.from("messages").select("request_id, body, sender, created_at"),
+  ]);
+  if (msgRes.error) throw msgRes.error;
+  const titles = new Map<string, string>(
+    (reqRes.data ?? []).map((r) => [r.id, r.title]),
+  );
+  const byReq = new Map<string, ThreadMessage[]>();
+  for (const m of msgRes.data ?? []) {
+    const list = byReq.get(m.request_id) ?? [];
+    list.push(m);
+    byReq.set(m.request_id, list);
+  }
+  const threads: MessageThread[] = [];
+  for (const [requestId, msgs] of byReq) {
+    const sorted = [...msgs].sort((a, b) =>
+      a.created_at < b.created_at ? 1 : -1,
+    );
+    const last = sorted[0];
+    threads.push({
+      requestId,
+      title: titles.get(requestId) ?? "Untitled request",
+      lastBody: last.body,
+      lastAt: last.created_at,
+      lastSender: last.sender,
+    });
+  }
+  return threads.sort((a, b) => (a.lastAt < b.lastAt ? 1 : -1));
+}
+
+/** All messages for one request, oldest first (chat order). */
+export async function getThreadMessages(requestId: string): Promise<Message[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("request_id", requestId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export interface OrderHistoryRow {
+  request: Request;
+  order: Order | null;
+}
+
+/** Settled/closed hunts (released, refunded, cancelled) with their order. */
+export async function getOrderHistory(): Promise<OrderHistoryRow[]> {
+  const supabase = await createClient();
+  const [reqRes, orderRes] = await Promise.all([
+    supabase
+      .from("requests")
+      .select("*")
+      .in("status", ["released", "refunded", "cancelled"])
+      .order("updated_at", { ascending: false }),
+    supabase.from("orders").select("*"),
+  ]);
+  if (reqRes.error) throw reqRes.error;
+  const orders = orderRes.data ?? [];
+  return (reqRes.data ?? []).map((request) => ({
+    request,
+    order:
+      orders
+        .filter((o) => o.request_id === request.id)
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0] ?? null,
+  }));
+}
