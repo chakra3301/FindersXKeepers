@@ -86,18 +86,18 @@ export function MessagesView({
           <>
             <div className="flex items-center gap-3 border-b border-border px-5 py-3.5">
               <span
-                className="grid size-8 flex-none place-items-center rounded-full bg-primary/10 text-[12px] font-semibold text-primary"
+                className="size-8 flex-none rounded-lg"
+                style={{
+                  background:
+                    "repeating-linear-gradient(135deg, var(--muted), var(--muted) 5px, var(--secondary) 5px, var(--secondary) 10px)",
+                }}
                 aria-hidden
-              >
-                A
-              </span>
+              />
               <div className="min-w-0">
                 <div className="truncate text-[13.5px] font-[560] text-foreground">
-                  Aoi &middot; your hunter
-                </div>
-                <div className="text-[11.5px] text-success">
                   {activeThread?.title ?? "Conversation"}
                 </div>
+                <div className="text-[11.5px] text-success">Your hunter</div>
               </div>
             </div>
 
