@@ -5,10 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ----------------------------------------------------------------------------
-   Finders × Keepers — "Quiet Concierge" design tokens
-   Fintech-calm with a Japanese ink sensibility:
-   warm washi paper ground · 藍 indigo trust accent · editorial serif display.
-   This token layer is intentionally swappable when the real design lands.
+   Finders × Keepers — design-handoff tokens
+   Clean near-white ground · blue-700 (#1D4ED8) indigo trust accent ·
+   emerald (#047857) escrow/trust · amber (#B45309) action-needed.
+   Geist (UI) + Geist Mono (ledger figures); no serif face.
+   Reference: design/handoff/Finders Keepers.dc.html
 ---------------------------------------------------------------------------- */
 
 @theme inline {
@@ -17,8 +18,6 @@
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  --font-heading: var(--font-fraunces);
-
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,6 +48,15 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-muted: var(--success-muted);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-muted: var(--warning-muted);
+  --color-warning-border: var(--warning-border);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -61,47 +69,59 @@
 :root {
   --radius: 0.7rem;
 
-  /* Warm washi paper ground, deep sumi-indigo ink text */
-  --background: oklch(0.9911 0.0036 106.48);
-  --foreground: oklch(0.248 0.018 274);
+  /* Clean near-white ground, near-black ink */
+  --background: oklch(0.992 0.001 286);   /* #FCFCFD */
+  --foreground: oklch(0.18 0.006 277);    /* #0F1115 */
 
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  /* 藍 indigo — the single trust accent */
-  --primary: oklch(0.408 0.116 264.7);
-  --primary-foreground: oklch(0.985 0.006 106);
+  /* blue-700 indigo — single trust accent */
+  --primary: oklch(0.488 0.217 264.4);    /* #1D4ED8 */
+  --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.958 0.006 106);
-  --secondary-foreground: oklch(0.305 0.02 272);
+  --secondary: oklch(0.968 0.002 286);
+  --secondary-foreground: oklch(0.37 0.03 264);
 
-  --muted: oklch(0.963 0.005 106);
-  --muted-foreground: oklch(0.524 0.022 272);
+  --muted: oklch(0.97 0.002 286);
+  --muted-foreground: oklch(0.55 0.02 264);  /* ~#6B7280 */
 
-  --accent: oklch(0.945 0.021 264);
-  --accent-foreground: oklch(0.36 0.1 264.7);
+  --accent: oklch(0.962 0.013 264);          /* #EEF3FF-ish */
+  --accent-foreground: oklch(0.488 0.217 264.4);
 
-  --destructive: oklch(0.555 0.193 16.4);
+  --destructive: oklch(0.55 0.214 26);       /* ~#DC2626 */
 
-  --border: oklch(0.906 0.006 92);
-  --input: oklch(0.9 0.006 92);
-  --ring: oklch(0.408 0.116 264.7);
+  --border: oklch(0.93 0.003 286);           /* #EAECEF */
+  --input: oklch(0.91 0.004 286);            /* #E5E7EB */
+  --ring: oklch(0.488 0.217 264.4);
 
-  --chart-1: oklch(0.408 0.116 264.7);
-  --chart-2: oklch(0.62 0.12 200);
-  --chart-3: oklch(0.7 0.13 80);
-  --chart-4: oklch(0.6 0.15 25);
-  --chart-5: oklch(0.55 0.13 150);
+  /* escrow / trust green */
+  --success: oklch(0.52 0.12 162);           /* #047857 */
+  --success-foreground: oklch(1 0 0);
+  --success-muted: oklch(0.965 0.03 162);    /* #E8F6EF */
+  --success-border: oklch(0.92 0.03 162);    /* #DDEEE3 */
 
-  --sidebar: oklch(0.985 0.004 106);
+  /* action-needed amber */
+  --warning: oklch(0.55 0.13 64);            /* #B45309 */
+  --warning-foreground: oklch(1 0 0);
+  --warning-muted: oklch(0.96 0.04 80);      /* #FDF4E7 */
+  --warning-border: oklch(0.89 0.06 80);     /* #F2DEB4 */
+
+  --chart-1: oklch(0.488 0.217 264.4);
+  --chart-2: oklch(0.52 0.12 162);
+  --chart-3: oklch(0.55 0.13 64);
+  --chart-4: oklch(0.55 0.214 26);
+  --chart-5: oklch(0.55 0.04 264);
+
+  --sidebar: oklch(1 0 0);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: oklch(0.952 0.013 264);
-  --sidebar-accent-foreground: oklch(0.36 0.1 264.7);
-  --sidebar-border: oklch(0.912 0.006 92);
+  --sidebar-accent: oklch(0.962 0.013 264);  /* #F4F6FB */
+  --sidebar-accent-foreground: oklch(0.488 0.217 264.4);
+  --sidebar-border: oklch(0.945 0.002 286);  /* #EEF0F3 */
   --sidebar-ring: var(--primary);
 }
 
@@ -115,7 +135,7 @@
   --popover: oklch(0.246 0.018 274);
   --popover-foreground: var(--foreground);
 
-  --primary: oklch(0.72 0.11 262);
+  --primary: oklch(0.62 0.17 264);
   --primary-foreground: oklch(0.2 0.02 274);
 
   --secondary: oklch(0.29 0.02 274);
@@ -131,7 +151,19 @@
 
   --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.72 0.11 262);
+  --ring: oklch(0.62 0.17 264);
+
+  /* escrow / trust green — dark */
+  --success: oklch(0.66 0.12 162);
+  --success-foreground: oklch(0.2 0.02 264);
+  --success-muted: oklch(0.3 0.05 162);
+  --success-border: oklch(0.35 0.02 162);
+
+  /* action-needed amber — dark */
+  --warning: oklch(0.7 0.12 75);
+  --warning-foreground: oklch(0.2 0.02 264);
+  --warning-muted: oklch(0.3 0.05 75);
+  --warning-border: oklch(0.35 0.02 75);
 
   --sidebar: oklch(0.22 0.017 274);
   --sidebar-foreground: var(--foreground);
@@ -169,7 +201,6 @@
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4 {
-    @apply font-heading;
     letter-spacing: -0.012em;
   }
 }
@@ -207,4 +238,18 @@
   .rise {
     animation: fk-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+}
+
+@keyframes fkpulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+@keyframes fkfade { from { opacity: 0; transform: translateY(7px) } to { opacity: 1; transform: none } }
+
+@utility pulse-dot { animation: fkpulse 2s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot { animation: none; }
+}
+
+/* Diagonal-hatch placeholder for not-yet-real imagery */
+@utility hatch {
+  background: repeating-linear-gradient(135deg, #F5F6F8, #F5F6F8 7px, #EEF0F3 7px, #EEF0F3 14px);
 }

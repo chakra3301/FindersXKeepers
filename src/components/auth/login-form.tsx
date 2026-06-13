@@ -112,7 +112,7 @@ export function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
-            className="h-11"
+            className="h-11 focus-visible:ring-primary/15"
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -127,11 +127,15 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
-            className="h-11"
+            className="h-11 focus-visible:ring-primary/15"
           />
         </div>
 
-        <Button type="submit" className="h-11 w-full text-[0.9rem]" disabled={loading}>
+        <Button
+          type="submit"
+          className="h-11 w-full text-[0.9rem]"
+          disabled={loading}
+        >
           {loading && <Loader2 className="size-4 animate-spin" />}
           {mode === "signin" ? "Sign in" : "Create account"}
         </Button>

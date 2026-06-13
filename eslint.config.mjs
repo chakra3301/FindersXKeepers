@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Locked design-handoff reference (prototype HTML/JS, not app source).
+    "design/**",
   ]),
 ]);
 

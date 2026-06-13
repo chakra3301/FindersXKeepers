@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0}
+::selection{background:#D7E3FF}
+@keyframes fkpulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes fkfade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;font-family:'Geist','SF Pro Text',-apple-system,system-ui,sans-serif;color:#0F1115;background:#FCFCFD;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased">
+
+<!-- ============================ LANDING (public) ============================ -->
+<sc-if value="{{ screenLanding }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#fff">
+  <!-- top nav -->
+  <div style="position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid #EEF0F3">
+    <div style="max-width:1120px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#1D4ED8" stroke-width="2"/><circle cx="14" cy="14" r="3.6" fill="#1D4ED8"/></svg>
+        <span style="font-weight:600;font-size:16px;letter-spacing:-.01em">Finders&nbsp;Keepers</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:26px">
+        <span style="font-size:13.5px;color:#475569;cursor:pointer">How it works</span>
+        <span style="font-size:13.5px;color:#475569;cursor:pointer">Pricing</span>
+        <span style="font-size:13.5px;color:#475569;cursor:pointer">Trust &amp; safety</span>
+        <button onClick="{{ goDash }}" style="font:inherit;font-size:13.5px;font-weight:500;color:#0F1115;background:none;border:none;cursor:pointer">Sign in</button>
+        <button onClick="{{ goCreate }}" style="font:inherit;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px;border-radius:9px;background:#1D4ED8;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer">Make a request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div style="max-width:1120px;margin:0 auto;padding:84px 28px 56px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center">
+    <div>
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 8px;border-radius:30px;background:#F4F6FB;border:1px solid #E8EBF2;font-size:12.5px;color:#1D4ED8;font-weight:540;margin-bottom:24px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#1D4ED8;color:#fff;font-size:11px">¥</span>
+        A bounty board for Japanese goods
+      </div>
+      <h1 style="font-size:50px;line-height:1.04;letter-spacing:-.03em;font-weight:600;margin:0 0 20px;text-wrap:balance">Tell us what you want from Japan. We hunt it down.</h1>
+      <p style="font-size:17px;line-height:1.55;color:#475569;margin:0 0 30px;max-width:30em;text-wrap:pretty">Post a request, set your budget and the condition you'll accept, and pay into escrow. We search Japanese auctions, secondhand shops and stores, send proof, and ship only on your approval — <strong style="color:#0F1115;font-weight:560">you're charged only once it's in transit.</strong></p>
+      <div style="display:flex;align-items:center;gap:14px">
+        <button onClick="{{ goCreate }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 24px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:15px;border:none;cursor:pointer">Make a request</button>
+        <button onClick="{{ goDash }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 22px;border-radius:11px;background:#fff;color:#0F1115;font-weight:540;font-size:15px;border:1px solid #E5E7EB;cursor:pointer">See how it works</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;margin-top:26px;font-size:13px;color:#6B7280">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#047857" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#047857" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Funds held in escrow · released only when your item ships
+      </div>
+    </div>
+    <!-- hero proof card -->
+    <div style="position:relative">
+      <div style="background:#fff;border:1px solid #EAECEF;border-radius:18px;box-shadow:0 18px 50px rgba(15,17,21,.08);padding:18px">
+        <div style="display:flex;gap:15px">
+          <div style="flex:none;width:78px;height:106px;border-radius:11px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:7px"><span style="font-family:'Geist Mono',monospace;font-size:8px;color:#9AA3AF">card front</span></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:560;font-size:14.5px;letter-spacing:-.01em">Charizard ex — SAR</div>
+            <div style="font-size:12.5px;color:#6B7280;margin-top:2px;font-family:'Geist Mono',monospace">151 · SV2a</div>
+            <div style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:3px 9px;border-radius:20px;background:#FDF4E7;color:#B45309;font-size:11px;font-weight:540"><span style="width:6px;height:6px;border-radius:50%;background:#D97706;animation:fkpulse 2s infinite"></span>Match found · review</div>
+            <div style="display:flex;gap:3px;margin-top:13px">
+              <div style="flex:1;height:4px;border-radius:2px;background:#1D4ED8"></div><div style="flex:1;height:4px;border-radius:2px;background:#1D4ED8"></div><div style="flex:1;height:4px;border-radius:2px;background:#1D4ED8"></div><div style="flex:1;height:4px;border-radius:2px;background:#E8EAED"></div><div style="flex:1;height:4px;border-radius:2px;background:#E8EAED"></div><div style="flex:1;height:4px;border-radius:2px;background:#E8EAED"></div><div style="flex:1;height:4px;border-radius:2px;background:#E8EAED"></div><div style="flex:1;height:4px;border-radius:2px;background:#E8EAED"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding-top:15px;border-top:1px solid #EEF0F3;display:flex;align-items:flex-end;justify-content:space-between">
+          <div><div style="font-size:11.5px;color:#6B7280">Held in escrow</div><div style="font-size:19px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums">¥48,000</div><div style="font-size:11.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">≈ $307.20</div></div>
+          <div style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#047857;font-weight:540"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg>Held safely</div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:-22px;left:-22px;background:#fff;border:1px solid #EAECEF;border-radius:13px;box-shadow:0 10px 30px rgba(15,17,21,.08);padding:11px 14px;display:flex;align-items:center;gap:9px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#E8F6EF"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div><div style="font-size:12.5px;font-weight:560">Found in 3 days</div><div style="font-size:11px;color:#6B7280">Umbreon VMAX · PSA 10</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 steps -->
+  <div style="max-width:1120px;margin:0 auto;padding:40px 28px 20px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px">
+      <div style="background:#FAFBFC;border:1px solid #EEF0F3;border-radius:16px;padding:26px">
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#1D4ED8;font-weight:500">01</div>
+        <div style="font-size:18px;font-weight:560;margin:14px 0 8px;letter-spacing:-.01em">Post your request</div>
+        <p style="font-size:14px;color:#475569;margin:0;line-height:1.55">Describe the item, drop a reference photo or link, set the condition you'll accept and your budget cap.</p>
+      </div>
+      <div style="background:#FAFBFC;border:1px solid #EEF0F3;border-radius:16px;padding:26px">
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#1D4ED8;font-weight:500">02</div>
+        <div style="font-size:18px;font-weight:560;margin:14px 0 8px;letter-spacing:-.01em">We hunt it down</div>
+        <p style="font-size:14px;color:#475569;margin:0;line-height:1.55">Our team searches Japanese auctions, Mercari, secondhand shops and stores — then sends you proof to approve.</p>
+      </div>
+      <div style="background:#FAFBFC;border:1px solid #EEF0F3;border-radius:16px;padding:26px">
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#1D4ED8;font-weight:500">03</div>
+        <div style="font-size:18px;font-weight:560;margin:14px 0 8px;letter-spacing:-.01em">Ship on approval</div>
+        <p style="font-size:14px;color:#475569;margin:0;line-height:1.55">Approve the real photos, we ship worldwide, and escrow releases. You're charged only once it's in transit.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- escrow band -->
+  <div style="max-width:1120px;margin:36px auto 0;padding:0 28px">
+    <div style="background:#0F1115;border-radius:20px;padding:44px 44px;color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#9DB4E8;font-weight:540;margin-bottom:16px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#9DB4E8" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#9DB4E8" stroke-width="1.8"/></svg>Escrow, in plain terms</div>
+        <h2 style="font-size:30px;line-height:1.12;letter-spacing:-.02em;font-weight:600;margin:0 0 14px">Your money is held — not spent — until your item ships.</h2>
+        <p style="font-size:15px;line-height:1.6;color:#C5CAD3;margin:0;max-width:30em">You deposit into escrow when you post. We only draw from it to buy once you approve a match, and the final charge settles in JPY at capture. If we can't find it by the deadline, you're refunded in full.</p>
+      </div>
+      <div style="background:#16191F;border:1px solid #262B33;border-radius:14px;padding:22px">
+        <div style="font-size:12px;color:#8B93A1;font-weight:540;margin-bottom:14px;letter-spacing:.02em;text-transform:uppercase">Every price, four lines</div>
+        <div style="display:flex;flex-direction:column;gap:11px;font-variant-numeric:tabular-nums">
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:#C5CAD3">Item</span><span>¥44,000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:#C5CAD3">Finder's fee</span><span>¥6,600</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:#C5CAD3">Shipping (EMS)</span><span>¥4,200</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span style="color:#C5CAD3">Import &amp; tax (est.)</span><span>¥3,800</span></div>
+          <div style="height:1px;background:#262B33;margin:4px 0"></div>
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:600"><span>Held in escrow</span><span>¥58,600</span></div>
+          <div style="text-align:right;font-size:12px;color:#8B93A1">≈ $375.04 · settles in JPY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- example finds -->
+  <div style="max-width:1120px;margin:0 auto;padding:56px 28px 20px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px">
+      <h2 style="font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0">Recent finds</h2>
+      <span style="font-size:13.5px;color:#6B7280">Average hunt closed in <strong style="color:#0F1115;font-weight:560">9 days</strong></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+      <sc-for list="{{ finds }}" as="f" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:14px;overflow:hidden">
+          <div style="height:128px;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 8px,#EEF0F3 8px,#EEF0F3 16px);display:flex;align-items:flex-end;justify-content:center;padding:9px"><span style="font-family:'Geist Mono',monospace;font-size:8.5px;color:#9AA3AF">{{ f.thumb }}</span></div>
+          <div style="padding:14px">
+            <div style="font-size:13.5px;font-weight:560;letter-spacing:-.01em">{{ f.name }}</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:2px;font-family:'Geist Mono',monospace">{{ f.set }}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+              <span style="font-size:13.5px;font-weight:560;font-variant-numeric:tabular-nums">{{ f.price }}</span>
+              <span style="font-size:11.5px;color:#047857;font-weight:540">{{ f.days }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- final CTA -->
+  <div style="max-width:1120px;margin:0 auto;padding:56px 28px 70px">
+    <div style="text-align:center;padding:54px 28px;background:#F7F9FC;border:1px solid #EAECEF;border-radius:20px">
+      <h2 style="font-size:32px;font-weight:600;letter-spacing:-.02em;margin:0 0 12px">There's nothing we can't find.</h2>
+      <p style="font-size:16px;color:#475569;margin:0 0 26px">Post your first request in two minutes. No charge until your item ships.</p>
+      <button onClick="{{ goCreate }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 26px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:15px;border:none;cursor:pointer">Make a request</button>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div style="border-top:1px solid #EEF0F3;background:#fff">
+    <div style="max-width:1120px;margin:0 auto;padding:30px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div style="display:flex;align-items:center;gap:9px;color:#6B7280;font-size:13px"><svg width="18" height="18" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#9AA3AF" stroke-width="2"/><circle cx="14" cy="14" r="3.6" fill="#9AA3AF"/></svg>Finders Keepers · concierge sourcing from Japan</div>
+      <div style="display:flex;gap:22px;font-size:13px;color:#6B7280">
+        <span style="cursor:pointer">特定商取引法に基づく表記</span>
+        <span style="cursor:pointer">Terms</span>
+        <span style="cursor:pointer">Privacy</span>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============================ APP SHELL ============================ -->
+<sc-if value="{{ inApp }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;min-height:100vh">
+  <!-- SIDEBAR -->
+  <aside style="flex:none;width:256px;border-right:1px solid #EEF0F3;background:#fff;padding:22px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 8px 22px">
+      <svg width="25" height="25" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#1D4ED8" stroke-width="2"/><circle cx="14" cy="14" r="3.6" fill="#1D4ED8"/></svg>
+      <span style="font-weight:600;font-size:15px;letter-spacing:-.01em">Finders&nbsp;Keepers</span>
+    </div>
+    <button onClick="{{ goCreate }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:40px;border-radius:10px;background:#1D4ED8;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer;margin-bottom:18px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>New request
+    </button>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button onClick="{{ goDash }}" style="font:inherit;display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;border-radius:9px;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;background:{{ ns.dashboard.bg }};color:{{ ns.dashboard.fg }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6" stroke="currentColor" stroke-width="1.7"/></svg>Dashboard
+      </button>
+      <button onClick="{{ goDash }}" style="font:inherit;display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;border-radius:9px;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;background:transparent;color:#475569">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/></svg>My hunts
+        <span style="margin-left:auto;font-size:11px;font-weight:540;color:#B45309;background:#FDF4E7;border-radius:20px;padding:1px 8px;font-variant-numeric:tabular-nums">{{ actionCount }}</span>
+      </button>
+      <button onClick="{{ goMessages }}" style="font:inherit;display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;border-radius:9px;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;background:{{ ns.messages.bg }};color:{{ ns.messages.fg }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H9l-4 3.5V16H4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Messages
+      </button>
+      <button onClick="{{ goHistory }}" style="font:inherit;display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;border-radius:9px;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;background:{{ ns.history.bg }};color:{{ ns.history.fg }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3 1.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Order history
+      </button>
+      <button onClick="{{ goAccount }}" style="font:inherit;display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;border-radius:9px;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;background:{{ ns.account.bg }};color:{{ ns.account.fg }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.5" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Account
+      </button>
+    </div>
+
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid #EEF0F3">
+      <button onClick="{{ goExplore }}" style="font:inherit;display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border:none;border-radius:9px;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;background:{{ ns.explore.bg }};color:{{ ns.explore.fg }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3l8.5 8.5L12 20 3.5 11.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Explorations
+      </button>
+    </div>
+
+    <!-- escrow mini -->
+    <div style="margin-top:auto">
+      <div style="background:#F7F9FC;border:1px solid #EAEEF4;border-radius:12px;padding:13px 14px">
+        <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#047857;font-weight:540;margin-bottom:7px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg>Held in escrow</div>
+        <div style="font-size:19px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ totalEscrowStr }}</div>
+        <div style="font-size:11px;color:#6B7280;margin-top:3px">across {{ activeCount }} active hunts</div>
+      </div>
+      <button onClick="{{ goLanding }}" style="font:inherit;display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:7px 11px;border:none;border-radius:8px;font-size:12.5px;color:#6B7280;cursor:pointer;background:transparent">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>View public site
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main style="flex:1;min-width:0;max-height:100vh;overflow-y:auto">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <sc-if value="{{ screenDashboard }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1000px;margin:0 auto;padding:40px 40px 80px">
+      <!-- header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:26px">
+        <div>
+          <h1 style="font-size:27px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px">Your hunts</h1>
+          <p style="font-size:14.5px;color:#6B7280;margin:0">Everything we're tracking down for you, in one place.</p>
+        </div>
+        <button onClick="{{ goCreate }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 17px;border-radius:10px;white-space:nowrap;flex:none;background:#1D4ED8;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>New request</button>
+      </div>
+
+      <!-- escrow trust banner -->
+      <div style="display:flex;align-items:center;gap:18px;background:#fff;border:1px solid #E6EFE9;border-radius:16px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+        <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;background:#E8F6EF"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg></span>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:560;letter-spacing:-.01em"><span style="font-variant-numeric:tabular-nums">{{ totalEscrowStr }}</span> held safely across {{ activeCount }} hunts</div>
+          <div style="font-size:13px;color:#6B7280;margin-top:2px">Released only when each item ships. Refunded in full if we can't find it by the deadline.</div>
+        </div>
+        <span style="flex:none;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#047857;font-weight:540;background:#E8F6EF;border-radius:20px;padding:5px 11px">Escrow active</span>
+      </div>
+
+      <!-- action needed strip -->
+      <sc-if value="{{ hasAction }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:10px;margin:24px 0 14px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#D97706;animation:fkpulse 2s infinite"></span>
+        <h2 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#B45309;margin:0">Your action needed</h2>
+        <span style="font-size:12px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ actionCount }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:30px">
+        <sc-for list="{{ actionReqs }}" as="r" hint-placeholder-count="2">
+          <button onClick="{{ r.open }}" style="font:inherit;display:flex;gap:18px;width:100%;text-align:left;background:#fff;border:1px solid #F2DEB4;border-radius:16px;padding:17px 19px;cursor:pointer;box-shadow:0 1px 2px rgba(15,17,21,.04);align-items:center" style-hover="box-shadow:0 8px 24px rgba(15,17,21,.07);border-color:#EBCF93">
+            <div style="flex:none;width:60px;height:82px;border-radius:10px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:6px"><span style="font-family:'Geist Mono',monospace;font-size:8px;color:#9AA3AF">{{ r.thumb }}</span></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="font-size:15px;font-weight:560;letter-spacing:-.01em;min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:540;flex:none;white-space:nowrap;background:{{ r.pill.bg }};color:{{ r.pill.fg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.pill.dot }}"></span>{{ r.pill.label }}</span>
+              </div>
+              <div style="font-size:12.5px;color:#6B7280;font-family:'Geist Mono',monospace">{{ r.set }} · {{ r.grade }}</div>
+              <span style="display:inline-flex;align-items:center;gap:7px;align-self:flex-start;padding:5px 11px;border-radius:9px;background:#FDF4E7;color:#B45309;font-size:12.5px;font-weight:540"><span style="width:6px;height:6px;border-radius:50%;background:#D97706;animation:fkpulse 2s infinite"></span>{{ r.action }}</span>
+            </div>
+            <div style="flex:none;text-align:right">
+              <div style="font-size:11.5px;color:#6B7280">{{ r.escrowCaption }}</div>
+              <div style="font-size:18px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin-top:2px">{{ r.escrowStr }}</div>
+              <div style="font-size:11.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ r.escrowLocal }}</div>
+              <sc-if value="{{ r.deadlineStr }}"><div style="display:inline-block;margin-top:9px;padding:3px 9px;border-radius:7px;font-size:11.5px;font-weight:540;background:{{ r.deadlineBg }};color:{{ r.deadlineFg }};font-variant-numeric:tabular-nums">{{ r.deadlineStr }}</div></sc-if>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <!-- all hunts -->
+      <div style="display:flex;align-items:center;gap:10px;margin:8px 0 14px">
+        <h2 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0">All hunts</h2>
+        <span style="font-size:12px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ reqCount }}</span>
+        <button onClick="{{ toggleEmpty }}" style="font:inherit;margin-left:auto;font-size:12px;color:#9AA3AF;background:none;border:none;cursor:pointer">{{ emptyToggleLabel }}</button>
+      </div>
+
+      <sc-if value="{{ dashEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:64px 28px;background:#FAFBFC;border:1px dashed #DDE1E7;border-radius:18px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:15px;background:#fff;border:1px solid #EAECEF;margin-bottom:18px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#1D4ED8" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="#1D4ED8" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 style="font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0 0 8px">Start your first hunt</h3>
+          <p style="font-size:14.5px;color:#6B7280;margin:0 auto 22px;max-width:34em;line-height:1.55">Tell us what you're after from Japan — a card, a console, a rarity. We'll track it down and send proof before anything is bought.</p>
+          <button onClick="{{ goCreate }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 20px;border-radius:10px;background:#1D4ED8;color:#fff;font-weight:540;font-size:14px;border:none;cursor:pointer">Make a request</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showList }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ reqs }}" as="r" hint-placeholder-count="5">
+          <button onClick="{{ r.open }}" style="font:inherit;display:flex;gap:18px;width:100%;text-align:left;background:#fff;border:1px solid {{ r.cardBorder }};border-radius:16px;padding:18px 20px;cursor:pointer;box-shadow:0 1px 2px rgba(15,17,21,.04);align-items:center" style-hover="box-shadow:0 8px 24px rgba(15,17,21,.07);border-color:#C9D6F5">
+            <div style="flex:none;width:62px;height:84px;border-radius:10px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:6px"><span style="font-family:'Geist Mono',monospace;font-size:8px;color:#9AA3AF">{{ r.thumb }}</span></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                <span style="font-size:15px;font-weight:560;letter-spacing:-.01em;min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:540;flex:none;white-space:nowrap;background:{{ r.pill.bg }};color:{{ r.pill.fg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.pill.dot }}"></span>{{ r.pill.label }}</span>
+              </div>
+              <div style="font-size:12.5px;color:#6B7280;font-family:'Geist Mono',monospace">{{ r.set }} · {{ r.grade }}</div>
+              <div style="display:flex;gap:3px;max-width:340px;margin-top:1px">
+                <sc-for list="{{ r.steps }}" as="st" hint-placeholder-count="8"><div style="flex:1;height:4px;border-radius:2px;background:{{ st.barBg }}"></div></sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:#9AA3AF">
+                <span>{{ r.stageCaption }}</span><span>·</span><span>updated {{ r.updated }} ago</span>
+              </div>
+            </div>
+            <div style="flex:none;text-align:right">
+              <div style="font-size:11.5px;color:#6B7280">{{ r.escrowCaption }}</div>
+              <div style="font-size:18px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin-top:2px">{{ r.escrowStr }}</div>
+              <div style="font-size:11.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ r.escrowLocal }}</div>
+              <sc-if value="{{ r.deadlineStr }}"><div style="display:inline-block;margin-top:9px;padding:3px 9px;border-radius:7px;font-size:11.5px;font-weight:540;background:{{ r.deadlineBg }};color:{{ r.deadlineFg }};font-variant-numeric:tabular-nums">{{ r.deadlineStr }}</div></sc-if>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <!-- ===================== REQUEST DETAIL ===================== -->
+    <sc-if value="{{ screenDetail }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1000px;margin:0 auto;padding:30px 40px 80px">
+      <button onClick="{{ goDash }}" style="font:inherit;display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#6B7280;background:none;border:none;cursor:pointer;padding:6px 0;margin-bottom:14px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>All hunts</button>
+
+      <!-- header -->
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:28px">
+        <div style="flex:none;width:88px;height:120px;border-radius:12px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 8px,#EEF0F3 8px,#EEF0F3 16px);display:flex;align-items:flex-end;justify-content:center;padding:8px"><span style="font-family:'Geist Mono',monospace;font-size:9px;color:#9AA3AF">{{ selected.thumb }}</span></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:8px;min-width:0">
+            <h1 style="font-size:25px;font-weight:600;letter-spacing:-.02em;margin:0;min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ selected.name }}</h1>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:540;flex:none;white-space:nowrap;background:{{ selected.pill.bg }};color:{{ selected.pill.fg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ selected.pill.dot }}"></span>{{ selected.pill.label }}</span>
+          </div>
+          <div style="font-size:13.5px;color:#6B7280;font-family:'Geist Mono',monospace">{{ selected.set }} · {{ selected.grade }}</div>
+          <div style="display:flex;gap:3px;max-width:420px;margin-top:14px">
+            <sc-for list="{{ selected.steps }}" as="st" hint-placeholder-count="8"><div style="flex:1;height:5px;border-radius:2px;background:{{ st.barBg }}"></div></sc-for>
+          </div>
+        </div>
+        <div style="flex:none;text-align:right">
+          <div style="font-size:11.5px;color:#6B7280">{{ selected.escrowCaption }}</div>
+          <div style="font-size:24px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin-top:2px">{{ selected.escrowStr }}</div>
+          <div style="font-size:12px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ selected.escrowLocal }}</div>
+        </div>
+      </div>
+
+      <!-- action banner -->
+      <sc-if value="{{ selected.actionNeeded }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:16px;background:#FFFBF3;border:1px solid #F2DEB4;border-radius:14px;padding:16px 20px;margin-bottom:24px">
+        <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#FDF4E7"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 16.5v.5" stroke="#D97706" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#D97706" stroke-width="1.7"/></svg></span>
+        <div style="flex:1"><div style="font-size:14.5px;font-weight:560">{{ selected.action }}</div><div style="font-size:13px;color:#6B7280;margin-top:1px">Take a look and tell us how to proceed — no rush, escrow stays held.</div></div>
+        <button onClick="{{ goCandidate }}" style="font:inherit;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px;border-radius:9px;background:#1D4ED8;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer">Review it</button>
+      </div>
+      </sc-if>
+
+      <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:24px">
+        <!-- LEFT -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <!-- lifecycle -->
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 18px">Lifecycle</h3>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ selected.steps }}" as="st" hint-placeholder-count="8">
+                <div style="display:flex;gap:14px">
+                  <div style="display:flex;flex-direction:column;align-items:center">
+                    <span style="flex:none;width:14px;height:14px;border-radius:50%;background:{{ st.dotBg }};border:2px solid {{ st.dotBorder }}"></span>
+                    <span style="flex:1;width:2px;background:{{ st.lineBg }};min-height:20px"></span>
+                  </div>
+                  <div style="padding-bottom:16px;flex:1;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                    <span style="font-size:13.5px;font-weight:540;color:{{ st.labColor }}">{{ st.label }}</span>
+                    <span style="font-size:12px;color:{{ st.tsColor }};font-variant-numeric:tabular-nums;white-space:nowrap">{{ st.ts }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- proof -->
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0">Proof photos</h3><span style="font-size:12px;color:#9AA3AF">from your hunter</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+              <div style="aspect-ratio:3/4;border-radius:10px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:7px"><span style="font-family:'Geist Mono',monospace;font-size:8px;color:#9AA3AF">front</span></div>
+              <div style="aspect-ratio:3/4;border-radius:10px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:7px"><span style="font-family:'Geist Mono',monospace;font-size:8px;color:#9AA3AF">back</span></div>
+              <div style="aspect-ratio:3/4;border-radius:10px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:7px"><span style="font-family:'Geist Mono',monospace;font-size:8px;color:#9AA3AF">corners</span></div>
+            </div>
+          </div>
+
+          <!-- updates -->
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 16px">Updates from your hunter</h3>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:12px">
+                <span style="flex:none;width:30px;height:30px;border-radius:50%;background:#EEF3FF;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">A</span>
+                <div><div style="font-size:13.5px;line-height:1.5">Found a strong candidate on Mercari JP — centering looks clean front and back. Sending photos now for your approval.</div><div style="font-size:11.5px;color:#9AA3AF;margin-top:4px">Aoi · your hunter · 2h ago</div></div>
+              </div>
+              <div style="display:flex;gap:12px">
+                <span style="flex:none;width:30px;height:30px;border-radius:50%;background:#EEF3FF;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">A</span>
+                <div><div style="font-size:13.5px;line-height:1.5">Started the hunt — I've set alerts on Yahoo! Auctions, Mercari and two Akihabara shops.</div><div style="font-size:11.5px;color:#9AA3AF;margin-top:4px">Aoi · your hunter · 1d ago</div></div>
+              </div>
+            </div>
+            <button onClick="{{ goMessages }}" style="font:inherit;margin-top:18px;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:9px;background:#fff;color:#0F1115;font-weight:540;font-size:13px;border:1px solid #E5E7EB;cursor:pointer">Message your hunter</button>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- pricing -->
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 8px">What you'll pay</h3>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ selPricing.lines }}" as="l" hint-placeholder-count="4">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid #F4F5F7">
+                  <div><div style="font-size:13.5px">{{ l.label }}</div><div style="font-size:11px;color:#9AA3AF">{{ l.sub }}</div></div>
+                  <div style="text-align:right"><div style="font-size:13.5px;font-weight:540;font-variant-numeric:tabular-nums">{{ l.jpy }}</div><div style="font-size:10.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ l.local }}</div></div>
+                </div>
+              </sc-for>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:13px">
+                <span style="font-size:14px;font-weight:600">Total held</span>
+                <span style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums">{{ selPricing.totalJpy }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- escrow status -->
+          <div style="background:#F7FBF8;border:1px solid #DDEEE3;border-radius:16px;padding:18px 20px">
+            <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:#047857;font-weight:560;margin-bottom:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg>Escrow protection</div>
+            <div style="font-size:13px;color:#3B6B53;line-height:1.55">Your <strong style="font-weight:600">{{ selected.escrowStr }}</strong> is held by Finders Keepers and released to the seller only when your item ships. Not found by the deadline? Refunded in full.</div>
+          </div>
+
+          <!-- tracking (shipped) -->
+          <sc-if value="{{ selIsShipped }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:18px 20px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 12px">Tracking</h3>
+            <div style="font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.01em">{{ selected.tracking }}</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:6px;font-variant-numeric:tabular-nums">Estimated delivery {{ selected.eta }}</div>
+            <button style="font:inherit;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:38px;border-radius:9px;background:#1D4ED8;color:#fff;font-weight:540;font-size:13px;border:none;cursor:pointer">Track package</button>
+          </div>
+          </sc-if>
+
+          <!-- review CTA -->
+          <sc-if value="{{ selActionReview }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ goCandidate }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:14px;border:none;cursor:pointer">Review the candidate</button>
+          </sc-if>
+          <sc-if value="{{ selOverCap }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ goCandidate }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;border-radius:11px;background:#0F1115;color:#fff;font-weight:560;font-size:14px;border:none;cursor:pointer">Review over-cap find</button>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== CANDIDATE FOUND (approval) ===================== -->
+    <sc-if value="{{ screenCandidate }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:980px;margin:0 auto;padding:30px 40px 80px">
+      <button onClick="{{ goDetail }}" style="font:inherit;display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#6B7280;background:none;border:none;cursor:pointer;padding:6px 0;margin-bottom:16px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to hunt</button>
+
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px">
+        <span style="display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:540;background:#FDF4E7;color:#B45309"><span style="width:6px;height:6px;border-radius:50%;background:#D97706;animation:fkpulse 2s infinite"></span>Candidate found</span>
+      </div>
+      <h1 style="font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px">Review this find for {{ selected.name }}</h1>
+      <p style="font-size:14.5px;color:#6B7280;margin:0 0 26px;max-width:46em">Your hunter found a match. Check the photos and price against what you asked for — nothing is purchased until you approve.</p>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:start">
+        <!-- photos + listing -->
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+          <div style="aspect-ratio:4/3;border-radius:12px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 9px,#EEF0F3 9px,#EEF0F3 18px);display:flex;align-items:flex-end;justify-content:center;padding:10px;margin-bottom:10px"><span style="font-family:'Geist Mono',monospace;font-size:9px;color:#9AA3AF">listing photo · front</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+            <div style="aspect-ratio:1;border-radius:9px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:6px"><span style="font-family:'Geist Mono',monospace;font-size:7.5px;color:#9AA3AF">back</span></div>
+            <div style="aspect-ratio:1;border-radius:9px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:6px"><span style="font-family:'Geist Mono',monospace;font-size:7.5px;color:#9AA3AF">corner TL</span></div>
+            <div style="aspect-ratio:1;border-radius:9px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 7px,#EEF0F3 7px,#EEF0F3 14px);display:flex;align-items:flex-end;justify-content:center;padding:6px"><span style="font-family:'Geist Mono',monospace;font-size:7.5px;color:#9AA3AF">corner BR</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="display:flex;justify-content:space-between;font-size:13.5px"><span style="color:#6B7280">Source</span><span style="font-family:'Geist Mono',monospace">Mercari JP</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13.5px"><span style="color:#6B7280">Seller rating</span><span style="font-weight:540">98% · 1,240 sales</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13.5px"><span style="color:#6B7280">Listed condition</span><span style="font-weight:540">Near Mint</span></div>
+            <div style="font-size:13px;color:#475569;line-height:1.55;background:#FAFBFC;border:1px solid #EEF0F3;border-radius:10px;padding:12px 14px">Hunter's note: "Centering ~60/40, holo clean, no whitening on the back edges. Strong example for a raw card."</div>
+          </div>
+        </div>
+
+        <!-- decision -->
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,17,21,.04);position:sticky;top:24px">
+          <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 16px">Checked against your cap</h3>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+            <div><div style="font-size:11.5px;color:#6B7280">Listing price</div><div style="font-size:24px;font-weight:600;font-variant-numeric:tabular-nums">{{ candFoundStr }}</div><div style="font-size:11.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ candFoundLocal }}</div></div>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:560;flex:none;white-space:nowrap;background:{{ candCapBg }};color:{{ candCapFg }}">{{ candCapNote }}</span>
+          </div>
+          <div style="height:8px;border-radius:5px;background:#F1F5F9;overflow:hidden;margin-bottom:7px"><div style="height:100%;border-radius:5px;background:{{ candBarColor }};width:{{ candPct }}%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#9AA3AF;margin-bottom:20px"><span>Your cap {{ candCapStr }}</span><span style="font-variant-numeric:tabular-nums">{{ candPct }}% of cap</span></div>
+
+          <sc-if value="{{ candPending }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button onClick="{{ acceptCand }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:46px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:14.5px;border:none;cursor:pointer">Approve &amp; buy now</button>
+            <button onClick="{{ rejectCand }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;border-radius:11px;background:#fff;color:#0F1115;font-weight:540;font-size:14px;border:1px solid #E5E7EB;cursor:pointer">Keep hunting</button>
+          </div>
+          <p style="font-size:12px;color:#9AA3AF;line-height:1.55;margin:16px 0 0;text-align:center">Approving draws from your escrow to purchase. You'll approve once more — against the real photos — before it ships.</p>
+          </sc-if>
+
+          <sc-if value="{{ candAccepted }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:6px 0">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#E8F6EF;margin-bottom:14px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#047857" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div style="font-size:16px;font-weight:600;margin-bottom:6px">Purchase approved</div>
+            <p style="font-size:13px;color:#6B7280;line-height:1.55;margin:0 0 18px">We're buying it now. You'll get the real photos to approve before we ship — escrow stays held until then.</p>
+            <button onClick="{{ goReceived }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:44px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:14px;border:none;cursor:pointer;margin-bottom:9px">Preview the arrival check<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button onClick="{{ goDetail }}" style="font:inherit;display:flex;align-items:center;justify-content:center;width:100%;height:42px;border-radius:10px;background:#fff;color:#0F1115;font-weight:540;font-size:13.5px;border:1px solid #E5E7EB;cursor:pointer">Back to hunt</button>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ candRejected }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:6px 0">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#F1F5F9;margin-bottom:14px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8.5 8.5L12 20 3.5 11.5z" stroke="#475569" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+            <div style="font-size:16px;font-weight:600;margin-bottom:6px">We'll keep hunting</div>
+            <p style="font-size:13px;color:#6B7280;line-height:1.55;margin:0 0 18px">No problem — your escrow stays held and we'll send the next match that fits. Deadline unchanged.</p>
+            <button onClick="{{ goDetail }}" style="font:inherit;display:flex;align-items:center;justify-content:center;width:100%;height:42px;border-radius:10px;background:#0F1115;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer">Back to hunt</button>
+          </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== ITEM RECEIVED (final approval) ===================== -->
+    <sc-if value="{{ screenReceived }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:980px;margin:0 auto;padding:30px 40px 80px">
+      <button onClick="{{ goDetail }}" style="font:inherit;display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#6B7280;background:none;border:none;cursor:pointer;padding:6px 0;margin-bottom:16px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to hunt</button>
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px"><span style="display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:540;background:#FDF4E7;color:#B45309"><span style="width:6px;height:6px;border-radius:50%;background:#D97706"></span>In hand — final check</span></div>
+      <h1 style="font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px">It arrived. Approve before we ship.</h1>
+      <p style="font-size:14.5px;color:#6B7280;margin:0 0 26px;max-width:46em">Here are real photos of the actual item in our hands. Compare them to the condition you asked for, then give the final go-ahead.</p>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:start">
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="aspect-ratio:3/4;border-radius:11px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 9px,#EEF0F3 9px,#EEF0F3 18px);display:flex;align-items:flex-end;justify-content:center;padding:9px"><span style="font-family:'Geist Mono',monospace;font-size:8.5px;color:#9AA3AF">in-hand · front</span></div>
+            <div style="aspect-ratio:3/4;border-radius:11px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 9px,#EEF0F3 9px,#EEF0F3 18px);display:flex;align-items:flex-end;justify-content:center;padding:9px"><span style="font-family:'Geist Mono',monospace;font-size:8.5px;color:#9AA3AF">in-hand · back</span></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,17,21,.04);position:sticky;top:24px">
+          <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 14px">Condition check</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:9px;font-size:13.5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You asked for <strong style="font-weight:560">Near Mint</strong></div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:13.5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Matches your must-haves</div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:13.5px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#047857" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Authenticated by our team</div>
+          </div>
+          <sc-if value="{{ rcvPending }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button onClick="{{ acceptRcv }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:46px;border-radius:11px;background:#047857;color:#fff;font-weight:560;font-size:14.5px;border:none;cursor:pointer">Approve &amp; ship to me</button>
+            <button style="font:inherit;display:flex;align-items:center;justify-content:center;width:100%;height:44px;border-radius:11px;background:#fff;color:#0F1115;font-weight:540;font-size:14px;border:1px solid #E5E7EB;cursor:pointer">Raise a concern</button>
+          </div>
+          <p style="font-size:12px;color:#9AA3AF;line-height:1.55;margin:16px 0 0;text-align:center">Approving releases escrow and ships your item. This is the last step.</p>
+          </sc-if>
+          <sc-if value="{{ rcvAccepted }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:6px 0">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#E8F6EF;margin-bottom:14px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#047857" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div style="font-size:16px;font-weight:600;margin-bottom:6px">Shipping now</div>
+            <p style="font-size:13px;color:#6B7280;line-height:1.55;margin:0 0 18px">Escrow released and your item is on its way. Tracking will appear on your hunt shortly.</p>
+            <button onClick="{{ goDash }}" style="font:inherit;display:flex;align-items:center;justify-content:center;width:100%;height:42px;border-radius:10px;background:#0F1115;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer">Back to dashboard</button>
+          </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== REQUEST CREATION ===================== -->
+    <sc-if value="{{ screenCreate }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:660px;margin:0 auto;padding:34px 40px 90px">
+      <!-- step indicator -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:30px">
+        <div style="flex:1;display:flex;gap:5px">
+          <sc-for list="{{ createSegs }}" as="sg" hint-placeholder-count="6"><div style="flex:1;height:4px;border-radius:2px;background:{{ sg.bg }}"></div></sc-for>
+        </div>
+        <div style="flex:none;font-family:'Geist Mono',monospace;font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums">Step {{ createStepNum }} of 6</div>
+      </div>
+
+      <h1 style="font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 24px">{{ createTitle }}</h1>
+
+      <!-- STEP 0: item -->
+      <sc-if value="{{ cs0 }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:540;margin-bottom:7px">What is it?</label>
+          <input value="{{ create.item }}" onChange="{{ setItem }}" placeholder="e.g. Charizard ex — SAR (151 / SV2a)" style="font:inherit;width:100%;height:46px;padding:0 15px;border-radius:11px;border:1px solid #E5E7EB;font-size:14.5px;outline:none;background:#fff" style-focus="border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.1)"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:540;margin-bottom:7px">Reference link <span style="color:#9AA3AF;font-weight:400">(optional)</span></label>
+          <input value="{{ create.url }}" onChange="{{ setUrl }}" placeholder="Paste a listing or image URL" style="font:inherit;width:100%;height:46px;padding:0 15px;border-radius:11px;border:1px solid #E5E7EB;font-size:14.5px;outline:none;background:#fff;font-family:'Geist Mono',monospace" style-focus="border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.1)"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:540;margin-bottom:7px">Reference photo <span style="color:#9AA3AF;font-weight:400">(optional)</span></label>
+          <div style="display:flex;align-items:center;gap:14px;border:1px dashed #D7DBE0;border-radius:13px;padding:20px;background:#FAFBFC">
+            <span style="flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:11px;background:#fff;border:1px solid #EAECEF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 19l4.5-5 3 3.5L16 13l3 6" stroke="#9AA3AF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="15" rx="2.5" stroke="#9AA3AF" stroke-width="1.7"/></svg></span>
+            <div><div style="font-size:13.5px;font-weight:540">Drop an image to help us match it</div><div style="font-size:12px;color:#9AA3AF;margin-top:2px">PNG or JPG · helps us avoid the wrong variant</div></div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- STEP 1: condition ladder -->
+      <sc-if value="{{ cs1 }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:14px;color:#6B7280;margin:0 0 18px;line-height:1.55">We won't buy anything below this. The lower you go, the more we'll likely find — and the less it'll cost.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ conds }}" as="c" hint-placeholder-count="5">
+          <button onClick="{{ c.set }}" style="font:inherit;display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:15px 17px;border-radius:13px;border:1.5px solid {{ c.border }};background:{{ c.bg }};cursor:pointer">
+            <span style="flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid {{ c.border }};background:{{ c.bg }};display:flex;align-items:center;justify-content:center"><span style="width:8px;height:8px;border-radius:50%;background:#1D4ED8;opacity:{{ c.tick }}"></span></span>
+            <div style="flex:1"><div style="font-size:14.5px;font-weight:560">{{ c.key }}</div><div style="font-size:12.5px;color:#6B7280;margin-top:1px">{{ c.desc }}</div></div>
+          </button>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <!-- STEP 2: priorities -->
+      <sc-if value="{{ cs2 }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:14px;color:#6B7280;margin:0 0 20px;line-height:1.55">Tell us what's non-negotiable versus what's just nice. The more specific, the better the match.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:14px;padding:18px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:560;margin-bottom:14px"><span style="width:7px;height:7px;border-radius:50%;background:#DC2626"></span>Must-haves</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:8px;background:#FEF1F1;color:#B42318;font-size:12.5px;font-weight:500">Centered front <span style="opacity:.5">×</span></span>
+            <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:8px;background:#FEF1F1;color:#B42318;font-size:12.5px;font-weight:500">No whitening <span style="opacity:.5">×</span></span>
+          </div>
+          <input placeholder="Add a must-have…" style="font:inherit;width:100%;height:38px;padding:0 12px;border-radius:9px;border:1px solid #E5E7EB;font-size:13px;outline:none"/>
+        </div>
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:14px;padding:18px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:560;margin-bottom:14px"><span style="width:7px;height:7px;border-radius:50%;background:#1D4ED8"></span>Nice-to-haves</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:8px;background:#EEF3FF;color:#1D4ED8;font-size:12.5px;font-weight:500">Original sleeve <span style="opacity:.5">×</span></span>
+          </div>
+          <input placeholder="Add a nice-to-have…" style="font:inherit;width:100%;height:38px;padding:0 12px;border-radius:9px;border:1px solid #E5E7EB;font-size:13px;outline:none"/>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- STEP 3: budget -->
+      <sc-if value="{{ cs3 }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:14px;color:#6B7280;margin:0 0 20px;line-height:1.55">The most you'll pay for the item itself. We never buy above this — and we'll always try to beat it.</p>
+      <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:24px">
+        <label style="display:block;font-size:13px;font-weight:540;margin-bottom:10px">Maximum item price (JPY)</label>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <span style="font-size:26px;font-weight:600;color:#6B7280">¥</span>
+          <input type="number" value="{{ create.cap }}" onChange="{{ setCap }}" style="font:inherit;flex:1;height:54px;padding:0 16px;border-radius:12px;border:1px solid #E5E7EB;font-size:26px;font-weight:600;outline:none;font-variant-numeric:tabular-nums" style-focus="border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.1)"/>
+        </div>
+        <div style="font-size:12.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ capLocal }} · final charge settles in JPY at capture</div>
+        <div style="display:flex;align-items:center;gap:9px;margin-top:18px;padding-top:18px;border-top:1px solid #F4F5F7;font-size:13px;color:#475569"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1D4ED8" stroke-width="1.6"/><path d="M12 11v5M12 8v.5" stroke="#1D4ED8" stroke-width="1.7" stroke-linecap="round"/></svg>Our finder's fee on this cap would be about <strong style="color:#0F1115;font-weight:560;font-variant-numeric:tabular-nums">&nbsp;{{ finderPreview }}</strong>&nbsp;(12%, only if we succeed).</div>
+      </div>
+      </sc-if>
+
+      <!-- STEP 4: rush -->
+      <sc-if value="{{ cs4 }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:14px;color:#6B7280;margin:0 0 18px;line-height:1.55">A deadline keeps your hunt active. Standard covers most finds — rush tiers prioritise the search.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ rushCreate }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.set }}" style="font:inherit;display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;border-radius:13px;border:1.5px solid {{ t.border }};background:{{ t.bg }};cursor:pointer">
+            <div style="flex:1"><div style="font-size:14.5px;font-weight:560">{{ t.label }}</div><div style="font-size:12.5px;color:#6B7280;margin-top:1px">{{ t.days }}</div></div>
+            <span style="font-size:13.5px;font-weight:560;color:#1D4ED8;font-variant-numeric:tabular-nums">{{ t.note }}</span>
+          </button>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <!-- STEP 5: review -->
+      <sc-if value="{{ cs5 }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:8px 22px;margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F4F5F7"><span style="font-size:13px;color:#6B7280">Item</span><span style="font-size:13.5px;font-weight:540;text-align:right;max-width:60%">{{ createItemLabel }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F4F5F7"><span style="font-size:13px;color:#6B7280">Minimum condition</span><span style="font-size:13.5px;font-weight:540">{{ create.condition }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F4F5F7"><span style="font-size:13px;color:#6B7280">Budget cap</span><span style="font-size:13.5px;font-weight:540;font-variant-numeric:tabular-nums">{{ capStr }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:14px 0"><span style="font-size:13px;color:#6B7280">Speed</span><span style="font-size:13.5px;font-weight:540">{{ create.rush }}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#F7FBF8;border:1px solid #DDEEE3;border-radius:13px;padding:14px 16px;font-size:13px;color:#3B6B53;line-height:1.5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex:none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg>Next you'll deposit into escrow. You're not charged until your item ships — and refunded in full if we can't find it.</div>
+      </sc-if>
+
+      <!-- footer nav -->
+      <div style="display:flex;align-items:center;gap:12px;margin-top:30px">
+        <button onClick="{{ prevStep }}" style="font:inherit;height:44px;padding:0 18px;border-radius:11px;background:#fff;color:#0F1115;font-weight:540;font-size:14px;border:1px solid #E5E7EB;cursor:pointer;visibility:{{ backVis }}">Back</button>
+        <button onClick="{{ goDash }}" style="font:inherit;height:44px;padding:0 16px;border-radius:11px;background:none;color:#9AA3AF;font-weight:500;font-size:13.5px;border:none;cursor:pointer">Cancel</button>
+        <div style="flex:1"></div>
+        <sc-if value="{{ isLastStep }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goCheckout }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:14px;border:none;cursor:pointer">Continue to escrow deposit<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></sc-if>
+        <sc-if value="{{ notLastStep }}" hint-placeholder-val="{{ true }}"><button onClick="{{ nextStep }}" style="font:inherit;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:560;font-size:14px;border:none;cursor:pointer">Continue<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></sc-if>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== CHECKOUT (escrow deposit) ===================== -->
+    <sc-if value="{{ screenCheckout }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:940px;margin:0 auto;padding:34px 40px 90px">
+      <button onClick="{{ goCreate }}" style="font:inherit;display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#6B7280;background:none;border:none;cursor:pointer;padding:6px 0;margin-bottom:14px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to request</button>
+      <h1 style="font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px">Deposit into escrow</h1>
+      <p style="font-size:14.5px;color:#6B7280;margin:0 0 28px;max-width:46em">This holds your funds — it isn't a charge. We only draw from escrow once you approve a find, and the final amount settles in JPY at capture.</p>
+
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:start">
+        <!-- summary -->
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <div style="display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid #F4F5F7;margin-bottom:6px">
+              <div style="flex:none;width:48px;height:66px;border-radius:9px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F5F6F8,#F5F6F8 6px,#EEF0F3 6px,#EEF0F3 12px)"></div>
+              <div style="flex:1"><div style="font-size:14.5px;font-weight:560">{{ createItemLabel }}</div><div style="font-size:12.5px;color:#6B7280;margin-top:2px">Minimum condition · {{ create.condition }}</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ co.lines }}" as="l" hint-placeholder-count="4">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid #F4F5F7">
+                  <div><div style="font-size:13.5px">{{ l.label }}</div><div style="font-size:11px;color:#9AA3AF">{{ l.sub }}</div></div>
+                  <div style="text-align:right"><div style="font-size:13.5px;font-weight:540;font-variant-numeric:tabular-nums">{{ l.jpy }}</div><div style="font-size:10.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ l.local }}</div></div>
+                </div>
+              </sc-for>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:15px">
+                <div><div style="font-size:15px;font-weight:600">Total held in escrow</div><div style="font-size:11.5px;color:#9AA3AF;font-variant-numeric:tabular-nums">{{ coTotalLocal }} · settles in JPY</div></div>
+                <span style="font-size:21px;font-weight:600;font-variant-numeric:tabular-nums">{{ coTotalJpy }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- rush selector -->
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <h3 style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#6B7280;margin:0 0 14px">Hunt speed</h3>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+              <sc-for list="{{ rushCo }}" as="t" hint-placeholder-count="3">
+                <button onClick="{{ t.set }}" style="font:inherit;text-align:left;padding:13px 14px;border-radius:12px;border:1.5px solid {{ t.border }};background:{{ t.bg }};cursor:pointer"><div style="font-size:13.5px;font-weight:560">{{ t.label }}</div><div style="font-size:11.5px;color:#6B7280;margin-top:2px">{{ t.days }}</div><div style="font-size:12px;font-weight:540;color:#1D4ED8;margin-top:8px;font-variant-numeric:tabular-nums">{{ t.note }}</div></button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- pay panel -->
+        <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:24px">
+          <div style="background:#F7FBF8;border:1px solid #DDEEE3;border-radius:16px;padding:18px 20px">
+            <div style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:#047857;font-weight:560;margin-bottom:9px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg>Held, not charged</div>
+            <p style="font-size:13px;color:#3B6B53;line-height:1.55;margin:0">Funds are held by Finders Keepers via Stripe. Released to the seller only when your item ships. Full refund if not found by the deadline.</p>
+          </div>
+          <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+            <div style="display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 14px;border:1px solid #E5E7EB;border-radius:11px;margin-bottom:14px"><span style="font-size:13.5px;color:#475569;display:flex;align-items:center;gap:9px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="#9AA3AF" stroke-width="1.6"/><path d="M3 10h18" stroke="#9AA3AF" stroke-width="1.6"/></svg>Visa ···· 4242</span><span style="font-size:12px;color:#9AA3AF">Change</span></div>
+            <button onClick="{{ toggleTerms }}" style="font:inherit;display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0">
+              <span style="flex:none;width:19px;height:19px;border-radius:6px;border:1.5px solid {{ coTermsBorder }};background:{{ coTermsBg }};display:flex;align-items:center;justify-content:center;margin-top:1px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-11" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span style="font-size:12.5px;color:#475569;line-height:1.5">I agree to the Terms and the escrow policy, and understand the final charge settles in JPY.</span>
+            </button>
+            <button onClick="{{ placeRequest }}" style="font:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;border-radius:12px;background:#1D4ED8;color:#fff;font-weight:560;font-size:15px;border:none;cursor:pointer">Place request · {{ coTotalJpy }} held</button>
+            <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;font-size:11.5px;color:#9AA3AF"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#9AA3AF" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#9AA3AF" stroke-width="1.8"/></svg>Secured by Stripe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== EXPLORATIONS BOARD ===================== -->
+    <sc-if value="{{ screenExplore }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#F4F5F7;min-height:100vh">
+      <div style="max-width:1080px;margin:0 auto;padding:40px 40px 90px">
+        <h1 style="font-size:25px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px">Explorations</h1>
+        <p style="font-size:14.5px;color:#6B7280;margin:0 0 36px;max-width:48em">Three takes each on the dimensions you flagged. Tell me which to carry into the live product — mix and match freely.</p>
+
+        <!-- DASHBOARD LAYOUT -->
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:16px"><h2 style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#0F1115;margin:0">Dashboard layout</h2><span style="font-size:13px;color:#9AA3AF">how the hunts are arranged</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:44px">
+          <!-- A list -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#0F1115;color:#fff;font-size:11px;font-weight:600">A</span><span style="font-size:13px;font-weight:560">Single-column list</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:14px;height:208px;display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;gap:9px;align-items:center;border:1px solid #EEF0F3;border-radius:9px;padding:8px"><div style="width:22px;height:30px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1"><div style="height:6px;width:62%;background:#E2E5E9;border-radius:3px"></div><div style="height:5px;width:40%;background:#EDEFF2;border-radius:3px;margin-top:5px"></div></div><div style="height:7px;width:30px;background:#DDE3F2;border-radius:3px"></div></div>
+              <div style="display:flex;gap:9px;align-items:center;border:1px solid #EEF0F3;border-radius:9px;padding:8px"><div style="width:22px;height:30px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1"><div style="height:6px;width:70%;background:#E2E5E9;border-radius:3px"></div><div style="height:5px;width:45%;background:#EDEFF2;border-radius:3px;margin-top:5px"></div></div><div style="height:7px;width:30px;background:#E2E5E9;border-radius:3px"></div></div>
+              <div style="display:flex;gap:9px;align-items:center;border:1px solid #EEF0F3;border-radius:9px;padding:8px"><div style="width:22px;height:30px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1"><div style="height:6px;width:55%;background:#E2E5E9;border-radius:3px"></div><div style="height:5px;width:38%;background:#EDEFF2;border-radius:3px;margin-top:5px"></div></div><div style="height:7px;width:30px;background:#E2E5E9;border-radius:3px"></div></div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Calmest. One hunt per row, max breathing room. <strong style="color:#0F1115;font-weight:560">Currently live.</strong></p>
+          </div>
+          <!-- B grid -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid #D7DBE0;color:#475569;font-size:11px;font-weight:600">B</span><span style="font-size:13px;font-weight:560">Two-column grid</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:14px;height:208px;display:grid;grid-template-columns:1fr 1fr;gap:9px">
+              <div style="border:1px solid #EEF0F3;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:6px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="height:6px;width:80%;background:#E2E5E9;border-radius:3px"></div><div style="height:7px;width:40%;background:#DDE3F2;border-radius:3px"></div></div>
+              <div style="border:1px solid #EEF0F3;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:6px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="height:6px;width:70%;background:#E2E5E9;border-radius:3px"></div><div style="height:7px;width:40%;background:#E2E5E9;border-radius:3px"></div></div>
+              <div style="border:1px solid #EEF0F3;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:6px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="height:6px;width:75%;background:#E2E5E9;border-radius:3px"></div><div style="height:7px;width:40%;background:#E2E5E9;border-radius:3px"></div></div>
+              <div style="border:1px solid #EEF0F3;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:6px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="height:6px;width:65%;background:#E2E5E9;border-radius:3px"></div><div style="height:7px;width:40%;background:#E2E5E9;border-radius:3px"></div></div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">More hunts in view. Better once a buyer runs many at once.</p>
+          </div>
+          <!-- C focus -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid #D7DBE0;color:#475569;font-size:11px;font-weight:600">C</span><span style="font-size:13px;font-weight:560">Action-first focus</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:14px;height:208px;display:flex;flex-direction:column;gap:9px">
+              <div style="border:1.5px solid #F2DEB4;background:#FFFBF3;border-radius:9px;padding:11px;display:flex;gap:9px;align-items:center"><div style="width:26px;height:36px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1"><div style="height:6px;width:60%;background:#E7D4AC;border-radius:3px"></div><div style="height:7px;width:50%;background:#F0DDB4;border-radius:3px;margin-top:6px"></div></div><div style="height:18px;width:42px;background:#1D4ED8;border-radius:5px"></div></div>
+              <div style="font-size:8px;color:#9AA3AF;letter-spacing:.04em;text-transform:uppercase;font-weight:600;margin-top:2px">Everything else</div>
+              <div style="display:flex;gap:9px;align-items:center;border:1px solid #EEF0F3;border-radius:8px;padding:7px"><div style="width:16px;height:22px;border-radius:4px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1"><div style="height:5px;width:55%;background:#E2E5E9;border-radius:3px"></div></div><div style="height:6px;width:26px;background:#E2E5E9;border-radius:3px"></div></div>
+              <div style="display:flex;gap:9px;align-items:center;border:1px solid #EEF0F3;border-radius:8px;padding:7px"><div style="width:16px;height:22px;border-radius:4px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1"><div style="height:5px;width:48%;background:#E2E5E9;border-radius:3px"></div></div><div style="height:6px;width:26px;background:#E2E5E9;border-radius:3px"></div></div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Pushes the one thing needing you to the top; rest go quiet.</p>
+          </div>
+        </div>
+
+        <!-- REQUEST CARD -->
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:16px"><h2 style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#0F1115;margin:0">Request card</h2><span style="font-size:13px;color:#9AA3AF">the anatomy of one hunt</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:44px">
+          <!-- A horizontal -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#0F1115;color:#fff;font-size:11px;font-weight:600">A</span><span style="font-size:13px;font-weight:560">Horizontal</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:14px;height:158px;display:flex;align-items:center">
+              <div style="display:flex;gap:12px;width:100%;align-items:center">
+                <div style="flex:none;width:40px;height:54px;border-radius:7px;border:1px solid #E5E7EB;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 6px,#E9EBEE 6px,#E9EBEE 12px)"></div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:560">Charizard ex</div><div style="font-size:9px;color:#9AA3AF;font-family:'Geist Mono',monospace;margin-top:2px">151 · SV2a</div><div style="display:flex;gap:2px;margin-top:8px"><div style="flex:1;height:3px;border-radius:2px;background:#1D4ED8"></div><div style="flex:1;height:3px;border-radius:2px;background:#1D4ED8"></div><div style="flex:1;height:3px;border-radius:2px;background:#1D4ED8"></div><div style="flex:1;height:3px;border-radius:2px;background:#E8EAED"></div><div style="flex:1;height:3px;border-radius:2px;background:#E8EAED"></div></div></div>
+                <div style="text-align:right"><div style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums">¥48,000</div><div style="font-size:9px;color:#9AA3AF">$307.20</div></div>
+              </div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Scannable, money pinned right. <strong style="color:#0F1115;font-weight:560">Currently live.</strong></p>
+          </div>
+          <!-- B vertical -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid #D7DBE0;color:#475569;font-size:11px;font-weight:600">B</span><span style="font-size:13px;font-weight:560">Vertical</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:14px;height:158px;display:flex;justify-content:center">
+              <div style="width:110px;border:1px solid #EEF0F3;border-radius:10px;overflow:hidden"><div style="height:66px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 7px,#E9EBEE 7px,#E9EBEE 14px)"></div><div style="padding:9px"><div style="font-size:11px;font-weight:560">Charizard ex</div><div style="font-size:8.5px;color:#9AA3AF;font-family:'Geist Mono',monospace;margin-top:2px">151 · SV2a</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px"><span style="font-size:11px;font-weight:600;font-variant-numeric:tabular-nums">¥48,000</span><span style="width:6px;height:6px;border-radius:50%;background:#D97706"></span></div></div></div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Image-forward — great for visual collectors and grids.</p>
+          </div>
+          <!-- C compact -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid #D7DBE0;color:#475569;font-size:11px;font-weight:600">C</span><span style="font-size:13px;font-weight:560">Compact row</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:14px;height:158px;display:flex;flex-direction:column;gap:8px;justify-content:center">
+              <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:22px;border-radius:3px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><span style="flex:1;font-size:11px;font-weight:540">Charizard ex</span><span style="width:6px;height:6px;border-radius:50%;background:#D97706"></span><span style="font-size:11px;font-weight:600;font-variant-numeric:tabular-nums">¥48,000</span></div>
+              <div style="height:1px;background:#F1F2F4"></div>
+              <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:22px;border-radius:3px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><span style="flex:1;font-size:11px;font-weight:540">Umbreon VMAX</span><span style="width:6px;height:6px;border-radius:50%;background:#1D4ED8"></span><span style="font-size:11px;font-weight:600;font-variant-numeric:tabular-nums">¥62,000</span></div>
+              <div style="height:1px;background:#F1F2F4"></div>
+              <div style="display:flex;align-items:center;gap:9px"><div style="width:16px;height:22px;border-radius:3px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><span style="flex:1;font-size:11px;font-weight:540">Blastoise</span><span style="width:6px;height:6px;border-radius:50%;background:#047857"></span><span style="font-size:11px;font-weight:600;font-variant-numeric:tabular-nums">¥210,000</span></div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Densest — for power users tracking a long list.</p>
+          </div>
+        </div>
+
+        <!-- ESCROW BADGE -->
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:16px"><h2 style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#0F1115;margin:0">Escrow badge &amp; trust framing</h2><span style="font-size:13px;color:#9AA3AF">the anxiety-killer</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px">
+          <!-- A banner -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#0F1115;color:#fff;font-size:11px;font-weight:600">A</span><span style="font-size:13px;font-weight:560">Reassurance banner</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:16px;height:130px;display:flex;align-items:center">
+              <div style="display:flex;align-items:center;gap:12px;width:100%;border:1px solid #E6EFE9;border-radius:11px;padding:12px;background:#fff">
+                <span style="flex:none;width:34px;height:34px;border-radius:9px;background:#E8F6EF;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#047857" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#047857" stroke-width="1.8"/></svg></span>
+                <div><div style="font-size:12px;font-weight:560;font-variant-numeric:tabular-nums">¥365,000 held safely</div><div style="font-size:10.5px;color:#6B7280;margin-top:2px">Released only when items ship</div></div>
+              </div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Warm, sentence-led. <strong style="color:#0F1115;font-weight:560">Currently live.</strong></p>
+          </div>
+          <!-- B inline stat -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid #D7DBE0;color:#475569;font-size:11px;font-weight:600">B</span><span style="font-size:13px;font-weight:560">Inline stat chip</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:16px;height:130px;display:flex;align-items:center;justify-content:center">
+              <div style="display:inline-flex;align-items:center;gap:9px;border:1px solid #DDEEE3;background:#F7FBF8;border-radius:30px;padding:8px 15px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#047857" stroke-width="1.6" stroke-linejoin="round"/></svg><span style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums">¥365,000</span><span style="font-size:11px;color:#047857;font-weight:540">in escrow</span></div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Quietest — a header pill that never shouts.</p>
+          </div>
+          <!-- C detailed bar -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid #D7DBE0;color:#475569;font-size:11px;font-weight:600">C</span><span style="font-size:13px;font-weight:560">Held / released bar</span></div>
+            <div style="background:#fff;border:1px solid #E6E8EB;border-radius:14px;padding:16px;height:130px;display:flex;align-items:center">
+              <div style="width:100%;border:1px solid #E6EFE9;border-radius:11px;padding:13px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px"><span style="font-size:11px;color:#6B7280">Held in escrow</span><span style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums">¥365,000</span></div>
+                <div style="height:6px;border-radius:4px;background:#E8F6EF;display:flex;overflow:hidden"><div style="width:62%;background:#047857"></div></div>
+                <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:9.5px;color:#9AA3AF"><span>● held</span><span>○ releases on dispatch</span></div>
+              </div>
+            </div>
+            <p style="font-size:12px;color:#6B7280;margin:9px 2px 0;line-height:1.5">Most explicit — shows held vs. releasing at a glance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== MESSAGES ===================== -->
+    <sc-if value="{{ screenMessages }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1000px;margin:0 auto;padding:40px 40px 40px;height:100vh;display:flex;flex-direction:column">
+      <h1 style="font-size:25px;font-weight:600;letter-spacing:-.02em;margin:0 0 22px">Messages</h1>
+      <div style="flex:1;display:grid;grid-template-columns:280px 1fr;gap:20px;min-height:0">
+        <!-- thread list -->
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:14px 16px;border-bottom:1px solid #F1F2F4;font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#6B7280">Per hunt</div>
+          <div style="display:flex;align-items:center;gap:11px;padding:13px 16px;background:#F4F6FB;border-left:2px solid #1D4ED8"><div style="flex:none;width:32px;height:32px;border-radius:8px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:560">Charizard ex</div><div style="font-size:11.5px;color:#6B7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Sending photos now…</div></div><span style="width:7px;height:7px;border-radius:50%;background:#D97706"></span></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:13px 16px"><div style="flex:none;width:32px;height:32px;border-radius:8px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:540">Umbreon VMAX</div><div style="font-size:11.5px;color:#9AA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">On the hunt — alerts set</div></div></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:13px 16px"><div style="flex:none;width:32px;height:32px;border-radius:8px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:540">Blastoise</div><div style="font-size:11.5px;color:#9AA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Shipped — EMS tracking</div></div></div>
+        </div>
+        <!-- conversation -->
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;display:flex;flex-direction:column;min-height:0">
+          <div style="padding:14px 18px;border-bottom:1px solid #F1F2F4;display:flex;align-items:center;gap:10px"><span style="width:30px;height:30px;border-radius:50%;background:#EEF3FF;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">A</span><div><div style="font-size:13.5px;font-weight:560">Aoi · your hunter</div><div style="font-size:11.5px;color:#047857">Online · Tokyo (JST)</div></div></div>
+          <div style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="align-self:flex-start;max-width:74%;background:#F4F5F7;border-radius:13px 13px 13px 4px;padding:10px 13px;font-size:13px;line-height:1.5">Hi! Starting the hunt for your Charizard ex — I'll set alerts across Mercari, Yahoo! Auctions and a couple of Akihabara shops.</div>
+            <div style="align-self:flex-end;max-width:74%;background:#1D4ED8;color:#fff;border-radius:13px 13px 4px 13px;padding:10px 13px;font-size:13px;line-height:1.5">Thanks! Centering matters most to me — front especially.</div>
+            <div style="align-self:flex-start;max-width:74%;background:#F4F5F7;border-radius:13px 13px 13px 4px;padding:10px 13px;font-size:13px;line-height:1.5">Noted. Found a strong candidate — sending photos now for your approval. Looks ~60/40 centered, no whitening.</div>
+          </div>
+          <div style="padding:14px 16px;border-top:1px solid #F1F2F4;display:flex;gap:10px"><input placeholder="Message Aoi…" style="font:inherit;flex:1;height:42px;padding:0 14px;border-radius:11px;border:1px solid #E5E7EB;font-size:13.5px;outline:none"/><button style="font:inherit;height:42px;padding:0 18px;border-radius:11px;background:#1D4ED8;color:#fff;font-weight:540;font-size:13.5px;border:none;cursor:pointer">Send</button></div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== ORDER HISTORY ===================== -->
+    <sc-if value="{{ screenHistory }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1000px;margin:0 auto;padding:40px 40px 80px">
+      <h1 style="font-size:25px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px">Order history</h1>
+      <p style="font-size:14.5px;color:#6B7280;margin:0 0 26px">Completed and closed hunts. Reorder anything in a tap.</p>
+      <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 100px;gap:14px;padding:13px 20px;border-bottom:1px solid #F1F2F4;font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#9AA3AF"><span>Item</span><span>Closed</span><span>Total</span><span>Status</span><span></span></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 100px;gap:14px;padding:15px 20px;border-bottom:1px solid #F4F5F7;align-items:center"><div style="display:flex;align-items:center;gap:11px"><div style="width:28px;height:38px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div><div style="font-size:13.5px;font-weight:540">Gengar VMAX</div><div style="font-size:11.5px;color:#9AA3AF;font-family:'Geist Mono',monospace">Fusion Strike · PSA 9</div></div></div><span style="font-size:13px;color:#6B7280;font-variant-numeric:tabular-nums">May 28</span><span style="font-size:13.5px;font-weight:540;font-variant-numeric:tabular-nums">¥31,400</span><span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:540;background:#E8F6EF;color:#047857"><span style="width:6px;height:6px;border-radius:50%;background:#047857"></span>Delivered</span></span><span style="font-size:12.5px;color:#1D4ED8;cursor:pointer;text-align:right">Reorder</span></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 100px;gap:14px;padding:15px 20px;border-bottom:1px solid #F4F5F7;align-items:center"><div style="display:flex;align-items:center;gap:11px"><div style="width:28px;height:38px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div><div style="font-size:13.5px;font-weight:540">Mew — Promo</div><div style="font-size:11.5px;color:#9AA3AF;font-family:'Geist Mono',monospace">151 · sealed ETB</div></div></div><span style="font-size:13px;color:#6B7280;font-variant-numeric:tabular-nums">May 19</span><span style="font-size:13.5px;font-weight:540;font-variant-numeric:tabular-nums">¥21,800</span><span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:540;background:#E8F6EF;color:#047857"><span style="width:6px;height:6px;border-radius:50%;background:#047857"></span>Delivered</span></span><span style="font-size:12.5px;color:#1D4ED8;cursor:pointer;text-align:right">Reorder</span></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 100px;gap:14px;padding:15px 20px;align-items:center"><div style="display:flex;align-items:center;gap:11px"><div style="width:28px;height:38px;border-radius:5px;background:repeating-linear-gradient(135deg,#F2F3F5,#F2F3F5 5px,#E9EBEE 5px,#E9EBEE 10px)"></div><div><div style="font-size:13.5px;font-weight:540">Trophy Pikachu</div><div style="font-size:11.5px;color:#9AA3AF;font-family:'Geist Mono',monospace">No.2 Trainer</div></div></div><span style="font-size:13px;color:#6B7280;font-variant-numeric:tabular-nums">May 11</span><span style="font-size:13.5px;font-weight:540;font-variant-numeric:tabular-nums">¥0</span><span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:540;background:#F1F5F9;color:#475569"><span style="width:6px;height:6px;border-radius:50%;background:#94A3B8"></span>Refunded</span></span><span style="font-size:12.5px;color:#1D4ED8;cursor:pointer;text-align:right">Reorder</span></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== ACCOUNT ===================== -->
+    <sc-if value="{{ screenAccount }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:760px;margin:0 auto;padding:40px 40px 80px">
+      <h1 style="font-size:25px;font-weight:600;letter-spacing:-.02em;margin:0 0 26px">Account &amp; settings</h1>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+          <h3 style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#6B7280;margin:0 0 16px">Shipping address</h3>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between"><div style="font-size:14px;line-height:1.6;color:#0F1115">Sam Rivera<br/>1240 Larkspur Ave, Apt 5<br/>Portland, OR 97214<br/><span style="color:#6B7280">United States</span></div><span style="font-size:12.5px;color:#1D4ED8;cursor:pointer">Edit</span></div>
+          <div style="display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid #F4F5F7;font-size:12.5px;color:#6B7280"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1D4ED8" stroke-width="1.6"/><path d="M12 11v5M12 8v.5" stroke="#1D4ED8" stroke-width="1.7" stroke-linecap="round"/></svg>Your country sets shipping options and customs estimates across the app.</div>
+        </div>
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+          <h3 style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#6B7280;margin:0 0 16px">Currency &amp; language</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #F4F5F7"><span style="font-size:14px">Display currency</span><span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:540">USD ($) <span style="font-size:11.5px;color:#9AA3AF;font-weight:400">alongside ¥</span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0"><span style="font-size:14px">Language</span><span style="font-size:13.5px;font-weight:540">English</span></div>
+        </div>
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+          <h3 style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#6B7280;margin:0 0 16px">Payment method</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:14px;display:flex;align-items:center;gap:10px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="#9AA3AF" stroke-width="1.6"/><path d="M3 10h18" stroke="#9AA3AF" stroke-width="1.6"/></svg>Visa ···· 4242</span><span style="font-size:12.5px;color:#1D4ED8;cursor:pointer">Manage</span></div>
+        </div>
+        <div style="background:#fff;border:1px solid #EAECEF;border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(15,17,21,.04)">
+          <h3 style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#6B7280;margin:0 0 16px">Notifications</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #F4F5F7"><span style="font-size:14px">Action needed (candidate found, item arrived)</span><div style="width:38px;height:22px;border-radius:14px;background:#1D4ED8;position:relative"><span style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff"></span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0"><span style="font-size:14px">Hunter updates &amp; messages</span><div style="width:38px;height:22px;border-radius:14px;background:#1D4ED8;position:relative"><span style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#fff"></span></div></div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </main>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:960}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'dashboard',
+    selectedId: 'charizard',
+    createStep: 0,
+    candidate: null,
+    received: null,
+    dashEmpty: false,
+    placed: false,
+    create: { item: '', url: '', condition: 'Like New', cap: 55000, rush: 'standard', musts: ['Centered front', 'No whitening'], nices: ['Original sleeve'] },
+    coRush: 'standard',
+    coTerms: false,
+  };
+
+  RATES = { USD: 0.0064, EUR: 0.0059, GBP: 0.0050, AUD: 0.0098 };
+  SYM = { USD: '$', EUR: '\u20AC', GBP: '\u00A3', AUD: 'A$' };
+  FLOW = ['open', 'sourcing', 'match', 'approved', 'purchased', 'received', 'shipped', 'released'];
+  LAB = { open: 'Open', sourcing: 'Sourcing', match: 'Match found', approved: 'Approved', purchased: 'Purchased', received: 'Received', shipped: 'Shipped', released: 'Released' };
+  TS = ['Jun 2', 'Jun 4', 'Jun 7', 'Jun 9', 'Jun 11', 'Jun 12', 'Jun 13', '\u2014'];
+
+  REQ = [
+    { id: 'charizard', name: 'Charizard ex \u2014 SAR', set: '151 \u00B7 SV2a', grade: 'Raw \u00B7 Near Mint', currency: 'USD',
+      stage: 'match', escrow: 48000, deadlineDays: 4, actionNeeded: true, action: 'Candidate found \u2014 review it', cap: 55000, found: 44000, seller: 'Mercari JP \u00B7 98% rating', updated: '2h', thumb: 'card front' },
+    { id: 'umbreon', name: 'Umbreon VMAX \u2014 Alt Art', set: 'Evolving Skies \u00B7 s7R', grade: 'PSA 10', currency: 'EUR',
+      stage: 'sourcing', escrow: 62000, deadlineDays: 12, actionNeeded: false, updated: '1d', thumb: 'graded slab' },
+    { id: 'blastoise', name: 'Blastoise \u2014 Base Set', set: '1st Ed \u00B7 Shadowless', grade: 'PSA 8', currency: 'GBP',
+      stage: 'shipped', escrow: 210000, deadlineDays: null, actionNeeded: false, tracking: 'EMS EE 1234 5678 9 JP', eta: 'Jun 18', updated: '6h', thumb: 'graded slab' },
+    { id: 'lugia', name: 'Lugia \u2014 Neo Genesis', set: '1st Edition', grade: 'PSA 9', currency: 'AUD',
+      stage: 'sourcing', escrow: 45000, deadlineDays: 6, actionNeeded: true, action: 'Found above your cap', overCap: true, found: 58000, cap: 45000, updated: '3h', thumb: 'graded slab' },
+    { id: 'illustrator', name: 'Pikachu Illustrator', set: 'CoroCoro promo', grade: 'PSA 7+', currency: 'USD',
+      stage: 'open', escrow: 38000, deadlineDays: 0, actionNeeded: false, notFound: true, updated: 'just now', thumb: 'reference' },
+  ];
+
+  RUSH = [
+    { key: 'standard', label: 'Standard', days: '30-day hunt', fee: 0, note: 'Included' },
+    { key: 'priority', label: 'Priority', days: '14-day hunt', fee: 3000, note: '+\u00A53,000' },
+    { key: 'express', label: 'Express', days: '7-day hunt', fee: 8000, note: '+\u00A58,000' },
+  ];
+
+  FINDS = [
+    { name: 'Umbreon VMAX', set: 'Evolving Skies', price: '\u00A562,000', days: 'found in 3d', thumb: 'graded slab' },
+    { name: 'Gengar VMAX', set: 'Fusion Strike', price: '\u00A528,500', days: 'found in 6d', thumb: 'graded slab' },
+    { name: 'Mew \u2014 Promo', set: '151 sealed ETB', price: '\u00A518,900', days: 'found in 2d', thumb: 'sealed box' },
+    { name: 'Rayquaza VMAX', set: 'Evolving Skies', price: '\u00A541,200', days: 'found in 8d', thumb: 'graded slab' },
+  ];
+
+  fmtJpy(n) { return '\u00A5' + Math.round(n).toLocaleString('en-US'); }
+  fmtCur(jpy, cur) { const r = this.RATES[cur] || this.RATES.USD; const s = this.SYM[cur] || '$'; return '\u2248 ' + s + (jpy * r).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  CONDDESC = { 'New': 'Sealed or factory-fresh, never handled', 'Like New': 'Opened but pristine \u2014 no visible wear', 'Good': 'Light handling wear, fully intact', 'Acceptable': 'Visible wear, still collectible', 'Any': 'Cheapest that exists \u2014 surprise me' };
+
+  pricing(item, rushKey, cur) {
+    const finder = Math.round(item * 0.12 / 100) * 100;
+    const shipping = 4200;
+    const tax = Math.round((item + finder + shipping) * 0.07 / 100) * 100;
+    const rush = (this.RUSH.find(r => r.key === rushKey) || this.RUSH[0]).fee;
+    const total = item + finder + shipping + tax + rush;
+    const L = (label, val, sub) => ({ label, jpy: this.fmtJpy(val), local: this.fmtCur(val, cur), sub: sub || '' });
+    const lines = [L('Item price (your cap)', item), L('Finder\u2019s fee', finder, '12% \u00B7 charged only on success'), L('Shipping', shipping, 'EMS tracked, worldwide'), L('Import & tax', tax, 'estimated at destination')];
+    if (rush > 0) lines.push(L('Rush tier', rush));
+    return { lines, totalJpy: this.fmtJpy(total), totalLocal: this.fmtCur(total, cur) };
+  }
+
+  pill(req) {
+    if (req.notFound) return { label: 'Not found', bg: '#F1F5F9', fg: '#475569', dot: '#94A3B8' };
+    const map = { open: 'slate', sourcing: 'blue', match: 'amber', approved: 'blue', purchased: 'blue', received: 'amber', shipped: 'blue', released: 'green' };
+    const tint = {
+      slate: { bg: '#F1F5F9', fg: '#475569', dot: '#94A3B8' },
+      blue: { bg: '#EEF3FF', fg: '#1D4ED8', dot: '#1D4ED8' },
+      amber: { bg: '#FDF4E7', fg: '#B45309', dot: '#D97706' },
+      green: { bg: '#E8F6EF', fg: '#047857', dot: '#047857' },
+    };
+    const t = tint[map[req.stage]];
+    return { label: this.LAB[req.stage], bg: t.bg, fg: t.fg, dot: t.dot };
+  }
+
+  steps(req) {
+    const i = this.FLOW.indexOf(req.stage);
+    const fill = req.notFound ? '#CBD5E1' : (req.stage === 'released' ? '#047857' : '#1D4ED8');
+    return this.FLOW.map((sg, idx) => {
+      const on = idx <= i;
+      const st = idx < i ? 'done' : idx === i ? 'current' : 'todo';
+      return { key: sg, label: this.LAB[sg], state: st, barBg: on ? fill : '#E8EAED', on, ts: on ? this.TS[idx] : 'pending',
+        dotBg: st === 'done' ? fill : '#fff', dotBorder: st === 'todo' ? '#D7DBE0' : fill,
+        labColor: st === 'todo' ? '#9AA3AF' : '#0F1115', lineBg: on ? fill : '#E8EAED',
+        tsColor: st === 'current' ? '#1D4ED8' : '#9AA3AF' };
+    });
+  }
+
+  vm(req) {
+    const cur = req.currency;
+    const escrowCaption = req.notFound ? 'Refunding to you' : (req.stage === 'shipped' ? 'Held \u00B7 releasing' : req.stage === 'released' ? 'Released' : 'Held in escrow');
+    const stageMap = { open: 'Awaiting sourcing', sourcing: 'We\u2019re hunting', match: 'Match found', approved: 'Purchase approved', purchased: 'Bought \u2014 inbound to us', received: 'Received \u00B7 review', shipped: 'In transit to you', released: 'Complete' };
+    return {
+      ...req,
+      pill: this.pill(req),
+      steps: this.steps(req),
+      escrowStr: this.fmtJpy(req.escrow),
+      escrowLocal: this.fmtCur(req.escrow, cur),
+      escrowCaption,
+      stageCaption: req.notFound ? 'Closed \u2014 not found' : stageMap[req.stage],
+      capStr: req.cap ? this.fmtJpy(req.cap) : null,
+      foundStr: req.found ? this.fmtJpy(req.found) : null,
+      foundLocal: req.found ? this.fmtCur(req.found, cur) : null,
+      deadlineStr: req.deadlineDays == null ? (req.tracking ? 'ETA ' + req.eta : null) : (req.deadlineDays === 0 ? null : req.deadlineDays + ' days left'),
+      deadlineBg: (req.deadlineDays != null && req.deadlineDays <= 4 && req.deadlineDays > 0) ? '#FDF4E7' : '#F1F5F9',
+      deadlineFg: (req.deadlineDays != null && req.deadlineDays <= 4 && req.deadlineDays > 0) ? '#B45309' : '#475569',
+      cardBorder: req.actionNeeded ? '#F2DEB4' : '#EAECEF',
+      open: () => this.setState({ selectedId: req.id, screen: 'detail' }),
+    };
+  }
+
+  go(sc) { const m = document.querySelector('main'); if (m) m.scrollTop = 0; window.scrollTo(0, 0); this.setState({ screen: sc }); }
+
+  navStyle(scr) {
+    const active = this.state.screen === scr;
+    return { bg: active ? '#F4F6FB' : 'transparent', fg: active ? '#1D4ED8' : '#475569' };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const reqs = this.REQ.map(r => this.vm(r));
+    const actionReqs = reqs.filter(r => r.actionNeeded);
+    const active = this.REQ.filter(r => !r.notFound);
+    const totalEscrow = active.reduce((a, r) => a + r.escrow, 0);
+    const selected = this.vm(this.REQ.find(r => r.id === s.selectedId) || this.REQ[0]);
+    const selPricing = this.pricing(selected.cap || selected.found || selected.escrow, 'standard', selected.currency);
+
+    const conds = ['New', 'Like New', 'Good', 'Acceptable', 'Any'].map(c => ({ key: c, desc: this.CONDDESC[c], active: s.create.condition === c, border: s.create.condition === c ? '#1D4ED8' : '#E5E7EB', bg: s.create.condition === c ? '#F6F8FF' : '#fff', tick: s.create.condition === c ? 1 : 0, set: () => this.setState(p => ({ create: { ...p.create, condition: c } })) }));
+    const rushCreate = this.RUSH.map(t => ({ ...t, active: s.create.rush === t.key, border: s.create.rush === t.key ? '#1D4ED8' : '#E5E7EB', bg: s.create.rush === t.key ? '#F6F8FF' : '#fff', set: () => this.setState(p => ({ create: { ...p.create, rush: t.key } })) }));
+    const rushCo = this.RUSH.map(t => ({ ...t, active: s.coRush === t.key, border: s.coRush === t.key ? '#1D4ED8' : '#E5E7EB', bg: s.coRush === t.key ? '#F6F8FF' : '#fff', set: () => this.setState({ coRush: t.key }) }));
+    const co = this.pricing(s.create.cap || 55000, s.coRush, 'USD');
+    const createTitles = ['What are you after?', 'Minimum condition you\u2019ll accept', 'Must-haves & nice-to-haves', 'Your budget cap', 'How fast do you need it?', 'Review your request'];
+    const finderPreview = this.fmtJpy(Math.round((s.create.cap || 0) * 0.12 / 100) * 100);
+
+    return {
+      // screen routing
+      screen: s.screen,
+      screenLanding: s.screen === 'landing',
+      inApp: s.screen !== 'landing',
+      screenDashboard: s.screen === 'dashboard',
+      screenDetail: s.screen === 'detail',
+      screenCandidate: s.screen === 'candidate',
+      screenReceived: s.screen === 'received',
+      screenCreate: s.screen === 'create',
+      screenCheckout: s.screen === 'checkout',
+      screenExplore: s.screen === 'explore',
+      screenMessages: s.screen === 'messages',
+      screenHistory: s.screen === 'history',
+      screenAccount: s.screen === 'account',
+
+      // nav
+      ns: {
+        dashboard: this.navStyle('dashboard'), messages: this.navStyle('messages'),
+        history: this.navStyle('history'), account: this.navStyle('account'), explore: this.navStyle('explore'),
+      },
+      goDash: () => this.go('dashboard'),
+      goCreate: () => { this.setState({ createStep: 0 }); this.go('create'); },
+      goCheckout: () => this.go('checkout'),
+      goExplore: () => this.go('explore'),
+      goLanding: () => this.go('landing'),
+      goMessages: () => this.go('messages'),
+      goHistory: () => this.go('history'),
+      goAccount: () => this.go('account'),
+
+      // data
+      reqs,
+      actionReqs,
+      finds: this.FINDS,
+      reqCount: this.REQ.length,
+      activeCount: active.length,
+      actionCount: actionReqs.length,
+      hasAction: actionReqs.length > 0 && !s.dashEmpty,
+      totalEscrowStr: this.fmtJpy(totalEscrow),
+      dashEmpty: s.dashEmpty,
+      showList: !s.dashEmpty,
+      toggleEmpty: () => this.setState(p => ({ dashEmpty: !p.dashEmpty })),
+      emptyToggleLabel: s.dashEmpty ? '\u2190 back to my hunts' : 'preview empty state',
+
+      // selected / detail
+      selected,
+      selPricing,
+      selActionReview: selected.actionNeeded && selected.stage === 'match',
+      selOverCap: !!selected.overCap,
+      selIsShipped: selected.stage === 'shipped',
+      selIsSourcing: selected.stage === 'sourcing' && !selected.overCap,
+      goCandidate: () => this.go('candidate'),
+      goReceived: () => this.go('received'),
+      goDetail: () => this.go('detail'),
+
+      // candidate / received approval
+      candFoundStr: selected.foundStr,
+      candFoundLocal: selected.foundLocal,
+      candCapStr: selected.capStr,
+      candUnderCap: selected.found != null && selected.cap != null && selected.found <= selected.cap,
+      candPct: selected.cap ? Math.min(100, Math.round((selected.found / selected.cap) * 100)) : 0,
+      candBarColor: (selected.found != null && selected.cap != null && selected.found <= selected.cap) ? '#047857' : '#DC2626',
+      candCapBg: (selected.found != null && selected.cap != null && selected.found <= selected.cap) ? '#E8F6EF' : '#FEF1F1',
+      candCapFg: (selected.found != null && selected.cap != null && selected.found <= selected.cap) ? '#047857' : '#DC2626',
+      candCapNote: (selected.found != null && selected.cap != null && selected.found <= selected.cap) ? 'Under your cap' : 'Over your cap',
+      candAccepted: s.candidate === 'accepted',
+      candRejected: s.candidate === 'rejected',
+      candPending: !s.candidate,
+      acceptCand: () => this.setState({ candidate: 'accepted' }),
+      rejectCand: () => this.setState({ candidate: 'rejected' }),
+      rcvAccepted: s.received === 'accepted',
+      rcvPending: !s.received,
+      acceptRcv: () => this.setState({ received: 'accepted' }),
+
+      // create flow
+      createStep: s.createStep,
+      createTitle: createTitles[s.createStep],
+      createStepNum: s.createStep + 1,
+      cs0: s.createStep === 0, cs1: s.createStep === 1, cs2: s.createStep === 2, cs3: s.createStep === 3, cs4: s.createStep === 4, cs5: s.createStep === 5,
+      isLastStep: s.createStep === 5,
+      notLastStep: s.createStep < 5,
+      isFirstStep: s.createStep === 0,
+      backVis: s.createStep === 0 ? 'hidden' : 'visible',
+      createSegs: [0, 1, 2, 3, 4, 5].map(i => ({ bg: i <= s.createStep ? '#1D4ED8' : '#E8EAED' })),
+      create: s.create,
+      conds, rushCreate,
+      capStr: this.fmtJpy(s.create.cap || 0),
+      capLocal: this.fmtCur(s.create.cap || 0, 'USD'),
+      finderPreview,
+      createItemLabel: s.create.item || 'Charizard ex \u2014 SAR',
+      nextStep: () => { const m = document.querySelector('main'); if (m) m.scrollTop = 0; this.setState(p => ({ createStep: Math.min(p.createStep + 1, 5) })); },
+      prevStep: () => this.setState(p => ({ createStep: Math.max(p.createStep - 1, 0) })),
+      setItem: (e) => this.setState(p => ({ create: { ...p.create, item: e.target.value } })),
+      setUrl: (e) => this.setState(p => ({ create: { ...p.create, url: e.target.value } })),
+      setCap: (e) => this.setState(p => ({ create: { ...p.create, cap: parseInt(e.target.value) || 0 } })),
+
+      // checkout
+      co, rushCo,
+      coTerms: s.coTerms,
+      coTermsBg: s.coTerms ? '#1D4ED8' : '#fff',
+      coTermsBorder: s.coTerms ? '#1D4ED8' : '#CBD2DA',
+      toggleTerms: () => this.setState(p => ({ coTerms: !p.coTerms })),
+      coTotalJpy: co.totalJpy,
+      coTotalLocal: co.totalLocal,
+      placeRequest: () => { const m = document.querySelector('main'); if (m) m.scrollTop = 0; this.setState({ placed: true, screen: 'dashboard', createStep: 0 }); },
+    };
+  }
+}
+</script>
+</body>
+</html>

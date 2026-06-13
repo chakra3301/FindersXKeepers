@@ -2,25 +2,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, PackagePlus, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Plus, ShieldCheck, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { buttonVariants } from "@/components/ui/button";
+import { formatJpy } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/requests/new", label: "New request", icon: PackagePlus },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  escrowTotal: number;
+  activeCount: number;
+}
+
+export function Sidebar({ escrowTotal, activeCount }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-[100svh] w-[264px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 lg:flex">
+    <aside className="sticky top-0 hidden h-[100svh] w-[256px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 lg:flex">
       <Link href="/dashboard" className="px-2 py-1.5">
         <Logo />
       </Link>
 
-      <nav className="mt-7 flex flex-col gap-1">
+      <Link
+        href="/requests/new"
+        className={cn(
+          buttonVariants({ variant: "default" }),
+          "mt-5 flex h-10 w-full items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-[540]",
+        )}
+      >
+        <Plus className="size-4 shrink-0" />
+        New request
+      </Link>
+
+      <nav className="mt-4 flex flex-col gap-0.5">
         {NAV.map((item) => {
           const active =
             pathname === item.href ||
@@ -50,15 +67,27 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto rounded-xl border border-sidebar-border bg-card/60 p-4">
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <ShieldCheck className="size-4 text-primary" />
-          Escrow protected
+      <div className="mt-auto">
+        <div className="rounded-xl border border-success-border bg-secondary p-3.5">
+          <div className="flex items-center gap-1.5 text-[11px] font-[540] text-success">
+            <ShieldCheck size={13} className="shrink-0" />
+            Held in escrow
+          </div>
+          <p className="tnum mt-1 text-lg font-[600] leading-tight text-foreground">
+            {formatJpy(escrowTotal)}
+          </p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            across {activeCount} active {activeCount === 1 ? "hunt" : "hunts"}
+          </p>
         </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-          Funds are held by the processor and released only once your item is in
-          transit.
-        </p>
+
+        <Link
+          href="/"
+          className="mt-2.5 flex items-center gap-2 px-2.5 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowRight size={14} className="shrink-0" />
+          View public site
+        </Link>
       </div>
     </aside>
   );

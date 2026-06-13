@@ -1,75 +1,89 @@
 import Link from "next/link";
-import { ArrowUpRight, Clock, Gauge } from "lucide-react";
 import type { DashboardRequest } from "@/lib/requests/queries";
 import { STATUS_META } from "@/lib/requests/status";
-import { RUSH_LABEL, formatJpy } from "@/lib/pricing";
+import { formatJpy } from "@/lib/pricing";
 import { formatRelativeTime } from "@/lib/dates";
+import {
+  railProgress,
+  escrowCaption,
+  deadlineChip,
+} from "@/lib/requests/display";
 import { StatusBadge } from "@/components/requests/status-badge";
-import { EscrowBadge } from "@/components/requests/escrow-badge";
+import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
 import { cn } from "@/lib/utils";
-
-const CONDITION_LABEL: Record<DashboardRequest["min_condition"], string> = {
-  new: "New",
-  like_new: "Like new",
-  good: "Good",
-  acceptable: "Acceptable",
-  any: "Any condition",
-};
-
-const HEADLINE_LABEL: Record<DashboardRequest["headline"]["kind"], string> = {
-  order: "Order total",
-  candidate: "Candidate price",
-  budget: "Budget cap",
-};
 
 export function RequestCard({ request }: { request: DashboardRequest }) {
   const meta = STATUS_META[request.status];
   const needsAction = meta.bucket === "action_needed";
+  const progress = railProgress(request.status);
+  const chip = deadlineChip(request.deadline_at, request.status);
 
   return (
     <Link
       href={`/requests/${request.id}`}
       className={cn(
-        "group relative flex flex-col rounded-2xl border bg-card p-5 lift lift-hover",
-        needsAction
-          ? "border-blue-300/70 ring-1 ring-blue-200/60 dark:border-blue-400/30 dark:ring-blue-400/15"
-          : "border-border",
+        "group flex items-center gap-[18px] rounded-2xl border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)] transition-shadow hover:shadow-[0_8px_24px_rgba(15,17,21,.07)]",
+        needsAction ? "border-warning-border" : "border-border",
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={request.status} />
-          <EscrowBadge state={request.escrowState} />
+      <PlaceholderThumb label="card" className="h-[84px] w-[62px] shrink-0" />
+
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="min-w-0 flex-[0_1_auto] truncate text-[15px] font-[560] tracking-tight">
+            {request.title}
+          </span>
+          <StatusBadge status={request.status} className="shrink-0" />
         </div>
-        <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/50 transition-colors group-hover:text-primary" />
+
+        <div className="flex flex-wrap gap-1">
+          {Array.from({ length: progress.total }).map((_, i) => (
+            <span
+              key={i}
+              className={cn(
+                "h-1 max-w-[42px] flex-1 rounded-full",
+                i < progress.filled
+                  ? progress.tone === "success"
+                    ? "bg-success"
+                    : "bg-primary"
+                  : "bg-border",
+              )}
+            />
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{meta.blurb}</span>
+          <span>·</span>
+          <span>updated {formatRelativeTime(request.updated_at)}</span>
+        </div>
       </div>
 
-      <h3 className="mt-3.5 text-pretty font-heading text-lg font-medium leading-snug tracking-tight">
-        {request.title}
-      </h3>
-      <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-        {meta.blurb}
-      </p>
-
-      <div className="mt-4 flex items-end justify-between gap-4 border-t border-border/70 pt-4">
-        <div>
-          <div className="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
-            {HEADLINE_LABEL[request.headline.kind]}
-          </div>
-          <div className="tnum mt-0.5 font-heading text-xl font-medium">
-            {formatJpy(request.headline.amountJpy)}
-          </div>
+      <div className="shrink-0 text-right">
+        <div className="text-[11.5px] text-muted-foreground">
+          {request.escrowState === "none"
+            ? request.headline.kind === "order"
+              ? "Order total"
+              : request.headline.kind === "candidate"
+                ? "Candidate price"
+                : "Budget cap"
+            : escrowCaption(request.status)}
         </div>
-        <div className="flex flex-col items-end gap-1.5 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <Gauge className="size-3.5" />
-            {RUSH_LABEL[request.rush_tier]} · {CONDITION_LABEL[request.min_condition]}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="size-3.5" />
-            Updated {formatRelativeTime(request.updated_at)}
-          </span>
+        <div className="tnum mt-0.5 text-lg font-[600] tracking-tight">
+          {formatJpy(request.headline.amountJpy)}
         </div>
+        {chip && (
+          <div
+            className={cn(
+              "tnum mt-2 inline-block rounded-md px-2 py-0.5 text-[11.5px] font-[540]",
+              chip.tone === "warning"
+                ? "bg-warning-muted text-warning"
+                : "bg-slate-100 text-slate-600",
+            )}
+          >
+            {chip.label}
+          </div>
+        )}
       </div>
     </Link>
   );

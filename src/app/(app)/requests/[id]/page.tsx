@@ -1,36 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ExternalLink,
-  PackageCheck,
-  Truck,
-} from "lucide-react";
+import { ChevronLeft, AlertCircle, ShieldCheck } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
 import { STATUS_META } from "@/lib/requests/status";
-import { escrowStateFromPayments, ESCROW_META } from "@/lib/escrow/display";
 import { RUSH_LABEL, formatJpy } from "@/lib/pricing";
-import { formatDate, formatRelativeTime } from "@/lib/dates";
-import type { MinCondition } from "@/lib/db/types";
+import { formatRelativeTime } from "@/lib/dates";
+import {
+  railProgress,
+  escrowCaption,
+  conditionLabel,
+} from "@/lib/requests/display";
+import { escrowStateFromPayments } from "@/lib/escrow/display";
 import { StatusBadge } from "@/components/requests/status-badge";
 import { EscrowBadge } from "@/components/requests/escrow-badge";
 import { LifecycleRail } from "@/components/requests/lifecycle-rail";
 import { PriceBreakdown } from "@/components/requests/price-breakdown";
-import { CandidateCard } from "@/components/requests/candidate-card";
-
-const CONDITION_LABEL: Record<MinCondition, string> = {
-  new: "New",
-  like_new: "Like new",
-  good: "Good",
-  acceptable: "Acceptable",
-  any: "Any condition",
-};
-
-const RECEIPT_LABEL = {
-  pending: "Awaiting inspection",
-  accepted: "Accepted",
-  rejected: "Rejected",
-} as const;
+import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
 
 export default async function RequestDetailPage({
   params,
@@ -41,279 +26,279 @@ export default async function RequestDetailPage({
   const detail = await getRequestDetail(id);
   if (!detail) notFound();
 
-  const { request, candidates, orders, shipments, payments, messages } = detail;
+  const { request, candidates, orders, shipments, messages, payments } = detail;
   const meta = STATUS_META[request.status];
+
+  // Latest-first arrays (queries already order desc)
+  const latestOrder = orders[0] ?? null;
+  const latestCandidate = candidates[0] ?? null;
+  const latestShipment = shipments[0] ?? null;
+
+  // Headline amount: latest order total → latest candidate price → budget cap
+  const headlineJpy: number | null = latestOrder
+    ? latestOrder.total_jpy
+    : latestCandidate
+      ? latestCandidate.price_jpy
+      : request.budget_cap_jpy;
+
+  // Real escrow state from payment rows
   const escrowState = escrowStateFromPayments(payments);
-  const escrowMeta = ESCROW_META[escrowState];
-  const order = orders[0];
-  const shipment = shipments[0];
-  const latestPayment = payments[0];
+
+  // Neutral caption label derived from same order→candidate→budget precedence
+  const capLabel: string = latestOrder
+    ? "Order total"
+    : latestCandidate
+      ? "Candidate price"
+      : "Budget cap";
+
+  // Progress bar
+  const progress = railProgress(request.status);
+
+  // Timestamps for LifecycleRail — best-effort from available data
+  const timestamps: Partial<Record<(typeof request.status), string>> = {
+    open: formatRelativeTime(request.created_at),
+  };
+  if (latestCandidate) {
+    timestamps.candidate_sent = formatRelativeTime(latestCandidate.created_at);
+  }
+  if (latestOrder) {
+    timestamps.purchased = formatRelativeTime(latestOrder.created_at);
+  }
+  if (latestShipment?.shipped_at) {
+    timestamps.shipped = formatRelativeTime(latestShipment.shipped_at);
+  }
+
+  // Action banner: action_needed bucket OR received (customer final-check moment)
+  const showActionBanner =
+    meta.bucket === "action_needed" || request.status === "received";
+  const actionMessage =
+    request.status === "candidate_sent"
+      ? "Candidate found — review it"
+      : request.status === "received"
+        ? "It arrived — final check"
+        : meta.blurb;
+
+  // Team messages (from hunter), newest-first
+  const teamMessages = messages
+    .filter((m) => m.sender === "team")
+    .slice()
+    .reverse();
+
+  // Tracking card: only when shipped and shipment has tracking_number
+  const showTracking =
+    request.status === "shipped" &&
+    latestShipment != null &&
+    latestShipment.tracking_number != null;
 
   return (
-    <div className="mx-auto w-full max-w-5xl rise">
+    <div className="mx-auto max-w-[1000px] px-10 pt-8 pb-20">
+      {/* Back link */}
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+        className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground"
       >
-        <ArrowLeft className="size-4" />
-        Back to dashboard
+        <ChevronLeft size={15} />
+        All hunts
       </Link>
 
       {/* Header */}
-      <header className="mt-5 border-b border-border pb-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={request.status} />
-          <EscrowBadge state={escrowState} />
+      <header className="mt-6 flex items-start gap-5">
+        <PlaceholderThumb label="card" className="h-[120px] w-[88px] shrink-0" />
+
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          {/* Title row */}
+          <div className="flex items-center gap-3">
+            <h1 className="min-w-0 truncate text-[25px] font-[600] tracking-tight">
+              {request.title}
+            </h1>
+            <StatusBadge status={request.status} className="shrink-0" />
+            <EscrowBadge state={escrowState} className="shrink-0" />
+          </div>
+
+          {/* Meta line */}
+          <p className="font-mono text-[13.5px] text-muted-foreground">
+            {conditionLabel(request.min_condition)} · {RUSH_LABEL[request.rush_tier]}
+          </p>
+
+          {/* Progress bar */}
+          <div className="flex max-w-[420px] gap-[3px]">
+            {Array.from({ length: progress.total }).map((_, i) => (
+              <span
+                key={i}
+                className={[
+                  "h-[5px] flex-1 rounded-full",
+                  i < progress.filled
+                    ? progress.tone === "success"
+                      ? "bg-success"
+                      : "bg-primary"
+                    : "bg-border",
+                ].join(" ")}
+              />
+            ))}
+          </div>
         </div>
-        <h1 className="mt-3 text-pretty font-heading text-2xl font-medium tracking-tight sm:text-3xl">
-          {request.title}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {meta.blurb} · Posted {formatRelativeTime(request.created_at)} · Updated{" "}
-          {formatRelativeTime(request.updated_at)}
-        </p>
+
+        {/* Headline amount (right) */}
+        <div className="shrink-0 text-right">
+          <div className="text-[11.5px] text-muted-foreground">
+            {escrowState === "none" ? capLabel : escrowCaption(request.status)}
+          </div>
+          <div className="tnum text-2xl font-[600]">
+            {formatJpy(headlineJpy)}
+          </div>
+        </div>
       </header>
 
-      <div className="mt-7 grid gap-6 lg:grid-cols-[1fr_320px]">
-        {/* Main column */}
-        <div className="flex flex-col gap-6">
-          {request.description && (
-            <Panel title="The brief">
-              <p className="text-sm leading-relaxed text-foreground/90">
-                {request.description}
-              </p>
-              {(request.must_haves.length > 0 ||
-                request.nice_to_haves.length > 0) && (
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <TagList label="Must-haves" items={request.must_haves} />
-                  <TagList label="Nice-to-haves" items={request.nice_to_haves} />
-                </div>
-              )}
-              {(request.reference_url || request.reference_image_url) && (
-                <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-border/70 pt-4">
-                  {request.reference_image_url && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={request.reference_image_url}
-                      alt="Reference"
-                      className="size-16 rounded-lg border border-border object-cover"
-                      loading="lazy"
-                    />
-                  )}
-                  {request.reference_url && (
-                    <a
-                      href={request.reference_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
-                    >
-                      Reference link
-                      <ExternalLink className="size-3.5" />
-                    </a>
-                  )}
-                </div>
-              )}
-            </Panel>
-          )}
+      {/* Action banner */}
+      {showActionBanner && (
+        <div className="mt-6 flex items-center gap-4 rounded-2xl border border-warning-border bg-warning-muted px-5 py-4">
+          <AlertCircle size={18} className="shrink-0 text-warning" />
+          <div>
+            <div className="text-[13.5px] font-[560] text-warning">
+              {actionMessage}
+            </div>
+            <div className="text-[12.5px] text-warning/80">
+              Take a look — your escrow stays held while you decide.
+            </div>
+          </div>
+        </div>
+      )}
 
-          {candidates.length > 0 && (
-            <Panel
-              title="Sourced candidates"
-              subtitle={
-                request.status === "candidate_sent"
-                  ? "Review and approve to move forward."
-                  : undefined
-              }
-            >
-              <div className="flex flex-col gap-3">
-                {candidates.map((c) => (
-                  <CandidateCard key={c.id} candidate={c} />
-                ))}
+      {/* Two-column grid */}
+      <div className="mt-7 grid grid-cols-1 gap-6 lg:grid-cols-[1.55fr_1fr]">
+        {/* LEFT column */}
+        <div className="flex flex-col gap-5">
+          {/* Lifecycle card */}
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+            <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
+              Lifecycle
+            </h2>
+            <LifecycleRail status={request.status} timestamps={timestamps} />
+          </section>
+
+          {/* Proof photos card — only when orders exist */}
+          {orders.length > 0 && (
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+              <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
+                Proof photos
+              </h2>
+              <div className="grid grid-cols-3 gap-2.5">
+                <PlaceholderThumb label="front" className="aspect-[3/4]" />
+                <PlaceholderThumb label="back" className="aspect-[3/4]" />
+                <PlaceholderThumb label="corners" className="aspect-[3/4]" />
               </div>
-            </Panel>
+            </section>
           )}
 
-          {order && (
-            <Panel title="Order & pricing">
-              <PriceBreakdown order={order} />
-              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <PackageCheck className="size-3.5" />
-                Receipt status: {RECEIPT_LABEL[order.receipt_status]}
-              </div>
-              {order.received_image_urls.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {order.received_image_urls.map((url, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      key={i}
-                      src={url}
-                      alt="Received item"
-                      className="size-20 rounded-lg border border-border object-cover"
-                      loading="lazy"
-                    />
-                  ))}
-                </div>
-              )}
-            </Panel>
-          )}
-
-          {shipment && (
-            <Panel title="Shipment">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 grid size-9 place-items-center rounded-lg bg-teal-50 text-teal-600 ring-1 ring-teal-600/15 dark:bg-teal-400/10 dark:text-teal-300">
-                  <Truck className="size-[18px]" />
-                </span>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">
-                    {shipment.carrier ?? "Carrier"} ·{" "}
-                    <span className="tnum">
-                      {shipment.tracking_number ?? "—"}
+          {/* Updates from your hunter — only when team messages exist */}
+          {teamMessages.length > 0 && (
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+              <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
+                Updates from your hunter
+              </h2>
+              <ul className="flex flex-col gap-4">
+                {teamMessages.map((m) => (
+                  <li key={m.id} className="flex items-start gap-3">
+                    <span className="grid size-[30px] shrink-0 place-items-center rounded-full bg-accent text-xs font-[600] text-primary">
+                      A
                     </span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Shipped {formatDate(shipment.shipped_at)} — escrow released on
-                    dispatch.
-                  </div>
-                </div>
-              </div>
-            </Panel>
-          )}
-
-          <Panel title="Messages">
-            {messages.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No messages yet. Updates from your finder will appear here.
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {messages.map((m) => (
-                  <li
-                    key={m.id}
-                    className={
-                      m.sender === "customer" ? "flex justify-end" : "flex"
-                    }
-                  >
-                    <div
-                      className={
-                        m.sender === "customer"
-                          ? "max-w-[80%] rounded-2xl rounded-br-sm bg-primary px-3.5 py-2 text-sm text-primary-foreground"
-                          : "max-w-[80%] rounded-2xl rounded-bl-sm bg-muted px-3.5 py-2 text-sm text-foreground"
-                      }
-                    >
-                      <div className="mb-0.5 text-[0.65rem] uppercase tracking-wide opacity-60">
-                        {m.sender === "customer" ? "You" : "Finders × Keepers"}
-                      </div>
-                      {m.body}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13.5px] leading-relaxed">{m.body}</p>
+                      <p className="mt-1 text-[11.5px] text-muted-foreground">
+                        your hunter · {formatRelativeTime(m.created_at)}
+                      </p>
                     </div>
                   </li>
                 ))}
               </ul>
-            )}
-          </Panel>
+            </section>
+          )}
         </div>
 
-        {/* Side column */}
-        <aside className="flex flex-col gap-6">
-          <Panel title="Lifecycle">
-            <LifecycleRail status={request.status} />
-          </Panel>
+        {/* RIGHT column */}
+        <div className="flex flex-col gap-4">
+          {/* Pricing */}
+          {latestOrder ? (
+            <PriceBreakdown order={latestOrder} />
+          ) : (
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+              <h2 className="mb-3 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
+                What you&apos;ll pay
+              </h2>
+              <div className="flex items-baseline justify-between">
+                <span className="text-[13.5px] text-foreground">Budget cap</span>
+                <span className="tnum text-[13.5px] font-[540]">
+                  {formatJpy(request.budget_cap_jpy)}
+                </span>
+              </div>
+              <p className="mt-3 text-[11.5px] text-muted-foreground">
+                Final four-line quote appears once we propose a match.
+              </p>
+            </section>
+          )}
 
-          <Panel title="Escrow">
-            <div className="flex items-center gap-2">
-              <EscrowBadge state={escrowState} />
+          {/* Escrow status card */}
+          <section className="rounded-2xl border border-success-border bg-success-muted/40 p-5">
+            <div className="mb-2 flex items-center gap-1.5 text-xs font-[560] text-success">
+              <ShieldCheck size={13} />
+              Escrow protection
             </div>
-            <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-              {escrowMeta.blurb}
+            <p className="text-[13px] leading-relaxed text-success/90">
+              {escrowState === "none" && (
+                <>
+                  You&apos;ll deposit into escrow when you approve a match.
+                  Funds are then held by Finders Keepers and released only once
+                  your item ships — or refunded in full if we can&apos;t find it
+                  by the deadline.
+                </>
+              )}
+              {escrowState === "pending" && (
+                <>
+                  Your deposit is being authorised. Once held, it&apos;s
+                  released only when your item ships.
+                </>
+              )}
+              {escrowState === "held" && (
+                <>
+                  Your {formatJpy(headlineJpy)} is held by Finders Keepers and
+                  released to the seller only when your item ships. Not found by
+                  the deadline? Refunded in full.
+                </>
+              )}
+              {escrowState === "released" && (
+                <>Escrow released — your item is on its way.</>
+              )}
+              {escrowState === "refunded" && <>Refunded to you in full.</>}
+              {escrowState === "failed" && (
+                <>
+                  The last payment attempt failed. Please update your payment
+                  method.
+                </>
+              )}
             </p>
-            {latestPayment && (
-              <dl className="mt-3 space-y-1.5 border-t border-border/70 pt-3 text-xs">
-                <Row label="Amount">
-                  <span className="tnum">{formatJpy(latestPayment.amount_jpy)}</span>
-                </Row>
-                <Row label="Processor">
-                  <span className="tnum text-muted-foreground">
-                    {latestPayment.stripe_payment_intent_id ?? "—"}
-                  </span>
-                </Row>
-              </dl>
-            )}
-          </Panel>
+          </section>
 
-          <Panel title="Specification">
-            <dl className="space-y-2.5 text-sm">
-              <Row label="Min condition">
-                {CONDITION_LABEL[request.min_condition]}
-              </Row>
-              <Row label="Budget cap">
-                <span className="tnum">{formatJpy(request.budget_cap_jpy)}</span>
-              </Row>
-              <Row label="Rush tier">{RUSH_LABEL[request.rush_tier]}</Row>
-              <Row label="Deadline">{formatDate(request.deadline_at)}</Row>
-            </dl>
-          </Panel>
-        </aside>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------- subparts -------------------------------- */
-
-function Panel({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border border-border bg-card p-5 lift">
-      <div className="mb-3.5">
-        <h2 className="font-heading text-base font-medium tracking-tight">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
-        )}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function Row({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium text-foreground">{children}</dd>
-    </div>
-  );
-}
-
-function TagList({ label, items }: { label: string; items: string[] }) {
-  if (items.length === 0) return null;
-  return (
-    <div>
-      <div className="mb-1.5 text-xs font-medium text-muted-foreground">
-        {label}
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {items.map((item) => (
-          <span
-            key={item}
-            className="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground"
-          >
-            {item}
-          </span>
-        ))}
+          {/* Tracking card — only when shipped and tracking number exists */}
+          {showTracking && latestShipment && (
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+              <h2 className="mb-3 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
+                Tracking
+              </h2>
+              <div className="font-mono text-[13px] font-[540]">
+                {latestShipment.tracking_number}
+              </div>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                {latestShipment.carrier ?? "Carrier"} · est. delivery soon
+              </p>
+              <button
+                type="button"
+                className="mt-4 w-full rounded-xl bg-primary px-4 py-2.5 text-[13.5px] font-[560] text-primary-foreground"
+              >
+                Track package
+              </button>
+            </section>
+          )}
+        </div>
       </div>
     </div>
   );
