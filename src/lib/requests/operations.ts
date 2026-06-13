@@ -131,6 +131,45 @@ export async function keepHunting(
   await setRequestStatus(requestId, "sourcing", admin);
 }
 
+/**
+ * Customer confirms the in-hand item. Loads the request's order and records a
+ * shipment with a CLEARLY-SIMULATED demo tracking number — which is what fires
+ * the real releaseEscrow + received → shipped inside recordShipment(). Real
+ * carrier handoff is a later phase; release still hangs off a tracking number,
+ * never a manual flag. Asserts received → shipped legality BEFORE recording, so
+ * an illegal state never releases escrow then throws.
+ */
+export async function shipApprovedOrder(
+  requestId: string,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error: reqErr } = await admin
+    .from("requests")
+    .select("status")
+    .eq("id", requestId)
+    .single();
+  if (reqErr || !req) throw new Error(`Request ${requestId} not found.`);
+  assertTransition(req.status, "shipped");
+
+  const { data: order, error: orderErr } = await admin
+    .from("orders")
+    .select("id")
+    .eq("request_id", requestId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (orderErr || !order) throw new Error(`No order for request ${requestId}.`);
+
+  await recordShipment(
+    {
+      orderId: order.id,
+      carrier: "Simulated carrier (demo)",
+      trackingNumber: `DEMO-${order.id.slice(0, 8)}`,
+    },
+    admin,
+  );
+}
+
 /** Move a request to a new status, enforcing the legal transition. */
 export async function setRequestStatus(
   requestId: string,

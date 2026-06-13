@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { depositForRequest, approveCandidate, keepHunting } from "./operations";
+import { depositForRequest, approveCandidate, keepHunting, shipApprovedOrder } from "./operations";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 
 /* ---------- in-memory fake of the Supabase admin client ---------- */
@@ -201,5 +201,36 @@ describe("keepHunting", () => {
     });
     await expect(keepHunting("r1", "c1", client)).rejects.toThrow();
     expect(tables.candidates[0].status).toBe("proposed");
+  });
+});
+
+describe("shipApprovedOrder", () => {
+  it("records a demo-tracked shipment, releases escrow, and moves received → shipped", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "received" })],
+      orders: [{ id: "o1", request_id: "r1", item_cost_jpy: 14_500, finder_fee_jpy: 1_500, shipping_jpy: 4_000, tax_jpy: 150, total_jpy: 20_150, created_at: "2026-01-03T00:00:00Z" }],
+      shipments: [],
+      payments: [{ id: "p1", request_id: "r1", stripe_payment_intent_id: "pi_test_held", amount_jpy: 20_150, status: "held", created_at: "2026-01-02T00:00:00Z" }],
+    });
+
+    await shipApprovedOrder("r1", client);
+
+    expect(tables.shipments).toHaveLength(1);
+    expect(tables.shipments[0].tracking_number).toContain("DEMO-");
+    expect(tables.shipments[0].order_id).toBe("o1");
+    expect(tables.requests[0].status).toBe("shipped");
+    expect(tables.payments[0].status).toBe("released");
+  });
+
+  it("throws on a non-received request and releases nothing", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "approved" })],
+      orders: [{ id: "o1", request_id: "r1", item_cost_jpy: 1, finder_fee_jpy: 1, shipping_jpy: 1, tax_jpy: 1, total_jpy: 4, created_at: "2026-01-03T00:00:00Z" }],
+      shipments: [],
+      payments: [{ id: "p1", request_id: "r1", stripe_payment_intent_id: "pi_test_held2", amount_jpy: 4, status: "held", created_at: "2026-01-02T00:00:00Z" }],
+    });
+    await expect(shipApprovedOrder("r1", client)).rejects.toThrow();
+    expect(tables.shipments).toHaveLength(0);
+    expect(tables.payments[0].status).toBe("held");
   });
 });
