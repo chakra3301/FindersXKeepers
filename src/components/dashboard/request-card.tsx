@@ -61,7 +61,13 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
 
       <div className="shrink-0 text-right">
         <div className="text-[11.5px] text-muted-foreground">
-          {escrowCaption(request.status)}
+          {request.escrowState === "none"
+            ? request.headline.kind === "order"
+              ? "Order total"
+              : request.headline.kind === "candidate"
+                ? "Candidate price"
+                : "Budget cap"
+            : escrowCaption(request.status)}
         </div>
         <div className="tnum mt-0.5 text-lg font-[600] tracking-tight">
           {formatJpy(request.headline.amountJpy)}

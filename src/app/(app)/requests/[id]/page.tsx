@@ -10,7 +10,9 @@ import {
   escrowCaption,
   conditionLabel,
 } from "@/lib/requests/display";
+import { escrowStateFromPayments } from "@/lib/escrow/display";
 import { StatusBadge } from "@/components/requests/status-badge";
+import { EscrowBadge } from "@/components/requests/escrow-badge";
 import { LifecycleRail } from "@/components/requests/lifecycle-rail";
 import { PriceBreakdown } from "@/components/requests/price-breakdown";
 import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
@@ -24,7 +26,7 @@ export default async function RequestDetailPage({
   const detail = await getRequestDetail(id);
   if (!detail) notFound();
 
-  const { request, candidates, orders, shipments, messages } = detail;
+  const { request, candidates, orders, shipments, messages, payments } = detail;
   const meta = STATUS_META[request.status];
 
   // Latest-first arrays (queries already order desc)
@@ -38,6 +40,16 @@ export default async function RequestDetailPage({
     : latestCandidate
       ? latestCandidate.price_jpy
       : request.budget_cap_jpy;
+
+  // Real escrow state from payment rows
+  const escrowState = escrowStateFromPayments(payments);
+
+  // Neutral caption label derived from same order→candidate→budget precedence
+  const capLabel: string = latestOrder
+    ? "Order total"
+    : latestCandidate
+      ? "Candidate price"
+      : "Budget cap";
 
   // Progress bar
   const progress = railProgress(request.status);
@@ -100,6 +112,7 @@ export default async function RequestDetailPage({
               {request.title}
             </h1>
             <StatusBadge status={request.status} className="shrink-0" />
+            <EscrowBadge state={escrowState} className="shrink-0" />
           </div>
 
           {/* Meta line */}
@@ -128,7 +141,7 @@ export default async function RequestDetailPage({
         {/* Headline amount (right) */}
         <div className="shrink-0 text-right">
           <div className="text-[11.5px] text-muted-foreground">
-            {escrowCaption(request.status)}
+            {escrowState === "none" ? capLabel : escrowCaption(request.status)}
           </div>
           <div className="tnum text-2xl font-[600]">
             {formatJpy(headlineJpy)}
@@ -231,9 +244,37 @@ export default async function RequestDetailPage({
               Escrow protection
             </div>
             <p className="text-[13px] leading-relaxed text-success/90">
-              Your {formatJpy(headlineJpy)} is held by Finders Keepers and
-              released to the seller only when your item ships. Not found by the
-              deadline? Refunded in full.
+              {escrowState === "none" && (
+                <>
+                  You&apos;ll deposit into escrow when you approve a match.
+                  Funds are then held by Finders Keepers and released only once
+                  your item ships — or refunded in full if we can&apos;t find it
+                  by the deadline.
+                </>
+              )}
+              {escrowState === "pending" && (
+                <>
+                  Your deposit is being authorised. Once held, it&apos;s
+                  released only when your item ships.
+                </>
+              )}
+              {escrowState === "held" && (
+                <>
+                  Your {formatJpy(headlineJpy)} is held by Finders Keepers and
+                  released to the seller only when your item ships. Not found by
+                  the deadline? Refunded in full.
+                </>
+              )}
+              {escrowState === "released" && (
+                <>Escrow released — your item is on its way.</>
+              )}
+              {escrowState === "refunded" && <>Refunded to you in full.</>}
+              {escrowState === "failed" && (
+                <>
+                  The last payment attempt failed. Please update your payment
+                  method.
+                </>
+              )}
             </p>
           </section>
 
