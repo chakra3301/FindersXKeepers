@@ -16,7 +16,7 @@ export default function NewRequestPage() {
       </Link>
 
       <header className="mt-5">
-        <h1 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
+        <h1 className="font-sans text-2xl font-medium tracking-tight sm:text-3xl">
           Post a request
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">

@@ -65,7 +65,7 @@ export default async function RequestDetailPage({
           <StatusBadge status={request.status} />
           <EscrowBadge state={escrowState} />
         </div>
-        <h1 className="mt-3 text-pretty font-heading text-2xl font-medium tracking-tight sm:text-3xl">
+        <h1 className="mt-3 text-pretty font-sans text-2xl font-medium tracking-tight sm:text-3xl">
           {request.title}
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
@@ -271,7 +271,7 @@ function Panel({
   return (
     <section className="rounded-2xl border border-border bg-card p-5 lift">
       <div className="mb-3.5">
-        <h2 className="font-heading text-base font-medium tracking-tight">
+        <h2 className="font-sans text-base font-medium tracking-tight">
           {title}
         </h2>
         {subtitle && (

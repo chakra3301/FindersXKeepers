@@ -51,7 +51,7 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
             >
               {status.label}
             </span>
-            <span className="tnum font-heading text-lg font-medium">
+            <span className="tnum font-sans text-lg font-medium">
               {formatJpy(candidate.price_jpy)}
             </span>
           </div>

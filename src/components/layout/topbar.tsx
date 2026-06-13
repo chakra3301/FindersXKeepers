@@ -15,7 +15,7 @@ export function Topbar({ email }: { email: string }) {
           </Link>
         </div>
         <div className="hidden text-sm text-muted-foreground lg:block">
-          <span className="font-heading text-[0.95rem] text-foreground">
+          <span className="font-sans text-[0.95rem] text-foreground">
             Concierge desk
           </span>
         </div>

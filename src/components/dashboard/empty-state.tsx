@@ -18,7 +18,7 @@ export function EmptyState() {
         <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
           <PackagePlus className="size-7 text-primary" />
         </div>
-        <h2 className="mt-6 font-heading text-2xl font-medium tracking-tight">
+        <h2 className="mt-6 font-sans text-2xl font-medium tracking-tight">
           Your concierge desk is ready
         </h2>
         <p className="mt-2.5 text-pretty text-sm leading-relaxed text-muted-foreground">

@@ -44,7 +44,7 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
         <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/50 transition-colors group-hover:text-primary" />
       </div>
 
-      <h3 className="mt-3.5 text-pretty font-heading text-lg font-medium leading-snug tracking-tight">
+      <h3 className="mt-3.5 text-pretty font-sans text-lg font-medium leading-snug tracking-tight">
         {request.title}
       </h3>
       <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
@@ -56,7 +56,7 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
           <div className="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
             {HEADLINE_LABEL[request.headline.kind]}
           </div>
-          <div className="tnum mt-0.5 font-heading text-xl font-medium">
+          <div className="tnum mt-0.5 font-sans text-xl font-medium">
             {formatJpy(request.headline.amountJpy)}
           </div>
         </div>

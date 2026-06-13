@@ -56,7 +56,7 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
             </span>
             <tile.icon className="size-4 text-muted-foreground/70" />
           </div>
-          <div className={cn("tnum mt-2 font-heading text-2xl font-medium", tile.tone)}>
+          <div className={cn("tnum mt-2 font-sans text-2xl font-medium", tile.tone)}>
             {tile.value}
           </div>
         </div>

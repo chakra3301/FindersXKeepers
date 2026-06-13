@@ -42,16 +42,16 @@ export default function LoginPage() {
         <Link href="/" className="relative">
           <span className="inline-flex items-center gap-2.5">
             <span className="grid size-8 place-items-center rounded-[0.5rem] bg-primary-foreground/15 ring-1 ring-primary-foreground/25">
-              <span className="font-heading text-[15px] leading-none">探</span>
+              <span className="font-sans text-[15px] leading-none">探</span>
             </span>
-            <span className="font-heading text-[15px] font-medium tracking-tight">
+            <span className="font-sans text-[15px] font-medium tracking-tight">
               Finders <span className="opacity-70">×</span> Keepers
             </span>
           </span>
         </Link>
 
         <div className="relative max-w-md">
-          <h1 className="text-balance font-heading text-4xl font-medium leading-[1.1] tracking-tight">
+          <h1 className="text-balance font-sans text-4xl font-medium leading-[1.1] tracking-tight">
             A concierge desk for everything you want from Japan.
           </h1>
           <p className="mt-5 text-pretty text-sm leading-relaxed text-primary-foreground/75">

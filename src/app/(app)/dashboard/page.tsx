@@ -47,7 +47,7 @@ export default async function DashboardPage() {
     <div className="mx-auto w-full max-w-7xl">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
+          <h1 className="font-sans text-2xl font-medium tracking-tight sm:text-3xl">
             Your requests
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
             {grouped.map(({ bucket, items }) => (
               <section key={bucket} className="rise">
                 <div className="mb-4 flex items-baseline gap-3">
-                  <h2 className="font-heading text-lg font-medium tracking-tight">
+                  <h2 className="font-sans text-lg font-medium tracking-tight">
                     {BUCKET_META[bucket].label}
                   </h2>
                   <span className="tnum rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">

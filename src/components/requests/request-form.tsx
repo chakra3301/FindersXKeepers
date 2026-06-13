@@ -85,7 +85,7 @@ export function RequestForm() {
 
       {/* What */}
       <fieldset className="flex flex-col gap-5">
-        <legend className="font-heading text-base font-medium tracking-tight">
+        <legend className="font-sans text-base font-medium tracking-tight">
           What are you after?
         </legend>
 
@@ -151,7 +151,7 @@ export function RequestForm() {
 
       {/* Constraints */}
       <fieldset className="flex flex-col gap-5">
-        <legend className="font-heading text-base font-medium tracking-tight">
+        <legend className="font-sans text-base font-medium tracking-tight">
           Your constraints
         </legend>
 

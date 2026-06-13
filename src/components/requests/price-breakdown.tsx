@@ -35,7 +35,7 @@ export function PriceBreakdown({ order }: { order: Order }) {
       </dl>
       <div className="flex items-center justify-between border-t-2 border-border px-4 py-3">
         <span className="text-sm font-medium">Total</span>
-        <span className="tnum font-heading text-lg font-medium">
+        <span className="tnum font-sans text-lg font-medium">
           {formatJpy(order.total_jpy)}
         </span>
       </div>
