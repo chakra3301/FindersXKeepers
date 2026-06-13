@@ -18,9 +18,19 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
   const progress = railProgress(request.status);
   const chip = deadlineChip(request.deadline_at, request.status);
 
+  // Direct action route for cards that need the customer to act.
+  const actionHref =
+    request.status === "candidate_sent"
+      ? `/requests/${request.id}/candidate`
+      : request.status === "received"
+        ? `/requests/${request.id}/received`
+        : request.status === "open" && request.escrowState === "none"
+          ? `/requests/${request.id}/checkout`
+          : null;
+
   return (
     <Link
-      href={`/requests/${request.id}`}
+      href={actionHref ?? `/requests/${request.id}`}
       className={cn(
         "group flex items-center gap-[18px] rounded-2xl border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)] transition-shadow hover:shadow-[0_8px_24px_rgba(15,17,21,.07)]",
         needsAction ? "border-warning-border" : "border-border",
@@ -82,6 +92,13 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
             )}
           >
             {chip.label}
+          </div>
+        )}
+        {actionHref && (
+          <div className="mt-2 text-[11.5px] font-[560] text-warning">
+            {request.status === "candidate_sent" ? "Review candidate →"
+              : request.status === "received" ? "Final check →"
+              : "Deposit into escrow →"}
           </div>
         )}
       </div>

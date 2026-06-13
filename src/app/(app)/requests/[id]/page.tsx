@@ -16,6 +16,8 @@ import { EscrowBadge } from "@/components/requests/escrow-badge";
 import { LifecycleRail } from "@/components/requests/lifecycle-rail";
 import { PriceBreakdown } from "@/components/requests/price-breakdown";
 import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default async function RequestDetailPage({
   params,
@@ -161,6 +163,20 @@ export default async function RequestDetailPage({
               Take a look — your escrow stays held while you decide.
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Unfunded open request → deposit CTA */}
+      {request.status === "open" && escrowState === "none" && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4">
+          <div className="text-[13.5px]">
+            <div className="font-[560]">Fund this hunt</div>
+            <div className="text-muted-foreground">Deposit into escrow so we can start sourcing.</div>
+          </div>
+          <Link href={`/requests/${request.id}/checkout`}
+            className={cn(buttonVariants(), "shrink-0")}>
+            Deposit into escrow
+          </Link>
         </div>
       )}
 
