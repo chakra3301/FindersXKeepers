@@ -62,6 +62,7 @@ export function RequestForm() {
   const TOTAL_STEPS = 6;
 
   // Controlled state for serialized / computed fields
+  const [title, setTitle] = useState("");
   const [minCondition, setMinCondition] =
     useState<(typeof MIN_CONDITIONS)[number]>("any");
   const [rushTier, setRushTier] =
@@ -152,6 +153,8 @@ export function RequestForm() {
           <Input
             id="title"
             name="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Vintage Comme des Garçons wool coat, size M"
             className="h-11 border-input focus-visible:ring-primary/15"
             aria-invalid={!!err.title}
@@ -345,11 +348,7 @@ export function RequestForm() {
       <div hidden={step !== 5} className={cn("flex flex-col gap-5", step !== 5 && "hidden")}>
         <dl className="flex flex-col gap-4 rounded-xl border border-border bg-secondary/30 px-5 py-4 text-sm">
           <ReviewRow label="Item">
-            {/* Title is uncontrolled — we can't easily echo it here without lifting.
-                So we show a friendly prompt to scroll back if needed. */}
-            <span className="text-muted-foreground italic">
-              See step 1 to edit title &amp; description.
-            </span>
+            {title || "—"}
           </ReviewRow>
           <ReviewRow label="Condition">
             {CONDITION_LABEL[minCondition]}{" "}
