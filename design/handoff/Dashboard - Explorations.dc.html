@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #EBEDF1; font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0F1115; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'Geist Mono', ui-monospace, 'SF Mono', monospace; font-variant-numeric: tabular-nums lining-nums; }
+  .tnum { font-variant-numeric: tabular-nums lining-nums; }
+  @keyframes fk-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.0); } 50% { box-shadow: 0 0 0 4px rgba(217,119,6,0.10); } }
+</style>
+</helmet>
+
+<div style="min-height:100vh; padding:0 0 96px;">
+
+  <!-- ===== Masthead ===== -->
+  <div style="max-width:1180px; margin:0 auto; padding:40px 32px 8px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:34px; height:34px; border-radius:9px; background:#0F1115; display:flex; align-items:center; justify-content:center;">
+          <div style="width:13px; height:13px; border:2.5px solid #fff; border-radius:50%; position:relative;">
+            <div style="position:absolute; width:6px; height:2.5px; background:#fff; bottom:-5px; right:-5px; transform:rotate(45deg); border-radius:2px;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:17px; font-weight:600; letter-spacing:-0.01em;">Finders Keepers</div>
+          <div class="mono" style="font-size:11px; color:#6B7280; letter-spacing:0.02em;">DASHBOARD · DIRECTION &amp; EXPLORATIONS</div>
+        </div>
+      </div>
+      <div class="mono" style="font-size:11px; color:#9CA3AF; text-align:right; line-height:1.7;">
+        v1 · fintech-calm<br>3 layouts · 3 escrow badges · 3 cards
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Design reasoning ===== -->
+  <div style="max-width:1180px; margin:24px auto 0; padding:0 32px;">
+    <div style="background:#fff; border:1px solid #E5E7EB; border-radius:16px; padding:28px 30px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+        <span class="mono" style="font-size:11px; color:#1D4ED8; font-weight:500;">00 — THE SYSTEM</span>
+      </div>
+      <h1 style="margin:0 0 10px; font-size:26px; font-weight:600; letter-spacing:-0.02em; max-width:640px; line-height:1.25;">They pay before the item is found, across a border. Every pixel fights that anxiety.</h1>
+      <p style="margin:0 0 26px; font-size:15px; line-height:1.6; color:#6B7280; max-width:620px;">Calm by default; the only loud moment is <em style="color:#D97706; font-style:normal; font-weight:500;">your action needed</em>. Escrow is always legible, the lifecycle is always visible, and money is never one opaque number. Below: the tokens, then three takes each on the dimensions you flagged.</p>
+
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:#E5E7EB; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+        <!-- Type -->
+        <div style="background:#fff; padding:18px 20px;">
+          <div class="mono" style="font-size:10px; color:#9CA3AF; letter-spacing:0.06em; margin-bottom:10px;">TYPE</div>
+          <div style="font-size:22px; font-weight:600; letter-spacing:-0.02em; line-height:1;">Geist</div>
+          <div class="mono" style="font-size:13px; color:#6B7280; margin-top:4px;">Geist Mono · 0123</div>
+        </div>
+        <!-- Color -->
+        <div style="background:#fff; padding:18px 20px;">
+          <div class="mono" style="font-size:10px; color:#9CA3AF; letter-spacing:0.06em; margin-bottom:10px;">PALETTE</div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <div title="ink" style="width:22px; height:22px; border-radius:6px; background:#0F1115;"></div>
+            <div title="accent" style="width:22px; height:22px; border-radius:6px; background:#1D4ED8;"></div>
+            <div title="held" style="width:22px; height:22px; border-radius:6px; background:#047857;"></div>
+            <div title="action" style="width:22px; height:22px; border-radius:6px; background:#D97706;"></div>
+            <div title="problem" style="width:22px; height:22px; border-radius:6px; background:#DC2626;"></div>
+          </div>
+          <div class="mono" style="font-size:11px; color:#6B7280; margin-top:9px;">ink · blue · held · action · problem</div>
+        </div>
+        <!-- Money -->
+        <div style="background:#fff; padding:18px 20px;">
+          <div class="mono" style="font-size:10px; color:#9CA3AF; letter-spacing:0.06em; margin-bottom:10px;">MONEY</div>
+          <div class="tnum" style="font-size:20px; font-weight:600; letter-spacing:-0.01em;">¥48,000</div>
+          <div class="mono" style="font-size:12px; color:#6B7280; margin-top:3px;">≈ $305 · 4-line pricing</div>
+        </div>
+        <!-- Lifecycle -->
+        <div style="background:#fff; padding:18px 20px;">
+          <div class="mono" style="font-size:10px; color:#9CA3AF; letter-spacing:0.06em; margin-bottom:10px;">LIFECYCLE</div>
+          <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:#047857;"></div>
+            <div style="flex:1; height:2px; background:#047857;"></div>
+            <div style="width:8px; height:8px; border-radius:50%; background:#1D4ED8;"></div>
+            <div style="flex:1; height:2px; background:#E5E7EB;"></div>
+            <div style="width:8px; height:8px; border-radius:50%; background:#E5E7EB;"></div>
+            <div style="flex:1; height:2px; background:#E5E7EB;"></div>
+            <div style="width:8px; height:8px; border-radius:50%; background:#E5E7EB;"></div>
+          </div>
+          <div class="mono" style="font-size:11px; color:#6B7280; margin-top:9px;">open → sourcing → … → released</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION A — DASHBOARD LAYOUT / IA -->
+  <!-- ============================================================ -->
+  <div style="max-width:1180px; margin:56px auto 0; padding:0 32px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:4px;">
+      <span class="mono" style="font-size:12px; color:#1D4ED8; font-weight:500;">A</span>
+      <h2 style="margin:0; font-size:20px; font-weight:600; letter-spacing:-0.01em;">Dashboard layout &amp; IA</h2>
+    </div>
+    <p style="margin:0 0 24px; font-size:14px; color:#6B7280; max-width:560px;">Where do the requests, the escrow total, and the “needs you” moments live? Three structures, increasingly opinionated.</p>
+
+    <!-- A1 — Single column feed -->
+    <div style="margin-bottom:28px;">
+      <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:10px;">
+        <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">A1</span>
+        <span style="font-size:14px; font-weight:500;">Single-column feed</span>
+        <span style="font-size:13px; color:#9CA3AF;">— Mercury-calm. One escrow summary, then a quiet stack of hunts.</span>
+      </div>
+      <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:26px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+        <!-- escrow summary strip -->
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px 20px; background:#F6FBF8; border:1px solid #CFE8DC; border-radius:11px; margin-bottom:22px;">
+          <div style="display:flex; align-items:center; gap:13px;">
+            <div style="width:30px; height:30px; border-radius:8px; background:#047857; display:flex; align-items:center; justify-content:center;">
+              <div style="width:9px; height:7px; border:2px solid #fff; border-bottom:none; border-radius:3px 3px 0 0; margin-bottom:5px;"></div>
+            </div>
+            <div>
+              <div class="tnum" style="font-size:18px; font-weight:600;">¥625,500 <span style="font-size:13px; color:#047857; font-weight:500;">held safely</span></div>
+              <div style="font-size:12px; color:#6B7280;">Across 5 active hunts · released only when your item ships</div>
+            </div>
+          </div>
+          <div class="mono tnum" style="font-size:12px; color:#6B7280;">≈ $3,980</div>
+        </div>
+        <!-- feed rows -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <!-- action-needed row -->
+          <div style="display:flex; gap:16px; align-items:center; padding:16px; border:1px solid #F1D9AE; background:#FEFBF4; border-radius:12px; animation:fk-pulse 3s ease-in-out infinite;">
+            <div style="width:52px; height:72px; border-radius:7px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                <span class="mono" style="font-size:10px; font-weight:600; color:#B45309; background:#FEF1DC; padding:2px 7px; border-radius:5px; letter-spacing:0.03em;">ACTION NEEDED</span>
+                <span class="mono" style="font-size:11px; color:#9CA3AF;">FK-2841</span>
+              </div>
+              <div style="font-size:15px; font-weight:600; letter-spacing:-0.01em;">1st Ed Base Set Charizard · PSA 9 (Japanese)</div>
+              <div style="font-size:12.5px; color:#6B7280; margin-top:2px;">Candidate found — review photos &amp; price before we buy</div>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <div class="tnum" style="font-size:15px; font-weight:600;">¥420,000</div>
+              <div class="mono" style="font-size:11px; color:#9CA3AF;">≈ €2,560</div>
+            </div>
+            <button style="flex-shrink:0; font-family:inherit; font-size:13px; font-weight:500; color:#fff; background:#D97706; border:none; border-radius:8px; padding:9px 16px; cursor:pointer;" style-hover="background:#B45309;">Review</button>
+          </div>
+          <!-- sourcing row -->
+          <div style="display:flex; gap:16px; align-items:center; padding:16px; border:1px solid #E5E7EB; border-radius:12px;" style-hover="border-color:#D1D5DB; background:#FAFAFA;">
+            <div style="width:52px; height:72px; border-radius:7px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#1D4ED8; font-weight:500;"><span style="width:6px;height:6px;border-radius:50%;background:#1D4ED8;"></span>Sourcing</span>
+                <span class="mono" style="font-size:11px; color:#9CA3AF;">FK-2839</span>
+              </div>
+              <div style="font-size:15px; font-weight:600; letter-spacing:-0.01em;">Umbreon VMAX Alt Art · Evolving Skies</div>
+              <div style="font-size:12.5px; color:#6B7280; margin-top:2px;">Searching 4 marketplaces · 21 days left</div>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <div class="tnum" style="font-size:15px; font-weight:600;">¥48,000</div>
+              <div class="mono" style="font-size:11px; color:#9CA3AF;">≈ $305</div>
+            </div>
+            <div style="width:74px;"></div>
+          </div>
+          <!-- shipped row -->
+          <div style="display:flex; gap:16px; align-items:center; padding:16px; border:1px solid #E5E7EB; border-radius:12px;" style-hover="border-color:#D1D5DB; background:#FAFAFA;">
+            <div style="width:52px; height:72px; border-radius:7px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#047857; font-weight:500;"><span style="width:6px;height:6px;border-radius:50%;background:#047857;"></span>Shipped</span>
+                <span class="mono" style="font-size:11px; color:#9CA3AF;">FK-2810</span>
+              </div>
+              <div style="font-size:15px; font-weight:600; letter-spacing:-0.01em;">Lugia · Neo Genesis 1st Ed Holo</div>
+              <div style="font-size:12.5px; color:#6B7280; margin-top:2px;">In transit · EMS · arriving ~Jun 18</div>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <div class="tnum" style="font-size:15px; font-weight:600;">¥36,500</div>
+              <div class="mono" style="font-size:11px; color:#9CA3AF;">≈ £190</div>
+            </div>
+            <div style="width:74px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A2 — Feed + right rail -->
+    <div style="margin-bottom:28px;">
+      <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:10px;">
+        <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">A2</span>
+        <span style="font-size:14px; font-weight:500;">Feed + escrow rail</span>
+        <span style="font-size:13px; color:#9CA3AF;">— hunts left, a sticky trust/activity rail right.</span>
+      </div>
+      <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:26px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+        <div style="display:grid; grid-template-columns:1fr 300px; gap:24px;">
+          <!-- left feed -->
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <h3 style="margin:0; font-size:15px; font-weight:600;">Your hunts</h3>
+              <span class="mono" style="font-size:11px; color:#9CA3AF;">5 ACTIVE</span>
+            </div>
+            <div style="display:flex; gap:14px; align-items:center; padding:15px; border:1px solid #F1D9AE; background:#FEFBF4; border-radius:11px;">
+              <div style="width:46px; height:64px; border-radius:6px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px);"></div>
+              <div style="flex:1; min-width:0;">
+                <span class="mono" style="font-size:10px; font-weight:600; color:#B45309; background:#FEF1DC; padding:2px 6px; border-radius:5px;">ACTION NEEDED</span>
+                <div style="font-size:14px; font-weight:600; margin-top:5px;">Charizard · PSA 9</div>
+                <div style="font-size:12px; color:#6B7280;">Candidate found</div>
+              </div>
+              <div class="tnum" style="font-size:14px; font-weight:600;">¥420,000</div>
+            </div>
+            <div style="display:flex; gap:14px; align-items:center; padding:15px; border:1px solid #E5E7EB; border-radius:11px;">
+              <div style="width:46px; height:64px; border-radius:6px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px);"></div>
+              <div style="flex:1; min-width:0;">
+                <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#1D4ED8; font-weight:500;"><span style="width:6px;height:6px;border-radius:50%;background:#1D4ED8;"></span>Sourcing</span>
+                <div style="font-size:14px; font-weight:600; margin-top:5px;">Umbreon VMAX Alt Art</div>
+                <div style="font-size:12px; color:#6B7280;">21 days left</div>
+              </div>
+              <div class="tnum" style="font-size:14px; font-weight:600;">¥48,000</div>
+            </div>
+            <div style="display:flex; gap:14px; align-items:center; padding:15px; border:1px solid #E5E7EB; border-radius:11px;">
+              <div style="width:46px; height:64px; border-radius:6px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px);"></div>
+              <div style="flex:1; min-width:0;">
+                <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#047857; font-weight:500;"><span style="width:6px;height:6px;border-radius:50%;background:#047857;"></span>Shipped</span>
+                <div style="font-size:14px; font-weight:600; margin-top:5px;">Lugia · Neo Genesis</div>
+                <div style="font-size:12px; color:#6B7280;">Arriving ~Jun 18</div>
+              </div>
+              <div class="tnum" style="font-size:14px; font-weight:600;">¥36,500</div>
+            </div>
+          </div>
+          <!-- right rail -->
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:#0F1115; color:#fff; border-radius:12px; padding:18px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                <div style="width:7px; height:7px; border-radius:50%; background:#34D399;"></div>
+                <span class="mono" style="font-size:10px; letter-spacing:0.06em; color:#9CA3AF;">IN ESCROW</span>
+              </div>
+              <div class="tnum" style="font-size:26px; font-weight:600; letter-spacing:-0.02em;">¥625,500</div>
+              <div class="mono tnum" style="font-size:12px; color:#9CA3AF; margin-top:2px;">≈ $3,980 USD</div>
+              <div style="height:1px; background:rgba(255,255,255,0.1); margin:14px 0;"></div>
+              <div style="font-size:12px; color:#D1D5DB; line-height:1.5;">Held by Finders Keepers, not spent. Released to us only the moment your item is dispatched.</div>
+            </div>
+            <div style="border:1px solid #E5E7EB; border-radius:12px; padding:16px;">
+              <div class="mono" style="font-size:10px; color:#9CA3AF; letter-spacing:0.06em; margin-bottom:12px;">RECENT ACTIVITY</div>
+              <div style="display:flex; flex-direction:column; gap:11px;">
+                <div style="display:flex; gap:9px;"><div style="width:6px;height:6px;border-radius:50%;background:#D97706;margin-top:5px;flex-shrink:0;"></div><div style="font-size:12px;color:#374151;line-height:1.4;">Candidate found for <b>Charizard</b> <span style="color:#9CA3AF;">· 2h ago</span></div></div>
+                <div style="display:flex; gap:9px;"><div style="width:6px;height:6px;border-radius:50%;background:#1D4ED8;margin-top:5px;flex-shrink:0;"></div><div style="font-size:12px;color:#374151;line-height:1.4;">Sourcing update on <b>Umbreon</b> <span style="color:#9CA3AF;">· 1d ago</span></div></div>
+                <div style="display:flex; gap:9px;"><div style="width:6px;height:6px;border-radius:50%;background:#047857;margin-top:5px;flex-shrink:0;"></div><div style="font-size:12px;color:#374151;line-height:1.4;"><b>Lugia</b> shipped via EMS <span style="color:#9CA3AF;">· 2d ago</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A3 — Grouped by attention -->
+    <div style="margin-bottom:8px;">
+      <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:10px;">
+        <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">A3</span>
+        <span style="font-size:14px; font-weight:500;">Grouped by attention</span>
+        <span style="font-size:13px; color:#9CA3AF;">— “Needs you” always floats to the top; calm work below.</span>
+      </div>
+      <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:26px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+        <!-- Needs you group -->
+        <div style="display:flex; align-items:center; gap:9px; margin-bottom:13px;">
+          <div style="width:7px; height:7px; border-radius:50%; background:#D97706;"></div>
+          <span style="font-size:13px; font-weight:600; color:#B45309;">Needs you</span>
+          <span class="mono" style="font-size:11px; color:#D97706; background:#FEF1DC; padding:1px 6px; border-radius:5px;">2</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:13px; margin-bottom:26px;">
+          <div style="padding:15px; border:1px solid #F1D9AE; background:#FEFBF4; border-radius:11px;">
+            <span class="mono" style="font-size:10px; font-weight:600; color:#B45309; background:#FEF1DC; padding:2px 6px; border-radius:5px;">CANDIDATE FOUND</span>
+            <div style="font-size:14px; font-weight:600; margin-top:9px;">Charizard · PSA 9</div>
+            <div style="font-size:12px; color:#6B7280; margin-top:2px;">Within cap · review &amp; approve</div>
+            <div class="tnum" style="font-size:14px; font-weight:600; margin-top:9px;">¥420,000 <span class="mono" style="font-size:11px;color:#9CA3AF;font-weight:400;">≈ €2,560</span></div>
+          </div>
+          <div style="padding:15px; border:1px solid #F3C9C9; background:#FEF6F6; border-radius:11px;">
+            <span class="mono" style="font-size:10px; font-weight:600; color:#B91C1C; background:#FBE3E3; padding:2px 6px; border-radius:5px;">OVER CAP</span>
+            <div style="font-size:14px; font-weight:600; margin-top:9px;">Gold Star Espeon · POP 5</div>
+            <div style="font-size:12px; color:#6B7280; margin-top:2px;">Best find ¥148k vs your ¥132k cap</div>
+            <div class="tnum" style="font-size:14px; font-weight:600; margin-top:9px; color:#B91C1C;">+¥16,000 <span class="mono" style="font-size:11px;color:#9CA3AF;font-weight:400;">over</span></div>
+          </div>
+        </div>
+        <!-- In progress group -->
+        <div style="display:flex; align-items:center; gap:9px; margin-bottom:13px;">
+          <div style="width:7px; height:7px; border-radius:50%; background:#1D4ED8;"></div>
+          <span style="font-size:13px; font-weight:600; color:#374151;">In progress</span>
+          <span class="mono" style="font-size:11px; color:#6B7280; background:#F4F5F7; padding:1px 6px; border-radius:5px;">2</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:13px; padding:13px 15px; border:1px solid #E5E7EB; border-radius:11px;">
+            <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#1D4ED8; font-weight:500;"><span style="width:6px;height:6px;border-radius:50%;background:#1D4ED8;"></span>Sourcing</span>
+            <span style="font-size:14px; font-weight:600;">Umbreon VMAX Alt Art</span>
+            <span style="font-size:12px; color:#9CA3AF;">· 21 days left</span>
+            <div style="flex:1;"></div>
+            <span class="tnum" style="font-size:14px; font-weight:600;">¥48,000</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:13px; padding:13px 15px; border:1px solid #E5E7EB; border-radius:11px;">
+            <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#047857; font-weight:500;"><span style="width:6px;height:6px;border-radius:50%;background:#047857;"></span>Shipped</span>
+            <span style="font-size:14px; font-weight:600;">Lugia · Neo Genesis</span>
+            <span style="font-size:12px; color:#9CA3AF;">· arriving ~Jun 18</span>
+            <div style="flex:1;"></div>
+            <span class="tnum" style="font-size:14px; font-weight:600;">¥36,500</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION B — ESCROW BADGE / TRUST FRAMING -->
+  <!-- ============================================================ -->
+  <div style="max-width:1180px; margin:56px auto 0; padding:0 32px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:4px;">
+      <span class="mono" style="font-size:12px; color:#1D4ED8; font-weight:500;">B</span>
+      <h2 style="margin:0; font-size:20px; font-weight:600; letter-spacing:-0.01em;">Escrow badge &amp; trust framing</h2>
+    </div>
+    <p style="margin:0 0 24px; font-size:14px; color:#6B7280; max-width:560px;">The single most important reassurance: their money is held, not spent. Three weights, from a quiet inline pill to a full statement panel.</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px;">
+      <!-- B1 inline pill -->
+      <div>
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;">
+          <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">B1</span>
+          <span style="font-size:13.5px; font-weight:500;">Inline pill</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:28px 22px; box-shadow:0 1px 2px rgba(15,17,21,0.04); min-height:188px; display:flex; flex-direction:column; justify-content:center; gap:16px;">
+          <div style="display:inline-flex; align-items:center; gap:8px; background:#F6FBF8; border:1px solid #CFE8DC; border-radius:999px; padding:7px 13px; width:fit-content;">
+            <span style="width:7px; height:7px; border-radius:50%; background:#047857;"></span>
+            <span class="tnum" style="font-size:12.5px; font-weight:500; color:#065F46;">¥48,000 held · released on dispatch</span>
+          </div>
+          <div style="display:inline-flex; align-items:center; gap:8px; background:#F6FBF8; border:1px solid #CFE8DC; border-radius:999px; padding:7px 13px; width:fit-content;">
+            <span style="width:7px; height:7px; border-radius:50%; background:#047857;"></span>
+            <span class="tnum" style="font-size:12.5px; font-weight:500; color:#065F46;">¥625,500 safe across 5 hunts</span>
+          </div>
+          <p style="margin:2px 0 0; font-size:12px; color:#9CA3AF; line-height:1.5;">Lowest-weight. Sits in card headers and rows without stealing attention.</p>
+        </div>
+      </div>
+      <!-- B2 trust panel -->
+      <div>
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;">
+          <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">B2</span>
+          <span style="font-size:13.5px; font-weight:500;">Trust panel</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(15,17,21,0.04); min-height:188px;">
+          <div style="background:#0F1115; color:#fff; border-radius:12px; padding:18px; height:100%; box-sizing:border-box;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:13px;">
+              <div style="width:24px; height:24px; border-radius:7px; background:rgba(52,211,153,0.16); display:flex; align-items:center; justify-content:center;">
+                <div style="width:8px; height:6px; border:2px solid #34D399; border-bottom:none; border-radius:3px 3px 0 0; margin-bottom:4px;"></div>
+              </div>
+              <span class="mono" style="font-size:10px; letter-spacing:0.06em; color:#9CA3AF;">IN ESCROW</span>
+            </div>
+            <div class="tnum" style="font-size:25px; font-weight:600; letter-spacing:-0.02em;">¥625,500</div>
+            <div class="mono tnum" style="font-size:12px; color:#9CA3AF; margin-top:2px;">≈ $3,980 USD</div>
+            <div style="height:1px; background:rgba(255,255,255,0.1); margin:13px 0;"></div>
+            <div style="font-size:11.5px; color:#D1D5DB; line-height:1.5;">Held, not spent. Released to us only when your item is dispatched.</div>
+          </div>
+        </div>
+      </div>
+      <!-- B3 ledger -->
+      <div>
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;">
+          <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">B3</span>
+          <span style="font-size:13.5px; font-weight:500;">Statement ledger</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:20px; box-shadow:0 1px 2px rgba(15,17,21,0.04); min-height:188px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <span class="mono" style="font-size:10px; color:#9CA3AF; letter-spacing:0.06em;">ESCROW LEDGER</span>
+            <span class="tnum" style="font-size:13px; font-weight:600;">¥625,500</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid #F1F2F4;">
+              <span style="font-size:12.5px; color:#374151;">Charizard PSA 9</span>
+              <span class="tnum" style="font-size:12.5px; font-weight:500;">¥420,000 <span style="color:#047857; font-size:10px;">●</span></span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid #F1F2F4;">
+              <span style="font-size:12.5px; color:#374151;">Umbreon VMAX</span>
+              <span class="tnum" style="font-size:12.5px; font-weight:500;">¥48,000 <span style="color:#047857; font-size:10px;">●</span></span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid #F1F2F4;">
+              <span style="font-size:12.5px; color:#374151;">Lugia Neo Genesis</span>
+              <span class="tnum" style="font-size:12.5px; font-weight:500;">¥36,500 <span style="color:#047857; font-size:10px;">●</span></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; padding-top:11px;">
+              <span style="width:6px; height:6px; border-radius:50%; background:#047857;"></span>
+              <span style="font-size:11px; color:#6B7280;">● held · released on dispatch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION C — REQUEST CARD -->
+  <!-- ============================================================ -->
+  <div style="max-width:1180px; margin:56px auto 0; padding:0 32px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:4px;">
+      <span class="mono" style="font-size:12px; color:#1D4ED8; font-weight:500;">C</span>
+      <h2 style="margin:0; font-size:20px; font-weight:600; letter-spacing:-0.01em;">Request (hunt) card</h2>
+    </div>
+    <p style="margin:0 0 24px; font-size:14px; color:#6B7280; max-width:560px;">The repeated atom. Same hunt — Charizard PSA 9, candidate found — shown three ways, from statement-minimal to a rich card with an inline lifecycle stepper.</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px;">
+      <!-- C1 statement row -->
+      <div>
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;">
+          <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">C1</span>
+          <span style="font-size:13.5px; font-weight:500;">Statement row</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+          <div style="display:flex; align-items:center; gap:13px;">
+            <div style="width:40px; height:56px; border-radius:6px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 6px,#FAFAFA 6px 12px); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:600; letter-spacing:-0.01em;">Charizard · PSA 9</div>
+              <div class="mono" style="font-size:11px; color:#9CA3AF; margin-top:2px;">FK-2841 · candidate found</div>
+            </div>
+            <div style="width:9px; height:9px; border-radius:50%; background:#D97706;"></div>
+          </div>
+          <div style="height:1px; background:#F1F2F4; margin:14px 0;"></div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="tnum" style="font-size:15px; font-weight:600;">¥420,000</span>
+            <span class="mono tnum" style="font-size:11px; color:#9CA3AF;">≈ €2,560</span>
+          </div>
+        </div>
+      </div>
+      <!-- C2 horizontal default -->
+      <div>
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;">
+          <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">C2</span>
+          <span style="font-size:13.5px; font-weight:500;">Default card</span>
+        </div>
+        <div style="background:#FEFBF4; border:1px solid #F1D9AE; border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+          <div style="display:flex; align-items:flex-start; gap:13px;">
+            <div style="width:54px; height:75px; border-radius:7px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;">
+              <span class="mono" style="font-size:10px; font-weight:600; color:#B45309; background:#FEF1DC; padding:2px 6px; border-radius:5px;">ACTION NEEDED</span>
+              <div style="font-size:14px; font-weight:600; margin-top:8px; letter-spacing:-0.01em;">Charizard · PSA 9</div>
+              <div style="font-size:12px; color:#6B7280; margin-top:2px;">Candidate within cap</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:15px;">
+            <div>
+              <div class="tnum" style="font-size:15px; font-weight:600;">¥420,000</div>
+              <div class="mono" style="font-size:11px; color:#9CA3AF;">≈ €2,560</div>
+            </div>
+            <button style="font-family:inherit; font-size:13px; font-weight:500; color:#fff; background:#D97706; border:none; border-radius:8px; padding:9px 18px; cursor:pointer;" style-hover="background:#B45309;">Review</button>
+          </div>
+        </div>
+      </div>
+      <!-- C3 rich with stepper -->
+      <div>
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;">
+          <span class="mono" style="font-size:11px; color:#0F1115; background:#fff; border:1px solid #E5E7EB; border-radius:6px; padding:3px 8px;">C3</span>
+          <span style="font-size:13.5px; font-weight:500;">Rich + stepper</span>
+        </div>
+        <div style="background:#fff; border:1px solid #E5E7EB; border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(15,17,21,0.04);">
+          <div style="display:flex; align-items:flex-start; gap:13px; margin-bottom:15px;">
+            <div style="width:54px; height:75px; border-radius:7px; border:1px solid #E5E7EB; background:repeating-linear-gradient(135deg,#F4F5F7 0 7px,#FAFAFA 7px 14px); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:14px; font-weight:600; letter-spacing:-0.01em;">Charizard · PSA 9</div>
+              <div class="mono" style="font-size:11px; color:#9CA3AF; margin-top:2px;">FK-2841</div>
+              <div style="display:inline-flex; align-items:center; gap:7px; background:#F6FBF8; border:1px solid #CFE8DC; border-radius:999px; padding:4px 9px; margin-top:8px;">
+                <span style="width:6px; height:6px; border-radius:50%; background:#047857;"></span>
+                <span class="tnum" style="font-size:11px; font-weight:500; color:#065F46;">¥420,000 held</span>
+              </div>
+            </div>
+          </div>
+          <!-- mini stepper -->
+          <div style="display:flex; align-items:center; gap:3px; margin-bottom:6px;">
+            <div style="width:7px; height:7px; border-radius:50%; background:#047857;"></div>
+            <div style="flex:1; height:2px; background:#047857;"></div>
+            <div style="width:7px; height:7px; border-radius:50%; background:#047857;"></div>
+            <div style="flex:1; height:2px; background:#D97706;"></div>
+            <div style="width:9px; height:9px; border-radius:50%; background:#D97706; box-shadow:0 0 0 3px rgba(217,119,6,0.15);"></div>
+            <div style="flex:1; height:2px; background:#E5E7EB;"></div>
+            <div style="width:7px; height:7px; border-radius:50%; background:#E5E7EB;"></div>
+            <div style="flex:1; height:2px; background:#E5E7EB;"></div>
+            <div style="width:7px; height:7px; border-radius:50%; background:#E5E7EB;"></div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="mono" style="font-size:10px; color:#B45309;">MATCH FOUND</span>
+            <button style="font-family:inherit; font-size:12px; font-weight:500; color:#fff; background:#D97706; border:none; border-radius:7px; padding:7px 14px; cursor:pointer;" style-hover="background:#B45309;">Review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== footer note ===== -->
+  <div style="max-width:1180px; margin:56px auto 0; padding:0 32px;">
+    <div style="border-top:1px solid #DfE2E6; padding-top:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <p style="margin:0; font-size:13px; color:#6B7280; max-width:620px; line-height:1.5;">Pick the atoms you like — e.g. <b style="color:#374151;">A2 layout + B2 trust panel + C2 card</b> — and I’ll build the full clickable Dashboard prototype, then move to request detail, approval moments, creation → checkout, and the landing page.</p>
+      <a href="#" style="font-size:13px; color:#1D4ED8; text-decoration:none; font-weight:500;">特商法 · Terms · Privacy</a>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>
