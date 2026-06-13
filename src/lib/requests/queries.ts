@@ -3,6 +3,7 @@ import { escrowStateFromPayments, type EscrowState } from "@/lib/escrow/display"
 import type {
   Candidate,
   Message,
+  MessageSender,
   Order,
   Payment,
   Request,
@@ -144,13 +145,13 @@ export interface MessageThread {
   title: string;
   lastBody: string;
   lastAt: string;
-  lastSender: "customer" | "team";
+  lastSender: MessageSender;
 }
 
 type ThreadMessage = {
   request_id: string;
   body: string;
-  sender: "customer" | "team";
+  sender: MessageSender;
   created_at: string;
 };
 
@@ -162,6 +163,7 @@ export async function getMessageThreads(): Promise<MessageThread[]> {
     supabase.from("messages").select("request_id, body, sender, created_at"),
   ]);
   if (msgRes.error) throw msgRes.error;
+  if (reqRes.error) throw reqRes.error;
   const titles = new Map<string, string>(
     (reqRes.data ?? []).map((r) => [r.id, r.title]),
   );
