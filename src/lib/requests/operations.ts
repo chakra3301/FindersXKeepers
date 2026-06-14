@@ -214,9 +214,15 @@ export async function createEscrowHold(
   return data;
 }
 
-/** Release the held escrow for a request (our trigger). */
+/**
+ * Settle the held escrow for a request (our trigger). Captures `captureJpy` to
+ * us and returns the rest of the hold to the customer; the split is computed
+ * from the authoritative held amount on the payment row. `captureJpy` omitted →
+ * full release (captured = held, refunded = 0).
+ */
 export async function releaseEscrow(
   requestId: string,
+  captureJpy?: number,
   admin: AdminClient = createAdminClient(),
 ): Promise<void> {
   const { data: payment } = await admin
@@ -229,10 +235,21 @@ export async function releaseEscrow(
     .maybeSingle();
   if (!payment?.stripe_payment_intent_id) return; // nothing held to release
 
-  const intent = await escrow.release(payment.stripe_payment_intent_id);
+  const held = payment.amount_jpy;
+  const capturedJpy = Math.max(0, Math.min(captureJpy ?? held, held));
+  const refundedJpy = held - capturedJpy;
+
+  const intent = await escrow.release(
+    payment.stripe_payment_intent_id,
+    capturedJpy,
+  );
   await admin
     .from("payments")
-    .update({ status: intent.status })
+    .update({
+      status: intent.status,
+      captured_jpy: capturedJpy,
+      refunded_jpy: refundedJpy,
+    })
     .eq("id", payment.id);
 }
 
@@ -275,7 +292,7 @@ export async function recordShipment(
 ) {
   const { data: order, error } = await admin
     .from("orders")
-    .select("id, request_id")
+    .select("id, request_id, total_jpy")
     .eq("id", params.orderId)
     .single();
   if (error || !order) throw new Error(`Order ${params.orderId} not found.`);
@@ -295,9 +312,9 @@ export async function recordShipment(
     .single();
   if (insertError) throw insertError;
 
-  // The trigger: only a real tracking number releases escrow + advances status.
+  // The trigger: only a real tracking number settles escrow + advances status.
   if (params.trackingNumber) {
-    await releaseEscrow(order.request_id, admin);
+    await releaseEscrow(order.request_id, order.total_jpy, admin);
     await setRequestStatus(order.request_id, "shipped", admin);
   }
 

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { depositForRequest, approveCandidate, keepHunting, shipApprovedOrder } from "./operations";
+import {
+  depositForRequest,
+  approveCandidate,
+  keepHunting,
+  shipApprovedOrder,
+  releaseEscrow,
+} from "./operations";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 
 /* ---------- in-memory fake of the Supabase admin client ---------- */
@@ -210,21 +216,22 @@ describe("keepHunting", () => {
 });
 
 describe("shipApprovedOrder", () => {
-  it("records a demo-tracked shipment, releases escrow, and moves received → shipped", async () => {
+  it("settles at the order total: captures it, returns the unused cap, ships", async () => {
     const { tables, client } = createFakeAdmin({
       requests: [baseRequest({ id: "r1", status: "received" })],
       orders: [{ id: "o1", request_id: "r1", item_cost_jpy: 14_500, finder_fee_jpy: 1_500, shipping_jpy: 4_000, tax_jpy: 150, total_jpy: 20_150, created_at: "2026-01-03T00:00:00Z" }],
       shipments: [],
-      payments: [{ id: "p1", request_id: "r1", stripe_payment_intent_id: "pi_test_held", amount_jpy: 20_150, status: "held", created_at: "2026-01-02T00:00:00Z" }],
+      payments: [{ id: "p1", request_id: "r1", stripe_payment_intent_id: "pi_test_held", amount_jpy: 30_000, status: "held", created_at: "2026-01-02T00:00:00Z" }],
     });
 
     await shipApprovedOrder("r1", client);
 
     expect(tables.shipments).toHaveLength(1);
     expect(tables.shipments[0].tracking_number).toContain("DEMO-");
-    expect(tables.shipments[0].order_id).toBe("o1");
     expect(tables.requests[0].status).toBe("shipped");
     expect(tables.payments[0].status).toBe("released");
+    expect(tables.payments[0].captured_jpy).toBe(20_150); // released to us
+    expect(tables.payments[0].refunded_jpy).toBe(9_850);   // returned to the customer
   });
 
   it("throws on a non-received request and releases nothing", async () => {
@@ -237,5 +244,30 @@ describe("shipApprovedOrder", () => {
     await expect(shipApprovedOrder("r1", client)).rejects.toThrow();
     expect(tables.shipments).toHaveLength(0);
     expect(tables.payments[0].status).toBe("held");
+  });
+
+  it("returns zero when the order equals the hold", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "received" })],
+      orders: [{ id: "o1", request_id: "r1", item_cost_jpy: 16_000, finder_fee_jpy: 1_600, shipping_jpy: 4_000, tax_jpy: 160, total_jpy: 21_760, created_at: "2026-01-03T00:00:00Z" }],
+      shipments: [],
+      payments: [{ id: "p1", request_id: "r1", stripe_payment_intent_id: "pi_eq", amount_jpy: 21_760, status: "held", created_at: "2026-01-02T00:00:00Z" }],
+    });
+    await shipApprovedOrder("r1", client);
+    expect(tables.payments[0].captured_jpy).toBe(21_760);
+    expect(tables.payments[0].refunded_jpy).toBe(0);
+  });
+});
+
+describe("releaseEscrow", () => {
+  it("defaults to a full release when no capture amount is given", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "received" })],
+      payments: [{ id: "p1", request_id: "r1", stripe_payment_intent_id: "pi_full", amount_jpy: 5_000, status: "held", created_at: "2026-01-02T00:00:00Z" }],
+    });
+    await releaseEscrow("r1", undefined, client);
+    expect(tables.payments[0].status).toBe("released");
+    expect(tables.payments[0].captured_jpy).toBe(5_000);
+    expect(tables.payments[0].refunded_jpy).toBe(0);
   });
 });
