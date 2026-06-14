@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   depositForRequest,
   approveCandidate,
@@ -6,6 +6,7 @@ import {
   shipApprovedOrder,
   releaseEscrow,
 } from "./operations";
+import { escrow } from "@/lib/escrow";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 import { createFakeAdmin, type Row } from "@/lib/test-support/fake-admin";
 
@@ -67,6 +68,32 @@ describe("depositForRequest", () => {
     await expect(depositForRequest("req_seed", "standard", client)).rejects.toThrow();
     expect(tables.payments).toHaveLength(0);
     expect(tables.requests[0].status).toBe("candidate_sent");
+  });
+
+  it("hosted payment (Stripe): returns checkoutUrl, leaves request open + payment pending", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ status: "open", budget_cap_jpy: 50_000 })],
+      payments: [],
+    });
+    // Stand in for the Stripe provider: an async hold that needs hosted payment.
+    const spy = vi.spyOn(escrow, "createHold").mockResolvedValue({
+      paymentIntentId: "pi_stripe",
+      amountJpy: 55_000,
+      status: "pending",
+      checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test",
+    });
+    try {
+      const result = await depositForRequest("req_seed", "standard", client);
+      expect(result).toEqual({
+        checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test",
+      });
+      // The webhook — not this call — advances the lifecycle.
+      expect(tables.requests[0].status).toBe("open");
+      expect(tables.payments).toHaveLength(1);
+      expect(tables.payments[0].status).toBe("pending");
+    } finally {
+      spy.mockRestore();
+    }
   });
 });
 

@@ -23,11 +23,13 @@ export async function submitDeposit(
   if (!owned) return { status: "error", message: "Request not found." };
 
   const rushTier = (formData.get("rushTier") as RushTier) ?? "standard";
+  let checkoutUrl: string | undefined;
   try {
-    await depositForRequest(requestId, rushTier);
+    ({ checkoutUrl } = await depositForRequest(requestId, rushTier));
   } catch (e) {
     return { status: "error", message: (e as Error).message };
   }
   revalidatePath("/dashboard");
-  redirect(`/requests/${requestId}`);
+  // Stripe → off to the hosted Checkout page; stub → back to the request.
+  redirect(checkoutUrl ?? `/requests/${requestId}`);
 }

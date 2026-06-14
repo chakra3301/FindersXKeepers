@@ -1,5 +1,5 @@
 import { createAdminClient, type AdminClient } from "@/lib/supabase/admin";
-import { escrow } from "@/lib/escrow";
+import { escrow, type EscrowIntent } from "@/lib/escrow";
 import { assertTransition, IllegalTransitionError } from "./state-machine";
 import type { PriceLines } from "@/lib/pricing";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
@@ -23,7 +23,7 @@ export async function depositForRequest(
   requestId: string,
   rushTier: RushTier,
   admin: AdminClient = createAdminClient(),
-): Promise<void> {
+): Promise<{ checkoutUrl?: string }> {
   const { data: req, error } = await admin
     .from("requests")
     .select("status, budget_cap_jpy, rush_tier")
@@ -48,8 +48,18 @@ export async function depositForRequest(
     rushTier,
   });
 
-  await createEscrowHold(requestId, lines, admin);
+  const intent = await createEscrowHold(requestId, lines, admin);
+
+  // Hosted-payment providers (Stripe) confirm the hold asynchronously via the
+  // webhook, which is what advances open → sourcing. Don't transition here —
+  // just hand back the redirect URL. The synchronous stub has no checkoutUrl,
+  // so it moves to sourcing immediately, exactly as before.
+  if (intent.checkoutUrl) {
+    return { checkoutUrl: intent.checkoutUrl };
+  }
+
   await setRequestStatus(requestId, "sourcing", admin);
+  return {};
 }
 
 /**
@@ -202,26 +212,27 @@ export async function setRequestStatus(
   if (updateError) throw updateError;
 }
 
-/** Create an escrow hold for a request and record the payment row. */
+/**
+ * Create an escrow hold for a request and record the payment row with the
+ * provider's returned status (`held` for the synchronous stub, `pending` for
+ * Stripe until the webhook confirms). Returns the intent so the caller can read
+ * an optional `checkoutUrl` (hosted payment redirect).
+ */
 export async function createEscrowHold(
   requestId: string,
   lines: PriceLines,
   admin: AdminClient = createAdminClient(),
-) {
+): Promise<EscrowIntent> {
   const amountJpy = totalJpy(lines);
   const intent = await escrow.createHold({ requestId, amountJpy });
-  const { data, error } = await admin
-    .from("payments")
-    .insert({
-      request_id: requestId,
-      stripe_payment_intent_id: intent.paymentIntentId,
-      amount_jpy: amountJpy,
-      status: intent.status,
-    })
-    .select()
-    .single();
+  const { error } = await admin.from("payments").insert({
+    request_id: requestId,
+    stripe_payment_intent_id: intent.paymentIntentId,
+    amount_jpy: amountJpy,
+    status: intent.status,
+  });
   if (error) throw error;
-  return data;
+  return intent;
 }
 
 /**
