@@ -11,7 +11,11 @@ export interface StripeEnv {
   secretKey: string;
   /** Webhook signing secret (`whsec_…`) from `stripe listen`. */
   webhookSecret: string;
+  /** Base URL for Checkout success/cancel redirects (no trailing slash). */
+  siteUrl: string;
 }
+
+const DEFAULT_SITE_URL = "http://localhost:3000";
 
 export function readStripeEnv(
   env: Record<string, string | undefined> = process.env,
@@ -32,5 +36,10 @@ export function readStripeEnv(
     );
   }
 
-  return { secretKey, webhookSecret };
+  const siteUrl = (env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL).replace(
+    /\/+$/,
+    "",
+  );
+
+  return { secretKey, webhookSecret, siteUrl };
 }

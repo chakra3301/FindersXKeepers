@@ -24,6 +24,11 @@ export interface EscrowIntent {
   capturedJpy?: number;
   /** Set at settlement: unused cap returned to the customer. */
   refundedJpy?: number;
+  /**
+   * Stripe Checkout redirect URL when the hold needs hosted payment. Absent for
+   * the stub (which holds synchronously) — so stub callers are unaffected.
+   */
+  checkoutUrl?: string;
 }
 
 export interface CreateHoldParams {
