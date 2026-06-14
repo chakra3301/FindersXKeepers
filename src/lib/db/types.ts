@@ -101,6 +101,8 @@ export type Payment = {
   stripe_payment_intent_id: string | null;
   amount_jpy: number;
   status: PaymentStatus;
+  captured_jpy: number | null;
+  refunded_jpy: number | null;
   created_at: string;
 }
 
@@ -127,7 +129,13 @@ export type Database = {
       orders: Table<Order, Omit<Order, "id" | "created_at" | "total_jpy">>;
       shipments: Table<Shipment, Omit<Shipment, "id" | "created_at">>;
       messages: Table<Message, Omit<Message, "id" | "created_at">>;
-      payments: Table<Payment, Omit<Payment, "id" | "created_at">>;
+      payments: Table<
+        Payment,
+        Omit<Payment, "id" | "created_at" | "captured_jpy" | "refunded_jpy"> & {
+          captured_jpy?: number | null;
+          refunded_jpy?: number | null;
+        }
+      >;
     };
     Views: { [_ in never]: never };
     Functions: { [_ in never]: never };
