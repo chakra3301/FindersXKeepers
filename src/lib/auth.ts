@@ -32,3 +32,14 @@ export async function getProfile(): Promise<Profile | null> {
     .maybeSingle();
   return data;
 }
+
+/** Require a staff session for operator routes; non-staff → /dashboard. */
+export async function requireStaff(): Promise<{
+  user: NonNullable<Awaited<ReturnType<typeof requireUser>>>;
+  profile: Profile;
+}> {
+  const user = await requireUser();
+  const profile = await getProfile();
+  if (!profile?.is_staff) redirect("/dashboard");
+  return { user, profile };
+}

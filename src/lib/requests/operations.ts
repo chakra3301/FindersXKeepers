@@ -125,6 +125,101 @@ export async function approveCandidate(
   await setRequestStatus(requestId, "approved", admin);
 }
 
+export interface PostCandidateInput {
+  priceJpy: number;
+  listingUrl?: string | null;
+  notes?: string | null;
+  listingImages?: string[];
+}
+
+/**
+ * Operator posts a candidate match. Asserts sourcing → candidate_sent BEFORE
+ * inserting so an illegal state never leaves an orphan candidate row.
+ */
+export async function postCandidate(
+  requestId: string,
+  input: PostCandidateInput,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error } = await admin
+    .from("requests")
+    .select("status")
+    .eq("id", requestId)
+    .single();
+  if (error || !req) throw new Error(`Request ${requestId} not found.`);
+  assertTransition(req.status, "candidate_sent");
+
+  const { error: insertErr } = await admin.from("candidates").insert({
+    request_id: requestId,
+    price_jpy: input.priceJpy,
+    listing_url: input.listingUrl ?? null,
+    notes: input.notes ?? null,
+    listing_images: input.listingImages ?? [],
+    status: "proposed",
+  });
+  if (insertErr) throw insertErr;
+
+  await setRequestStatus(requestId, "candidate_sent", admin);
+}
+
+/** Operator marks an approved request as purchased. Status-only — no money moves. */
+export async function markPurchased(
+  requestId: string,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error } = await admin
+    .from("requests")
+    .select("status")
+    .eq("id", requestId)
+    .single();
+  if (error || !req) throw new Error(`Request ${requestId} not found.`);
+  assertTransition(req.status, "purchased");
+  await setRequestStatus(requestId, "purchased", admin);
+}
+
+export interface MarkReceivedInput {
+  receivedImageUrls?: string[];
+}
+
+/**
+ * Operator confirms the item is in hand at our hub. Optionally attaches proof
+ * image URLs to the latest order, then advances purchased → received.
+ */
+export async function markReceived(
+  requestId: string,
+  input: MarkReceivedInput,
+  admin: AdminClient = createAdminClient(),
+): Promise<void> {
+  const { data: req, error: reqErr } = await admin
+    .from("requests")
+    .select("status")
+    .eq("id", requestId)
+    .single();
+  if (reqErr || !req) throw new Error(`Request ${requestId} not found.`);
+  assertTransition(req.status, "received");
+
+  const urls = input.receivedImageUrls ?? [];
+  if (urls.length > 0) {
+    const { data: order, error: orderErr } = await admin
+      .from("orders")
+      .select("id")
+      .eq("request_id", requestId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (orderErr || !order) {
+      throw new Error(`No order for request ${requestId}.`);
+    }
+    const { error: updateErr } = await admin
+      .from("orders")
+      .update({ received_image_urls: urls })
+      .eq("id", order.id);
+    if (updateErr) throw updateErr;
+  }
+
+  await setRequestStatus(requestId, "received", admin);
+}
+
 /**
  * Reject this candidate and go back to sourcing. No money moves — the hold
  * stays put while we keep looking.

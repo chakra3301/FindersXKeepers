@@ -49,10 +49,10 @@ async function resetDemoUser(): Promise<string> {
   });
   if (error || !data.user) throw error ?? new Error("Failed to create user");
 
-  // Flesh out the auto-created profile.
+  // Flesh out the auto-created profile; mark staff so one login demos both sides.
   await admin
     .from("profiles")
-    .update({ shipping_country: "US", currency_pref: "USD" })
+    .update({ shipping_country: "US", currency_pref: "USD", is_staff: true })
     .eq("id", data.user.id);
 
   return data.user.id;

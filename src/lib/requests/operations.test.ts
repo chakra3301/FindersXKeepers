@@ -5,6 +5,9 @@ import {
   keepHunting,
   shipApprovedOrder,
   releaseEscrow,
+  postCandidate,
+  markPurchased,
+  markReceived,
 } from "./operations";
 import { escrow } from "@/lib/escrow";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
@@ -221,5 +224,123 @@ describe("releaseEscrow", () => {
     expect(tables.payments[0].status).toBe("released");
     expect(tables.payments[0].captured_jpy).toBe(5_000);
     expect(tables.payments[0].refunded_jpy).toBe(0);
+  });
+});
+
+describe("postCandidate", () => {
+  it("inserts a proposed candidate and moves sourcing → candidate_sent", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "sourcing" })],
+      candidates: [],
+    });
+
+    await postCandidate(
+      "r1",
+      {
+        priceJpy: 28_000,
+        listingUrl: "https://example.com/listing",
+        notes: "Clean copy",
+        listingImages: ["https://example.com/img1.jpg"],
+      },
+      client,
+    );
+
+    expect(tables.candidates).toHaveLength(1);
+    expect(tables.candidates[0].status).toBe("proposed");
+    expect(tables.candidates[0].price_jpy).toBe(28_000);
+    expect(tables.candidates[0].listing_url).toBe("https://example.com/listing");
+    expect(tables.candidates[0].listing_images).toEqual([
+      "https://example.com/img1.jpg",
+    ]);
+    expect(tables.requests[0].status).toBe("candidate_sent");
+  });
+
+  it("throws on a non-sourcing request and writes no candidate", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "approved" })],
+      candidates: [],
+    });
+    await expect(
+      postCandidate("r1", { priceJpy: 10_000 }, client),
+    ).rejects.toThrow();
+    expect(tables.candidates).toHaveLength(0);
+    expect(tables.requests[0].status).toBe("approved");
+  });
+});
+
+describe("markPurchased", () => {
+  it("moves approved → purchased", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "approved" })],
+    });
+    await markPurchased("r1", client);
+    expect(tables.requests[0].status).toBe("purchased");
+  });
+
+  it("throws on a non-approved request", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "sourcing" })],
+    });
+    await expect(markPurchased("r1", client)).rejects.toThrow();
+    expect(tables.requests[0].status).toBe("sourcing");
+  });
+});
+
+describe("markReceived", () => {
+  it("writes proof URLs onto the latest order and moves purchased → received", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "purchased" })],
+      orders: [
+        {
+          id: "o1",
+          request_id: "r1",
+          candidate_id: "c1",
+          item_cost_jpy: 10_000,
+          finder_fee_jpy: 1_000,
+          shipping_jpy: 4_000,
+          tax_jpy: 100,
+          total_jpy: 15_100,
+          received_image_urls: [],
+          receipt_status: "pending",
+          created_at: "2026-01-03T00:00:00Z",
+        },
+      ],
+    });
+
+    await markReceived(
+      "r1",
+      { receivedImageUrls: ["https://example.com/proof1.jpg"] },
+      client,
+    );
+
+    expect(tables.orders[0].received_image_urls).toEqual([
+      "https://example.com/proof1.jpg",
+    ]);
+    expect(tables.requests[0].status).toBe("received");
+  });
+
+  it("throws on a non-purchased request and writes nothing", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "approved" })],
+      orders: [
+        {
+          id: "o1",
+          request_id: "r1",
+          item_cost_jpy: 1,
+          finder_fee_jpy: 1,
+          shipping_jpy: 1,
+          tax_jpy: 1,
+          total_jpy: 4,
+          received_image_urls: [],
+          receipt_status: "pending",
+          created_at: "2026-01-03T00:00:00Z",
+        },
+      ],
+    });
+    await expect(
+      markReceived("r1", { receivedImageUrls: ["https://x.com/a.jpg"] }, client),
+    ).rejects.toThrow();
+    expect(tables.orders[0].received_image_urls).toEqual([]);
+    expect(tables.requests[0].status).toBe("approved");
   });
 });

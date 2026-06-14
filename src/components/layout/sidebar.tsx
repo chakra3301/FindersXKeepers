@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Clock,
   Settings,
+  Wrench,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { buttonVariants } from "@/components/ui/button";
@@ -26,9 +27,10 @@ const NAV = [
 interface SidebarProps {
   escrowTotal: number;
   activeCount: number;
+  isStaff?: boolean;
 }
 
-export function Sidebar({ escrowTotal, activeCount }: SidebarProps) {
+export function Sidebar({ escrowTotal, activeCount, isStaff = false }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -76,6 +78,27 @@ export function Sidebar({ escrowTotal, activeCount }: SidebarProps) {
             </Link>
           );
         })}
+        {isStaff ? (
+          <Link
+            href="/operator"
+            className={cn(
+              "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              pathname.startsWith("/operator")
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+            )}
+          >
+            <Wrench
+              className={cn(
+                "size-[18px] transition-colors",
+                pathname.startsWith("/operator")
+                  ? "text-sidebar-accent-foreground"
+                  : "text-muted-foreground/80 group-hover:text-foreground",
+              )}
+            />
+            Operator console
+          </Link>
+        ) : null}
       </nav>
 
       <div className="mt-auto">

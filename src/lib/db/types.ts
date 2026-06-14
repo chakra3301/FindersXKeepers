@@ -32,6 +32,7 @@ export type Profile = {
   id: string;
   shipping_country: string | null;
   currency_pref: string;
+  is_staff: boolean;
   created_at: string;
 }
 

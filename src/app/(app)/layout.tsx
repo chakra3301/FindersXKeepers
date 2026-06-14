@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser, getProfile } from "@/lib/auth";
 import { getDashboardRequests } from "@/lib/requests/queries";
 import { STATUS_META } from "@/lib/requests/status";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -9,8 +9,9 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, requests] = await Promise.all([
+  const [user, profile, requests] = await Promise.all([
     requireUser(),
+    getProfile(),
     getDashboardRequests(),
   ]);
 
@@ -27,7 +28,11 @@ export default async function AppLayout({
 
   return (
     <div className="flex flex-1">
-      <Sidebar escrowTotal={escrowTotal} activeCount={activeCount} />
+      <Sidebar
+        escrowTotal={escrowTotal}
+        activeCount={activeCount}
+        isStaff={profile?.is_staff ?? false}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar email={user.email ?? "you"} />
         <main className="flex-1 min-w-0 px-5 py-7 sm:px-8 sm:py-9">
