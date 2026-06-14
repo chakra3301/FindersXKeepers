@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, AlertCircle, ShieldCheck } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { syncStripeCheckoutReturn } from "@/lib/escrow/sync-checkout-return";
 import { STATUS_META } from "@/lib/requests/status";
 import { RUSH_LABEL, formatJpy } from "@/lib/pricing";
 import { formatRelativeTime } from "@/lib/dates";
@@ -21,10 +23,20 @@ import { cn } from "@/lib/utils";
 
 export default async function RequestDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ checkout?: string }>;
 }) {
   const { id } = await params;
+  const { checkout } = await searchParams;
+
+  // Heal stuck "Authorising" when Stripe payment succeeded but the webhook was
+  // redirected (pre-fix) or delayed.
+  if (checkout === "complete") {
+    await syncStripeCheckoutReturn(id, createAdminClient());
+  }
+
   const detail = await getRequestDetail(id);
   if (!detail) notFound();
 
@@ -144,13 +156,34 @@ export default async function RequestDetailPage({
         {/* Headline amount (right) */}
         <div className="shrink-0 text-right">
           <div className="text-[11.5px] text-muted-foreground">
-            {escrowState === "none" ? capLabel : escrowCaption(request.status)}
+            {escrowState === "none"
+              ? capLabel
+              : escrowState === "pending"
+                ? "Authorising deposit"
+                : escrowCaption(request.status)}
           </div>
           <div className="tnum text-2xl font-[600]">
             {formatJpy(headlineJpy)}
           </div>
         </div>
       </header>
+
+      {/* Deposit confirmed after Stripe return */}
+      {checkout === "complete" &&
+        request.status === "sourcing" &&
+        escrowState === "held" && (
+          <div className="mt-6 flex items-center gap-4 rounded-2xl border border-success-border bg-success-muted px-5 py-4">
+            <ShieldCheck size={18} className="shrink-0 text-success" />
+            <div>
+              <div className="text-[13.5px] font-[560] text-success">
+                Deposit confirmed
+              </div>
+              <div className="text-[12.5px] text-success/80">
+                Your escrow hold is in place — we&apos;re sourcing now.
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* Action banner */}
       {showActionBanner && (
@@ -177,6 +210,24 @@ export default async function RequestDetailPage({
           <Link href={`/requests/${request.id}/checkout`}
             className={cn(buttonVariants(), "shrink-0")}>
             Deposit into escrow
+          </Link>
+        </div>
+      )}
+
+      {/* Payment started but not completed (Stripe hosted checkout) */}
+      {request.status === "open" && escrowState === "pending" && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-warning-border bg-warning-muted px-5 py-4">
+          <div className="text-[13.5px]">
+            <div className="font-[560] text-warning">Complete your deposit</div>
+            <div className="text-warning/80">
+              Payment was started but not finished. Continue to Stripe to fund this hunt.
+            </div>
+          </div>
+          <Link
+            href={`/requests/${request.id}/checkout`}
+            className={cn(buttonVariants(), "shrink-0")}
+          >
+            Continue to payment
           </Link>
         </div>
       )}

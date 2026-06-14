@@ -27,14 +27,28 @@ function createEscrowProvider(): EscrowProvider {
   }
 }
 
-// Reuse one provider instance across the server process.
+// Reuse one provider instance across the server process. Bump the version when
+// the EscrowProvider interface changes so dev HMR doesn't keep a stale instance.
+const ESCROW_CACHE_VERSION = 1;
+
 const globalForEscrow = globalThis as unknown as {
   __fkEscrow?: EscrowProvider;
+  __fkEscrowVersion?: number;
 };
 
-export const escrow: EscrowProvider =
-  globalForEscrow.__fkEscrow ?? createEscrowProvider();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForEscrow.__fkEscrow = escrow;
+function getEscrowProvider(): EscrowProvider {
+  const cached = globalForEscrow.__fkEscrow;
+  if (
+    cached &&
+    globalForEscrow.__fkEscrowVersion === ESCROW_CACHE_VERSION &&
+    typeof cached.resumeCheckout === "function"
+  ) {
+    return cached;
+  }
+  const provider = createEscrowProvider();
+  globalForEscrow.__fkEscrow = provider;
+  globalForEscrow.__fkEscrowVersion = ESCROW_CACHE_VERSION;
+  return provider;
 }
+
+export const escrow: EscrowProvider = getEscrowProvider();

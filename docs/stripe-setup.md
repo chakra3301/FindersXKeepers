@@ -30,6 +30,9 @@ standard test keys are needed.
    Copy the printed **webhook signing secret** (`whsec_…`). Re-print anytime with
    `stripe listen --print-secret`. Fire test events with e.g.
    `stripe trigger payment_intent.succeeded`.
+   **Expect `[200]` responses** from the forwarder — if you see `[307]`, the
+   webhook route is being redirected (auth middleware); `/api/stripe` must stay
+   public.
 5. **`.env.local`** (never commit — see `.env.example` for the documented block):
    ```bash
    ESCROW_PROVIDER=stripe          # only once the provider is built; keep "stub" until then

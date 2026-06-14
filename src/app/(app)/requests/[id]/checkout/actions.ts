@@ -6,7 +6,10 @@ import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { RushTier } from "@/lib/db/types";
 
-export type CheckoutState = { status: "idle" | "error"; message?: string };
+export type CheckoutState =
+  | { status: "idle" }
+  | { status: "error"; message?: string }
+  | { status: "redirect"; url: string };
 
 export async function submitDeposit(
   requestId: string,
@@ -30,6 +33,11 @@ export async function submitDeposit(
     return { status: "error", message: (e as Error).message };
   }
   revalidatePath("/dashboard");
-  // Stripe → off to the hosted Checkout page; stub → back to the request.
-  redirect(checkoutUrl ?? `/requests/${requestId}`);
+  revalidatePath(`/requests/${requestId}`);
+  revalidatePath(`/requests/${requestId}/checkout`);
+  if (checkoutUrl) {
+    return { status: "redirect", url: checkoutUrl };
+  }
+  // Stub provider — no hosted checkout; land on the request detail page.
+  redirect(`/requests/${requestId}`);
 }

@@ -11,19 +11,26 @@ export const metadata = { title: "Checkout — Finders Keepers" };
 
 export default async function CheckoutPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ checkout?: string }>;
 }) {
   const { id } = await params;
+  const { checkout: checkoutParam } = await searchParams;
   const [detail, profile] = await Promise.all([
     getRequestDetail(id),
     getProfile(),
   ]);
   if (!detail) notFound();
   const { request, payments } = detail;
+  const escrowState = escrowStateFromPayments(payments);
 
-  // Only an open, unfunded request can be deposited against.
-  if (request.status !== "open" || escrowStateFromPayments(payments) !== "none") {
+  // Open + unfunded, or open + payment still authorising (Stripe back-button).
+  if (
+    request.status !== "open" ||
+    (escrowState !== "none" && escrowState !== "pending")
+  ) {
     redirect(`/requests/${id}`);
   }
 
@@ -45,8 +52,9 @@ export default async function CheckoutPage({
           budgetCapJpy={request.budget_cap_jpy}
           initialRush={request.rush_tier}
           currencyPref={profile?.currency_pref ?? "JPY"}
-          // Stripe captures the cap now (refund-the-difference); the stub holds.
           chargesNow={escrow.name === "stripe"}
+          resuming={escrowState === "pending"}
+          cancelled={checkoutParam === "cancelled"}
         />
       </div>
     </div>

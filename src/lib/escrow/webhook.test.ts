@@ -77,6 +77,29 @@ describe("handleWebhookRequest — checkout.session.completed", () => {
     expect(tables.payments[0].status).toBe("held");
     expect(tables.requests[0].status).toBe("sourcing");
   });
+
+  it("upgrades a session-id placeholder to the real payment_intent id", async () => {
+    const seed = seedTables();
+    seed.payments[0].stripe_payment_intent_id = "cs_test_pending";
+    const { tables, client } = createFakeAdmin(seed);
+    const { rawBody, signature } = signed(
+      event("checkout.session.completed", {
+        metadata: { requestId: "r1" },
+        payment_intent: "pi_1",
+      }),
+    );
+
+    await handleWebhookRequest({
+      rawBody,
+      signature,
+      stripe,
+      webhookSecret: WEBHOOK_SECRET,
+      admin: client,
+    });
+
+    expect(tables.payments[0].status).toBe("held");
+    expect(tables.payments[0].stripe_payment_intent_id).toBe("pi_1");
+  });
 });
 
 describe("handleWebhookRequest — signature + other events", () => {

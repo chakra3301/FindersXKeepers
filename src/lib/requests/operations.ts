@@ -42,6 +42,30 @@ export async function depositForRequest(
     if (rushErr) throw rushErr;
   }
 
+  // Hosted checkout (Stripe): if the customer backed out mid-flow, resume the
+  // open session instead of creating duplicate pending payment rows.
+  const { data: pendingPayment } = await admin
+    .from("payments")
+    .select("id, stripe_payment_intent_id")
+    .eq("request_id", requestId)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (pendingPayment?.stripe_payment_intent_id) {
+    const checkoutUrl = await escrow.resumeCheckout(
+      pendingPayment.stripe_payment_intent_id,
+    );
+    if (checkoutUrl) return { checkoutUrl };
+
+    // Expired / abandoned session — mark stale so a fresh hold can be created.
+    await admin
+      .from("payments")
+      .update({ status: "failed" })
+      .eq("id", pendingPayment.id);
+  }
+
   const lines = computeQuote({
     itemCostJpy: req.budget_cap_jpy ?? 0,
     shippingJpy: SHIPPING_ESTIMATE_JPY,

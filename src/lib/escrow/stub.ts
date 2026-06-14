@@ -57,6 +57,11 @@ export class StubEscrowProvider implements EscrowProvider {
     return this.intents.get(paymentIntentId)?.status ?? "pending";
   }
 
+  async resumeCheckout(checkoutRef: string): Promise<string | undefined> {
+    void checkoutRef;
+    return undefined;
+  }
+
   private transition(
     paymentIntentId: string,
     status: PaymentStatus,

@@ -30,16 +30,20 @@ export async function processStripeEvent(
       if (!requestId || !piId) return;
 
       // Confirm the hold: pending → held (idempotent: only touches `pending`).
+      // Match by request — the row may still carry the Checkout Session id until
+      // the customer completes payment.
       const { data: payment } = await admin
         .from("payments")
         .select("id, status")
         .eq("request_id", requestId)
-        .eq("stripe_payment_intent_id", piId)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
-      if (payment && payment.status === "pending") {
+      if (payment) {
         await admin
           .from("payments")
-          .update({ status: "held" })
+          .update({ status: "held", stripe_payment_intent_id: piId })
           .eq("id", payment.id);
       }
 

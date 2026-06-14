@@ -98,6 +98,38 @@ describe("depositForRequest", () => {
       spy.mockRestore();
     }
   });
+
+  it("resumes an open hosted checkout instead of creating a duplicate pending row", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ status: "open", budget_cap_jpy: 50_000 })],
+      payments: [
+        {
+          id: "p_pending",
+          request_id: "req_seed",
+          stripe_payment_intent_id: "cs_test_open",
+          amount_jpy: 55_000,
+          status: "pending",
+          created_at: "2026-01-01T00:00:00Z",
+        },
+      ],
+    });
+    const createSpy = vi.spyOn(escrow, "createHold");
+    const resumeSpy = vi
+      .spyOn(escrow, "resumeCheckout")
+      .mockResolvedValue("https://checkout.stripe.com/c/pay/cs_test_open");
+    try {
+      const result = await depositForRequest("req_seed", "standard", client);
+      expect(result).toEqual({
+        checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_open",
+      });
+      expect(resumeSpy).toHaveBeenCalledWith("cs_test_open");
+      expect(createSpy).not.toHaveBeenCalled();
+      expect(tables.payments).toHaveLength(1);
+    } finally {
+      createSpy.mockRestore();
+      resumeSpy.mockRestore();
+    }
+  });
 });
 
 describe("approveCandidate", () => {

@@ -15,7 +15,6 @@ export function PostCandidateForm({ requestId }: { requestId: string }) {
 
   return (
     <form
-      encType="multipart/form-data"
       className="flex flex-col gap-4"
       action={(formData) => start(() => postCandidateAction(requestId, formData))}
     >

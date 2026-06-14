@@ -5,6 +5,7 @@ import { signOut } from "@/app/auth/actions";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -26,10 +27,12 @@ export function UserMenu({ email }: { email: string }) {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex items-center gap-2 font-normal">
-          <UserIcon className="size-4 text-muted-foreground" />
-          <span className="truncate text-sm">{email}</span>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex items-center gap-2 font-normal">
+            <UserIcon className="size-4 text-muted-foreground" />
+            <span className="truncate text-sm">{email}</span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form action={signOut}>
           <button

@@ -15,7 +15,7 @@ stubbed behind a clean seam; everything else is real.
 ## Stack
 
 Next.js 16 (App Router) · TypeScript (strict) · Tailwind v4 + shadcn/ui ·
-Supabase (Postgres / Auth / Storage) · escrow stub (Stripe Connect later).
+Supabase (Postgres / Auth / Storage) · Stripe escrow (stub or live test mode).
 
 ## Getting started
 
@@ -63,7 +63,8 @@ npm run seed
 ```
 
 This creates a demo user and requests in **every lifecycle state** (waiting,
-action-needed, in transit, completed, refunded, cancelled). Sign in with:
+action-needed, in transit, completed, refunded, cancelled). Uses the escrow
+**stub** regardless of `ESCROW_PROVIDER` in `.env.local`. Sign in with:
 
 ```
 email:    demo@finderskeepers.test

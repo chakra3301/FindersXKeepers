@@ -56,7 +56,9 @@ export class StripeEscrowProvider implements EscrowProvider {
     );
 
     return {
-      paymentIntentId: paymentIntentIdOf(session.payment_intent),
+      // Checkout Session creates the PaymentIntent asynchronously; until the
+      // webhook fires we key the pending row by session id.
+      paymentIntentId: paymentIntentIdOf(session.payment_intent, session.id),
       amountJpy: params.amountJpy,
       // The hold is not confirmed until checkout.session.completed arrives.
       status: "pending",
@@ -108,15 +110,23 @@ export class StripeEscrowProvider implements EscrowProvider {
     });
     return mapPaymentIntentStatus(pi);
   }
+
+  async resumeCheckout(checkoutRef: string): Promise<string | undefined> {
+    if (!checkoutRef.startsWith("cs_")) return undefined;
+    const session = await this.stripe.checkout.sessions.retrieve(checkoutRef);
+    if (session.status === "open" && session.url) return session.url;
+    return undefined;
+  }
 }
 
 function paymentIntentIdOf(
   pi: string | Stripe.PaymentIntent | null,
+  checkoutSessionId: string,
 ): string {
-  if (!pi) {
-    throw new Error("Stripe Checkout Session has no payment_intent.");
+  if (pi) {
+    return typeof pi === "string" ? pi : pi.id;
   }
-  return typeof pi === "string" ? pi : pi.id;
+  return checkoutSessionId;
 }
 
 /** Map a Stripe PaymentIntent (with latest_charge expanded) to our enum. */

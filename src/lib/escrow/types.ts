@@ -59,4 +59,11 @@ export interface EscrowProvider {
 
   /** Read current processor-side status. */
   getStatus(paymentIntentId: string): Promise<PaymentStatus>;
+
+  /**
+   * Resume an in-flight hosted checkout when the customer returns without
+   * paying. Returns the redirect URL if the session is still open; undefined
+   * when the provider has no hosted checkout or the session expired.
+   */
+  resumeCheckout(checkoutRef: string): Promise<string | undefined>;
 }

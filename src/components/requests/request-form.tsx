@@ -96,7 +96,7 @@ export function RequestForm() {
   const finderFeePreview = computeFinderFee(parsedCap, rushTier);
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-0">
+    <form action={formAction} className="flex flex-col gap-0">
       {/* Hidden serialised controlled values — always present for submit */}
       <input type="hidden" name="minCondition" value={minCondition} />
       <input type="hidden" name="rushTier" value={rushTier} />

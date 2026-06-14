@@ -24,7 +24,8 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
       ? `/requests/${request.id}/candidate`
       : request.status === "received"
         ? `/requests/${request.id}/received`
-        : request.status === "open" && request.escrowState === "none"
+        : request.status === "open" &&
+            (request.escrowState === "none" || request.escrowState === "pending")
           ? `/requests/${request.id}/checkout`
           : null;
 
@@ -98,6 +99,7 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
           <div className="mt-2 text-[11.5px] font-[560] text-warning">
             {request.status === "candidate_sent" ? "Review candidate →"
               : request.status === "received" ? "Final check →"
+              : request.escrowState === "pending" ? "Complete payment →"
               : "Deposit into escrow →"}
           </div>
         )}

@@ -1,6 +1,6 @@
 "use client";
-import { useActionState, useState } from "react";
-import { Check, Loader2, Lock, ShieldCheck } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
+import { ArrowRight, Check, Loader2, Lock, ShieldCheck } from "lucide-react";
 import { submitDeposit, type CheckoutState } from "./actions";
 import { RUSH_TIERS } from "@/lib/validation/request";
 import {
@@ -28,6 +28,8 @@ export function CheckoutForm({
   initialRush,
   currencyPref,
   chargesNow = false,
+  resuming = false,
+  cancelled = false,
 }: {
   requestId: string;
   budgetCapJpy: number | null;
@@ -35,12 +37,24 @@ export function CheckoutForm({
   currencyPref: string;
   /** Stripe captures the cap immediately; the stub only holds. Drives the copy. */
   chargesNow?: boolean;
+  /** A pending payment already exists — customer is finishing hosted checkout. */
+  resuming?: boolean;
+  /** Returned from Stripe cancel_url. */
+  cancelled?: boolean;
 }) {
   const initial: CheckoutState = { status: "idle" };
   const action = submitDeposit.bind(null, requestId);
   const [state, formAction, isPending] = useActionState(action, initial);
   const [rush, setRush] = useState<RushTier>(initialRush);
   const [accepted, setAccepted] = useState(false);
+
+  // External Stripe URLs are more reliable via client navigation than server redirect
+  // from a useActionState form action.
+  useEffect(() => {
+    if (state.status === "redirect" && state.url) {
+      window.location.assign(state.url);
+    }
+  }, [state]);
 
   const cap = budgetCapJpy ?? 0;
   const quote = computeQuote({
@@ -68,6 +82,17 @@ export function CheckoutForm({
           className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
         >
           {state.message}
+        </div>
+      )}
+
+      {(cancelled || resuming) && (
+        <div
+          role="status"
+          className="rounded-xl border border-warning-border bg-warning-muted px-4 py-3 text-sm text-warning"
+        >
+          {cancelled
+            ? "Payment was cancelled. Check the box below and continue when you're ready."
+            : "Payment not finished yet — continue to Stripe to fund this hunt."}
         </div>
       )}
 
@@ -202,14 +227,28 @@ export function CheckoutForm({
       <Button
         type="submit"
         size="lg"
-        disabled={!accepted || isPending || cap <= 0}
+        disabled={!accepted || isPending || state.status === "redirect" || cap <= 0}
         className="h-12 w-full gap-2 text-[15px]"
       >
-        {isPending ? <Loader2 className="size-4 animate-spin" /> : <Lock className="size-4" />}
-        {chargesNow
-          ? `Continue to payment · ${formatJpy(total)}`
-          : `Deposit ${formatJpy(total)} into escrow`}
+        {isPending || state.status === "redirect" ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <ArrowRight className="size-4" />
+        )}
+        {isPending || state.status === "redirect"
+          ? "Redirecting to Stripe…"
+          : chargesNow
+            ? resuming
+              ? `Resume payment · ${formatJpy(total)}`
+              : `Continue to payment · ${formatJpy(total)}`
+            : `Deposit ${formatJpy(total)} into escrow`}
       </Button>
+
+      {!accepted && cap > 0 && !isPending && (
+        <p className="-mt-2 text-center text-[11.5px] text-muted-foreground">
+          Check the authorisation box above to unlock payment.
+        </p>
+      )}
 
       {cap <= 0 ? (
         <p className="text-xs text-destructive">

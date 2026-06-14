@@ -4,7 +4,7 @@ import type { Database } from "@/lib/db/types";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./env";
 
 // Routes reachable without a session.
-const PUBLIC_PREFIXES = ["/login", "/auth", "/legal"];
+const PUBLIC_PREFIXES = ["/login", "/auth", "/legal", "/api/stripe"];
 
 /**
  * Refreshes the Supabase session on every request and gates protected routes.

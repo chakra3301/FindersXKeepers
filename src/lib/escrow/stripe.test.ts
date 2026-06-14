@@ -74,6 +74,15 @@ describe("StripeEscrowProvider.createHold", () => {
     const intent = await provider.createHold({ requestId: "r", amountJpy: 1000 });
     expect(intent.paymentIntentId).toBe("pi_obj");
   });
+
+  it("falls back to the Checkout Session id when payment_intent is not yet available", async () => {
+    const { stripe } = fakeStripe({
+      session: { id: "cs_test_pending", payment_intent: null },
+    });
+    const provider = new StripeEscrowProvider(stripe, SITE);
+    const intent = await provider.createHold({ requestId: "r", amountJpy: 1000 });
+    expect(intent.paymentIntentId).toBe("cs_test_pending");
+  });
 });
 
 describe("StripeEscrowProvider.release", () => {
@@ -117,6 +126,44 @@ describe("StripeEscrowProvider.release", () => {
     expect(refunds.create).not.toHaveBeenCalled();
     expect(intent.capturedJpy).toBe(10_000);
     expect(intent.refundedJpy).toBe(0);
+  });
+});
+
+describe("StripeEscrowProvider.resumeCheckout", () => {
+  it("returns the session url when the checkout session is still open", async () => {
+    const retrieve = vi.fn().mockResolvedValue({
+      id: "cs_test_open",
+      status: "open",
+      url: "https://checkout.stripe.com/c/pay/cs_test_open",
+    });
+    const stripe = {
+      checkout: { sessions: { create: vi.fn(), retrieve } },
+      paymentIntents: { retrieve: vi.fn() },
+      refunds: { create: vi.fn() },
+    } as unknown as Stripe;
+    const provider = new StripeEscrowProvider(stripe, SITE);
+
+    const url = await provider.resumeCheckout("cs_test_open");
+
+    expect(url).toBe("https://checkout.stripe.com/c/pay/cs_test_open");
+    expect(retrieve).toHaveBeenCalledWith("cs_test_open");
+  });
+
+  it("returns undefined for expired sessions or non-session refs", async () => {
+    const retrieve = vi.fn().mockResolvedValue({
+      id: "cs_test_expired",
+      status: "expired",
+      url: "https://checkout.stripe.com/c/pay/cs_test_expired",
+    });
+    const stripe = {
+      checkout: { sessions: { create: vi.fn(), retrieve } },
+      paymentIntents: { retrieve: vi.fn() },
+      refunds: { create: vi.fn() },
+    } as unknown as Stripe;
+    const provider = new StripeEscrowProvider(stripe, SITE);
+
+    expect(await provider.resumeCheckout("cs_test_expired")).toBeUndefined();
+    expect(await provider.resumeCheckout("pi_test_1")).toBeUndefined();
   });
 });
 
