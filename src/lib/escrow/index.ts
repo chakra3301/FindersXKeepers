@@ -16,9 +16,13 @@ function createEscrowProvider(): EscrowProvider {
     case "stub":
       return new StubEscrowProvider();
     case "stripe":
+      // The real provider is Phase 1, Effort 2 (needs Stripe test keys + the
+      // webhook route). Env validation already lives in ./stripe-env
+      // (readStripeEnv), ready for it. Until then, keep ESCROW_PROVIDER=stub.
       throw new Error(
-        "Stripe Connect escrow is not implemented yet. " +
-          "Add StripeEscrowProvider here and set ESCROW_PROVIDER=stripe.",
+        "StripeEscrowProvider is not built yet (Phase 1, Effort 2). " +
+          "Keep ESCROW_PROVIDER=stub for now — the env seam in ./stripe-env " +
+          "is ready for the real keys.",
       );
     default:
       throw new Error(`Unknown ESCROW_PROVIDER: ${provider}`);
