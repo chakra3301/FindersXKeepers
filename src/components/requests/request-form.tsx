@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ALLOWED_PROOF_MIMES } from "@/lib/storage/types";
 
 const CONDITION_LABEL: Record<(typeof MIN_CONDITIONS)[number], string> = {
   new: "New",
@@ -95,7 +96,7 @@ export function RequestForm() {
   const finderFeePreview = computeFinderFee(parsedCap, rushTier);
 
   return (
-    <form action={formAction} className="flex flex-col gap-0">
+    <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-0">
       {/* Hidden serialised controlled values — always present for submit */}
       <input type="hidden" name="minCondition" value={minCondition} />
       <input type="hidden" name="rushTier" value={rushTier} />
@@ -208,18 +209,17 @@ export function RequestForm() {
             />
           </Field>
           <Field
-            label="Reference image URL"
-            htmlFor="referenceImageUrl"
-            hint="Optional — paste an image link."
-            error={err.referenceImageUrl}
+            label="Reference photo"
+            htmlFor="referenceImage"
+            hint="Optional — helps us match the exact item."
+            error={err.referenceImage}
           >
             <Input
-              id="referenceImageUrl"
-              name="referenceImageUrl"
-              inputMode="url"
-              placeholder="https://…"
-              className="h-11 border-input focus-visible:ring-primary/15"
-              aria-invalid={!!err.referenceImageUrl}
+              id="referenceImage"
+              name="referenceImage"
+              type="file"
+              accept={ALLOWED_PROOF_MIMES.join(",")}
+              className="h-11 border-input file:mr-3 file:text-sm file:text-foreground"
             />
           </Field>
         </div>

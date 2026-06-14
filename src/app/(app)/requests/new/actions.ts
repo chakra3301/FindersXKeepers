@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createRequestSchema } from "@/lib/validation/request";
 import { screenRequest, type ScreenMatch } from "@/lib/prohibited/blocklist";
+import { proofFilesFromFormData, uploadProofFile } from "@/lib/storage";
 
 export interface CreateRequestState {
   status: "idle" | "error" | "blocked";
@@ -45,7 +46,7 @@ export async function createRequest(
     title: formData.get("title"),
     description: formData.get("description") ?? "",
     referenceUrl: formData.get("referenceUrl") ?? "",
-    referenceImageUrl: formData.get("referenceImageUrl") ?? "",
+    referenceImageUrl: "",
     minCondition: formData.get("minCondition"),
     mustHaves: parseArray(formData.get("mustHaves")),
     niceToHaves: parseArray(formData.get("niceToHaves")),
@@ -117,6 +118,25 @@ export async function createRequest(
       status: "error",
       message: "Couldn't save your request. Please try again.",
     };
+  }
+
+  const referenceFile = proofFilesFromFormData(formData, "referenceImage")[0];
+  if (referenceFile) {
+    try {
+      const path = await uploadProofFile(data.id, "reference", referenceFile);
+      await supabase
+        .from("requests")
+        .update({ reference_image_url: path })
+        .eq("id", data.id);
+    } catch (e) {
+      return {
+        status: "error",
+        message:
+          e instanceof Error
+            ? e.message
+            : "Request saved but the reference image couldn't be uploaded.",
+      };
+    }
   }
 
   revalidatePath("/dashboard");

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
 import { PriceBreakdown } from "@/components/requests/price-breakdown";
-import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
+import { resolveImageRefs } from "@/lib/storage";
+import { ProofGallery } from "@/components/requests/proof-image";
 import { ReceivedForm } from "./received-form";
 
 export const metadata = { title: "Final check — Finders Keepers" };
@@ -20,6 +21,7 @@ export default async function ReceivedPage({
   const { request, orders } = detail;
   if (request.status !== "received") redirect(`/requests/${id}`);
   const order = orders[0] ?? null;
+  const proofUrls = await resolveImageRefs(order?.received_image_urls ?? []);
 
   return (
     <div className="mx-auto w-full max-w-[980px] px-6 pt-8 pb-24 sm:px-10">
@@ -50,13 +52,13 @@ export default async function ReceivedPage({
       <div className="mt-7 grid items-start gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* In-hand photos */}
         <section className="rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
-          <div className="grid grid-cols-2 gap-2.5">
-            <PlaceholderThumb
-              label="in-hand · front"
-              className="aspect-[3/4]"
-            />
-            <PlaceholderThumb label="in-hand · back" className="aspect-[3/4]" />
-          </div>
+          <ProofGallery
+            urls={proofUrls}
+            className="grid-cols-2"
+            itemClassName="aspect-[3/4] w-full"
+            minSlots={2}
+            labels={["in-hand · front", "in-hand · back"]}
+          />
         </section>
 
         {/* Condition check + final approval */}

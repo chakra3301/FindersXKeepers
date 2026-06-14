@@ -8,14 +8,7 @@ import {
   markPurchased,
   markReceived,
 } from "@/lib/requests/operations";
-
-function parseUrlLines(raw: FormDataEntryValue | null): string[] {
-  if (typeof raw !== "string") return [];
-  return raw
-    .split("\n")
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+import { uploadProofFilesFromFormData } from "@/lib/storage";
 
 function parsePrice(raw: FormDataEntryValue | null): number {
   if (typeof raw !== "string" || raw.trim() === "") {
@@ -32,7 +25,12 @@ export async function postCandidateAction(requestId: string, formData: FormData)
   const priceJpy = parsePrice(formData.get("priceJpy"));
   const listingUrl = String(formData.get("listingUrl") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
-  const listingImages = parseUrlLines(formData.get("listingImages"));
+  const listingImages = await uploadProofFilesFromFormData(
+    requestId,
+    "listing",
+    formData,
+    "listingImages",
+  );
 
   await postCandidate(requestId, {
     priceJpy,
@@ -59,7 +57,12 @@ export async function markPurchasedAction(requestId: string) {
 export async function markReceivedAction(requestId: string, formData: FormData) {
   await requireStaff();
 
-  const receivedImageUrls = parseUrlLines(formData.get("receivedImageUrls"));
+  const receivedImageUrls = await uploadProofFilesFromFormData(
+    requestId,
+    "received",
+    formData,
+    "receivedImages",
+  );
 
   await markReceived(requestId, { receivedImageUrls });
 

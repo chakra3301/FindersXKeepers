@@ -52,10 +52,13 @@ number) · four-line pricing never collapsed · 特商法 footer on every page.
 - **Phase 1 Effort 2** — real `StripeEscrowProvider` + webhook (plain Stripe,
   capture-now/refund-difference, Checkout redirect, idempotent webhook); stub
   stays default (`af0f66d`). **58 Vitest tests, all green without Stripe keys.**
+- **Phase 3 — Operator console** — staff-gated `/operator`; `is_staff` on profiles
+  (migration `0003`); post-candidate + mark-purchased + mark-received ops;
+  cross-user queue via service-role (`cc29b94`). **64 Vitest tests** at handoff.
 - Over-cap server guard, order-history refund display, Stripe env prep.
 
-**Pending operator/manual steps (no code):** apply `supabase/migrations/0002`
-(and `0003` once Ph3 lands) in the Supabase SQL editor; the Stripe **live
+**Pending operator/manual steps (no code):** apply `supabase/migrations/0004`
+(storage proofs bucket) in the Supabase SQL editor; the Stripe **live
 test-mode smoke test** (needs `sk_test_…`/`whsec_…` — see `docs/stripe-setup.md`);
 a first live `npm run dev` click-through against seeded data.
 
@@ -63,28 +66,13 @@ a first live `npm run dev` click-through against seeded data.
 
 ## Remaining phases (recommended order)
 
-### 1. Phase 3 — Operator console  ▶ NEXT, spec ready
-**Spec:** `docs/superpowers/specs/2026-06-14-operator-console-design.md` (approved).
-Skip brainstorming → run **writing-plans** then **subagent-driven-development**.
-Staff-gated `/operator`; `is_staff` on profiles (migration `0003`); post-candidate
-+ mark-purchased + mark-received ops; cross-user queue via service-role; image
-URLs now (real upload = Ph2). Makes the full lifecycle reachable without seed.
-
-### 2. Phase 2 — Storage proof-image upload
+### 1. Phase 2 — Storage proof-image upload  ▶ NEXT (in progress on `main`)
 **Goal:** real image uploads replacing `PlaceholderThumb` + the Ph3 URL inputs.
-**Recommended decisions:**
-- Supabase **Storage** with a private bucket (e.g. `proofs`); RLS so a customer
-  reads images for their own requests, staff read/write all, via signed URLs.
-- Upload paths: operator candidate form (listing images) + mark-received (proof)
-  + customer reference image on request creation.
-- Store object paths in existing columns (`candidates.listing_images`,
-  `orders.received_image_urls`, `requests.reference_image_url`); render via signed
-  URLs.
-- Keep a thin seam (`src/lib/storage/`) like the escrow seam so it's swappable
-  and testable; unit-test the path/URL logic, verify upload live.
-**Scope out:** image processing/resizing, CDN tuning.
+Private Supabase Storage bucket `proofs`; object paths in existing columns;
+signed URLs at render time; uploads on create-request, operator candidate,
+and mark-received forms. Seam: `src/lib/storage/`.
 
-### 3. Phase 4 — Interactive messaging
+### 2. Phase 4 — Interactive messaging
 **Goal:** make the messages composer actually send (currently disabled).
 **Recommended decisions:**
 - `sendMessage(requestId, body)` server action: customer inserts `sender:'customer'`
@@ -96,7 +84,7 @@ URLs now (real upload = Ph2). Makes the full lifecycle reachable without seed.
 **Scope out:** email/push notifications, realtime subscriptions, attachments
 (those are a later pass).
 
-### 4. Phase 6 — Account writes
+### 3. Phase 6 — Account writes
 **Goal:** make the account screen save (currently read-only).
 **Recommended decisions:**
 - `updateProfile({ shippingCountry, currencyPref })` server action (RLS owner
@@ -106,7 +94,7 @@ URLs now (real upload = Ph2). Makes the full lifecycle reachable without seed.
 **Scope out:** email/password change, payment-method management (Stripe billing
 portal is a later add).
 
-### 5. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy
+### 4. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy
 **Goal:** fill the placeholder footer links and any landing CTAs.
 **Recommended decisions:**
 - Real **Terms** + **Privacy** pages under `/legal/*`; make the footer
@@ -117,7 +105,7 @@ portal is a later add).
 - i18n (JP/EN) is a larger effort; **defer** unless explicitly wanted — if done,
   scope to copy/dictionary + a locale switch, its own spec.
 
-### 6. Phase 8 — Hardening, CI, deploy  ▶ LAST
+### 5. Phase 8 — Hardening, CI, deploy  ▶ LAST
 **Goal:** productionize.
 **Recommended decisions:**
 - **CI:** GitHub Actions running `npm ci && npm run typecheck && npm run lint &&
@@ -133,8 +121,8 @@ portal is a later add).
 
 ## Verification / manual steps (interleave as access allows)
 
-- **Apply migrations** `0002` (escrow settlement) and `0003` (staff role, after
-  Ph3) in the Supabase SQL editor; re-`npm run seed`.
+- **Apply migrations** `0002` (escrow settlement), `0003` (staff role), and
+  `0004` (storage proofs bucket) in the Supabase SQL editor; re-`npm run seed`.
 - **Stripe live smoke test** (after you have test keys): set `ESCROW_PROVIDER=stripe`
   + `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` in `.env.local`; `stripe listen
   --forward-to localhost:3000/api/stripe/webhook`; walk create → checkout

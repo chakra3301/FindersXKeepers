@@ -4,8 +4,9 @@ import { ChevronLeft, ExternalLink } from "lucide-react";
 import { getOperatorRequestDetail } from "@/lib/requests/operator-queries";
 import { STATUS_META } from "@/lib/requests/status";
 import { formatJpy } from "@/lib/pricing";
+import { resolveImageRefs } from "@/lib/storage";
 import { StatusBadge } from "@/components/requests/status-badge";
-import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
+import { ProofGallery, ProofImage } from "@/components/requests/proof-image";
 import { PostCandidateForm } from "@/components/operator/post-candidate-form";
 import { MarkPurchasedButton } from "@/components/operator/mark-purchased-button";
 import { MarkReceivedForm } from "@/components/operator/mark-received-form";
@@ -23,6 +24,12 @@ export default async function OperatorRequestPage({
   const meta = STATUS_META[request.status];
   const latestCandidate = candidates[0] ?? null;
   const latestOrder = orders[0] ?? null;
+  const listingUrls = latestCandidate
+    ? await resolveImageRefs(latestCandidate.listing_images ?? [])
+    : [];
+  const receivedUrls = latestOrder
+    ? await resolveImageRefs(latestOrder.received_image_urls ?? [])
+    : [];
 
   return (
     <div>
@@ -71,16 +78,11 @@ export default async function OperatorRequestPage({
               <p className="text-[13px] font-medium text-foreground">
                 Latest candidate · {formatJpy(latestCandidate.price_jpy ?? 0)}
               </p>
-              {latestCandidate.listing_images[0] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={latestCandidate.listing_images[0]}
-                  alt=""
-                  className="aspect-[4/3] w-full rounded-lg border border-border object-cover"
-                />
-              ) : (
-                <PlaceholderThumb label="listing" className="aspect-[4/3] w-full" />
-              )}
+              <ProofImage
+                src={listingUrls[0]}
+                label="listing"
+                className="aspect-[4/3] w-full"
+              />
               {latestCandidate.notes ? (
                 <p className="text-[13px] leading-relaxed text-muted-foreground">
                   {latestCandidate.notes}
@@ -109,18 +111,12 @@ export default async function OperatorRequestPage({
               <p className="text-[13px] font-medium text-foreground">
                 Order total · {formatJpy(latestOrder.total_jpy)}
               </p>
-              {latestOrder.received_image_urls.length > 0 ? (
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {latestOrder.received_image_urls.map((url) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      key={url}
-                      src={url}
-                      alt=""
-                      className="aspect-square rounded-lg border border-border object-cover"
-                    />
-                  ))}
-                </div>
+              {receivedUrls.length > 0 ? (
+                <ProofGallery
+                  urls={receivedUrls}
+                  className="mt-3 grid-cols-2"
+                  itemClassName="aspect-square w-full"
+                />
               ) : null}
             </div>
           ) : null}
@@ -156,7 +152,7 @@ export default async function OperatorRequestPage({
               <>
                 <p className="mb-4 text-[13px] leading-relaxed text-muted-foreground">
                   Confirm the item is in hand at our hub. Optionally attach proof
-                  photo URLs for the customer&apos;s final ship approval.
+                  photos for the customer&apos;s final ship approval.
                 </p>
                 <MarkReceivedForm requestId={id} />
               </>

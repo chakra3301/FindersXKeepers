@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ChevronLeft, ExternalLink } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
 import { formatJpy } from "@/lib/pricing";
-import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
+import { resolveImageRefs } from "@/lib/storage";
+import { ProofGallery, ProofImage } from "@/components/requests/proof-image";
 import { CandidateActions } from "./candidate-actions";
 
 export const metadata = { title: "Review candidate — Finders Keepers" };
@@ -28,6 +29,9 @@ export default async function CandidatePage({
   const price = candidate.price_jpy ?? 0;
   const overCap = cap > 0 && price > cap;
   const pct = cap > 0 ? Math.min(100, Math.round((price / cap) * 100)) : 0;
+  const listingUrls = await resolveImageRefs(candidate.listing_images ?? []);
+  const heroUrl = listingUrls[0];
+  const thumbUrls = listingUrls.slice(1);
 
   return (
     <div className="mx-auto w-full max-w-[980px] px-6 pt-8 pb-24 sm:px-10">
@@ -58,15 +62,18 @@ export default async function CandidatePage({
       <div className="mt-7 grid items-start gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Photos + listing detail */}
         <section className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
-          <PlaceholderThumb
+          <ProofImage
+            src={heroUrl}
             label="listing photo · front"
             className="aspect-[4/3] w-full"
           />
-          <div className="grid grid-cols-3 gap-2.5">
-            <PlaceholderThumb label="back" className="aspect-square" />
-            <PlaceholderThumb label="detail" className="aspect-square" />
-            <PlaceholderThumb label="corner" className="aspect-square" />
-          </div>
+          <ProofGallery
+            urls={thumbUrls}
+            className="grid-cols-3"
+            itemClassName="aspect-square w-full"
+            minSlots={heroUrl ? Math.max(0, 3 - thumbUrls.length) : 3}
+            labels={["back", "detail", "corner"]}
+          />
 
           {candidate.notes ? (
             <p className="rounded-[10px] border border-border bg-muted/40 px-3.5 py-3 text-[13px] leading-relaxed text-muted-foreground">

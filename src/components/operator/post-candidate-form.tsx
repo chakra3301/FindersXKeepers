@@ -7,12 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { postCandidateAction } from "@/app/operator/[id]/actions";
+import { ALLOWED_PROOF_MIMES } from "@/lib/storage/types";
 
 export function PostCandidateForm({ requestId }: { requestId: string }) {
   const [pending, start] = useTransition();
+  const accept = ALLOWED_PROOF_MIMES.join(",");
 
   return (
     <form
+      encType="multipart/form-data"
       className="flex flex-col gap-4"
       action={(formData) => start(() => postCandidateAction(requestId, formData))}
     >
@@ -41,16 +44,18 @@ export function PostCandidateForm({ requestId }: { requestId: string }) {
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="listingImages">Listing image URLs</Label>
-        <Textarea
+        <Label htmlFor="listingImages">Listing photos</Label>
+        <Input
           id="listingImages"
           name="listingImages"
-          rows={3}
-          placeholder="One URL per line"
+          type="file"
+          accept={accept}
+          multiple
           disabled={pending}
         />
         <p className="text-[12px] text-muted-foreground">
-          Paste image URLs for now — Storage upload comes in a later phase.
+          JPEG, PNG, WebP, or GIF — up to 5 MB each. Upload at least one so the
+          customer can review proof.
         </p>
       </div>
 
