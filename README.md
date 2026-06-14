@@ -44,12 +44,17 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # server-only, never commit
 > **Tip:** In **Authentication → Providers → Email**, turn **off** "Confirm
 > email" so new sign-ups (and the demo user) can log in immediately.
 
-### 3. Apply the database schema
+### 3. Apply database migrations
 
-Open the **SQL Editor** in your Supabase dashboard, paste the contents of
-[`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql), and
-run it. (Or, with the Supabase CLI linked: `supabase db push`.) This creates all
-tables, enums, RLS policies, triggers, and the `proof-images` storage bucket.
+Open the **SQL Editor** in your Supabase dashboard and run each migration in
+order (paste file contents, run):
+
+1. [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql)
+2. [`supabase/migrations/0002_escrow_settlement.sql`](supabase/migrations/0002_escrow_settlement.sql)
+3. [`supabase/migrations/0003_staff_role.sql`](supabase/migrations/0003_staff_role.sql)
+4. [`supabase/migrations/0004_storage_proofs.sql`](supabase/migrations/0004_storage_proofs.sql)
+
+Or, with the Supabase CLI linked: `supabase db push`.
 
 ### 4. Seed demo data
 
@@ -84,7 +89,28 @@ the empty state.)
 - **Request detail** — lifecycle timeline, four-line price breakdown, escrow
   status, sourced candidate, shipment tracking, and the message thread.
 - **Footer → 特定商取引法に基づく表記** — the legal disclosure page, present on
-  every page.
+  every page (plus Terms and Privacy).
+- **Operator console** (`/operator`) — staff-only fulfillment queue (demo user
+  is seeded as staff).
+- **Messages** — two-way threads per hunt.
+
+## Deploy (Vercel)
+
+1. Import the repo in [Vercel](https://vercel.com) (Next.js preset).
+2. Set environment variables from `.env.example` for **Production** and
+   **Preview**:
+   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+     `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL` → your Vercel URL (e.g. `https://your-app.vercel.app`)
+   - `ESCROW_PROVIDER=stub` until Stripe is configured; then `stripe` +
+     `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (see
+     [`docs/stripe-setup.md`](docs/stripe-setup.md))
+3. Apply all migrations to your **production** Supabase project (see step 3 above).
+4. Register the Stripe webhook endpoint
+   `https://YOUR-DOMAIN/api/stripe/webhook` when using live Stripe.
+5. Run `npm run seed` against production once (or create staff users manually).
+
+CI runs on every push/PR via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Scripts
 
@@ -93,6 +119,7 @@ the empty state.)
 | `npm run dev` | Start the dev server |
 | `npm run build` | Production build |
 | `npm run seed` | Reset + seed the demo user and requests |
+| `npm run test` | Vitest unit tests |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 

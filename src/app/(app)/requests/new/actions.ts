@@ -6,6 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createRequestSchema } from "@/lib/validation/request";
 import { screenRequest, type ScreenMatch } from "@/lib/prohibited/blocklist";
 import { proofFilesFromFormData, uploadProofFile } from "@/lib/storage";
+import {
+  checkCreateRequestRateLimit,
+  createRequestRateLimitMessage,
+} from "@/lib/create-request-rate-limit";
 
 export interface CreateRequestState {
   status: "idle" | "error" | "blocked";
@@ -92,6 +96,14 @@ export async function createRequest(
   } = await supabase.auth.getUser();
   if (!user) {
     return { status: "error", message: "Your session expired. Sign in again." };
+  }
+
+  const rateLimit = checkCreateRequestRateLimit(user.id);
+  if (!rateLimit.allowed) {
+    return {
+      status: "error",
+      message: createRequestRateLimitMessage(rateLimit),
+    };
   }
 
   const { data, error } = await supabase
