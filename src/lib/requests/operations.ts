@@ -65,7 +65,7 @@ export async function approveCandidate(
 ): Promise<void> {
   const { data: req, error: reqErr } = await admin
     .from("requests")
-    .select("status, rush_tier")
+    .select("status, rush_tier, budget_cap_jpy")
     .eq("id", requestId)
     .single();
   if (reqErr || !req) throw new Error(`Request ${requestId} not found.`);
@@ -77,6 +77,16 @@ export async function approveCandidate(
     .eq("id", candidateId)
     .single();
   if (candErr || !cand) throw new Error(`Candidate ${candidateId} not found.`);
+
+  // Server-side over-cap guard (mirrors the UI gate): the approved price must
+  // fit the hold sized to the cap. A null/zero cap means no cap.
+  const cap = req.budget_cap_jpy ?? 0;
+  const price = cand.price_jpy ?? 0;
+  if (cap > 0 && price > cap) {
+    throw new Error(
+      `Candidate price ¥${price} exceeds the budget cap ¥${cap}; re-authorisation is required.`,
+    );
+  }
 
   const lines = computeQuote({
     itemCostJpy: cand.price_jpy ?? 0,

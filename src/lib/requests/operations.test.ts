@@ -192,6 +192,18 @@ describe("approveCandidate", () => {
     expect(tables.orders).toHaveLength(0);
     expect(tables.candidates[0].status).toBe("proposed");
   });
+
+  it("rejects an over-cap candidate and writes no order", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [baseRequest({ id: "r1", status: "candidate_sent", budget_cap_jpy: 30_000, rush_tier: "standard" })],
+      candidates: [{ id: "c1", request_id: "r1", price_jpy: 41_000, status: "proposed", created_at: "2026-01-02T00:00:00Z" }],
+      orders: [],
+    });
+    await expect(approveCandidate("r1", "c1", client)).rejects.toThrow();
+    expect(tables.orders).toHaveLength(0);
+    expect(tables.candidates[0].status).toBe("proposed");
+    expect(tables.requests[0].status).toBe("candidate_sent");
+  });
 });
 
 describe("keepHunting", () => {
