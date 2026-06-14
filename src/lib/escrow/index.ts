@@ -1,13 +1,10 @@
-import Stripe from "stripe";
 import type { EscrowProvider } from "./types";
 import { StubEscrowProvider } from "./stub";
 import { StripeEscrowProvider } from "./stripe";
 import { readStripeEnv } from "./stripe-env";
+import { createStripeClient } from "./stripe-client";
 
 export type { EscrowProvider, EscrowIntent, CreateHoldParams } from "./types";
-
-// Pinned to the SDK's bundled API version so behaviour can't drift under us.
-const STRIPE_API_VERSION = "2026-05-27.dahlia";
 
 /**
  * Escrow provider factory — the ONE place to swap stub → Stripe.
@@ -23,8 +20,7 @@ function createEscrowProvider(): EscrowProvider {
       return new StubEscrowProvider();
     case "stripe": {
       const { secretKey, siteUrl } = readStripeEnv();
-      const stripe = new Stripe(secretKey, { apiVersion: STRIPE_API_VERSION });
-      return new StripeEscrowProvider(stripe, siteUrl);
+      return new StripeEscrowProvider(createStripeClient(secretKey), siteUrl);
     }
     default:
       throw new Error(`Unknown ESCROW_PROVIDER: ${provider}`);
