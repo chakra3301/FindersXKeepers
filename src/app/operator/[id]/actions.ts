@@ -8,6 +8,7 @@ import {
   markPurchased,
   markReceived,
 } from "@/lib/requests/operations";
+import { sendTeamMessage } from "@/lib/requests/messages";
 import { uploadProofFilesFromFormData } from "@/lib/storage";
 
 function parsePrice(raw: FormDataEntryValue | null): number {
@@ -70,4 +71,16 @@ export async function markReceivedAction(requestId: string, formData: FormData) 
   revalidatePath(`/operator/${requestId}`);
   revalidatePath("/dashboard");
   redirect(`/operator/${requestId}`);
+}
+
+export async function sendTeamMessageAction(
+  requestId: string,
+  formData: FormData,
+): Promise<void> {
+  await requireStaff();
+  const body = String(formData.get("body") ?? "");
+  await sendTeamMessage(requestId, body);
+  revalidatePath("/operator");
+  revalidatePath(`/operator/${requestId}`);
+  revalidatePath("/messages");
 }

@@ -10,6 +10,7 @@ import { ProofGallery, ProofImage } from "@/components/requests/proof-image";
 import { PostCandidateForm } from "@/components/operator/post-candidate-form";
 import { MarkPurchasedButton } from "@/components/operator/mark-purchased-button";
 import { MarkReceivedForm } from "@/components/operator/mark-received-form";
+import { OperatorMessagePanel } from "@/components/operator/operator-message-panel";
 
 export default async function OperatorRequestPage({
   params,
@@ -20,7 +21,7 @@ export default async function OperatorRequestPage({
   const detail = await getOperatorRequestDetail(id);
   if (!detail) notFound();
 
-  const { request, candidates, orders } = detail;
+  const { request, candidates, orders, messages } = detail;
   const meta = STATUS_META[request.status];
   const latestCandidate = candidates[0] ?? null;
   const latestOrder = orders[0] ?? null;
@@ -173,6 +174,8 @@ export default async function OperatorRequestPage({
           </div>
         </section>
       </div>
+
+      <OperatorMessagePanel requestId={id} messages={messages} />
     </div>
   );
 }

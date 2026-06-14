@@ -52,39 +52,24 @@ number) · four-line pricing never collapsed · 特商法 footer on every page.
 - **Phase 1 Effort 2** — real `StripeEscrowProvider` + webhook (plain Stripe,
   capture-now/refund-difference, Checkout redirect, idempotent webhook); stub
   stays default (`af0f66d`). **58 Vitest tests, all green without Stripe keys.**
-- **Phase 3 — Operator console** — staff-gated `/operator`; `is_staff` on profiles
-  (migration `0003`); post-candidate + mark-purchased + mark-received ops;
-  cross-user queue via service-role (`cc29b94`). **64 Vitest tests** at handoff.
+- **Phase 3 — Operator console** — staff-gated `/operator`; migration `0003`
+  (`cc29b94`).
+- **Phase 2 — Storage proof-image upload** — private `proofs` bucket, upload
+  seam, signed URLs at render (`b9ab09e`).
+- **Phase 4 — Interactive messaging** — customer + operator composers (this
+  commit).
 - Over-cap server guard, order-history refund display, Stripe env prep.
+- **74 Vitest tests**, all green without Stripe keys.
 
-**Pending operator/manual steps (no code):** apply `supabase/migrations/0004`
-(storage proofs bucket) in the Supabase SQL editor; the Stripe **live
-test-mode smoke test** (needs `sk_test_…`/`whsec_…` — see `docs/stripe-setup.md`);
-a first live `npm run dev` click-through against seeded data.
+**Pending operator/manual steps (no code):** Stripe **live test-mode smoke test**
+(needs `sk_test_…`/`whsec_…` — see `docs/stripe-setup.md`); full lifecycle
+click-through with real uploads + messaging.
 
 ---
 
 ## Remaining phases (recommended order)
 
-### 1. Phase 2 — Storage proof-image upload  ▶ NEXT (in progress on `main`)
-**Goal:** real image uploads replacing `PlaceholderThumb` + the Ph3 URL inputs.
-Private Supabase Storage bucket `proofs`; object paths in existing columns;
-signed URLs at render time; uploads on create-request, operator candidate,
-and mark-received forms. Seam: `src/lib/storage/`.
-
-### 2. Phase 4 — Interactive messaging
-**Goal:** make the messages composer actually send (currently disabled).
-**Recommended decisions:**
-- `sendMessage(requestId, body)` server action: customer inserts `sender:'customer'`
-  (RLS owner-insert already allows it); operator/staff inserts `sender:'team'`
-  behind `requireStaff()`. Validate non-empty/length.
-- Wire the composer in `messages-view.tsx` (remove the disabled note) + a reply
-  box in `/operator/[id]`. `revalidatePath` / router refresh; no optimistic
-  complexity needed first.
-**Scope out:** email/push notifications, realtime subscriptions, attachments
-(those are a later pass).
-
-### 3. Phase 6 — Account writes
+### 1. Phase 6 — Account writes  ▶ NEXT
 **Goal:** make the account screen save (currently read-only).
 **Recommended decisions:**
 - `updateProfile({ shippingCountry, currencyPref })` server action (RLS owner
@@ -94,7 +79,7 @@ and mark-received forms. Seam: `src/lib/storage/`.
 **Scope out:** email/password change, payment-method management (Stripe billing
 portal is a later add).
 
-### 4. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy
+### 2. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy
 **Goal:** fill the placeholder footer links and any landing CTAs.
 **Recommended decisions:**
 - Real **Terms** + **Privacy** pages under `/legal/*`; make the footer
@@ -105,7 +90,7 @@ portal is a later add).
 - i18n (JP/EN) is a larger effort; **defer** unless explicitly wanted — if done,
   scope to copy/dictionary + a locale switch, its own spec.
 
-### 5. Phase 8 — Hardening, CI, deploy  ▶ LAST
+### 3. Phase 8 — Hardening, CI, deploy  ▶ LAST
 **Goal:** productionize.
 **Recommended decisions:**
 - **CI:** GitHub Actions running `npm ci && npm run typecheck && npm run lint &&

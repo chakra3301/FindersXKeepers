@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   Candidate,
+  Message,
   Order,
   Request,
   RequestStatus,
@@ -104,6 +105,7 @@ export interface OperatorRequestDetail {
   request: Request;
   candidates: Candidate[];
   orders: Order[];
+  messages: Message[];
 }
 
 /** Full cross-user detail for one request (operator console). */
@@ -120,7 +122,7 @@ export async function getOperatorRequestDetail(
   if (error) throw error;
   if (!request) return null;
 
-  const [candidatesRes, ordersRes] = await Promise.all([
+  const [candidatesRes, ordersRes, messagesRes] = await Promise.all([
     admin
       .from("candidates")
       .select("*")
@@ -131,14 +133,21 @@ export async function getOperatorRequestDetail(
       .select("*")
       .eq("request_id", id)
       .order("created_at", { ascending: false }),
+    admin
+      .from("messages")
+      .select("*")
+      .eq("request_id", id)
+      .order("created_at", { ascending: true }),
   ]);
 
   if (candidatesRes.error) throw candidatesRes.error;
   if (ordersRes.error) throw ordersRes.error;
+  if (messagesRes.error) throw messagesRes.error;
 
   return {
     request,
     candidates: candidatesRes.data ?? [],
     orders: ordersRes.data ?? [],
+    messages: messagesRes.data ?? [],
   };
 }

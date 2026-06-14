@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/dates";
 import type { MessageThread } from "@/lib/requests/queries";
 import type { Message } from "@/lib/db/types";
+import { MessageList } from "@/components/messages/message-list";
+import { MessageComposer } from "@/components/messages/message-composer";
+import { sendCustomerMessageAction } from "@/app/(app)/messages/actions";
 
 export function MessagesView({
   threads,
@@ -101,55 +104,16 @@ export function MessagesView({
               </div>
             </div>
 
-            <ul className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-5">
-              {messages.map((m) => {
-                const mine = m.sender === "customer";
-                return (
-                  <li
-                    key={m.id}
-                    className={cn(
-                      "max-w-[74%] px-3.5 py-2.5 text-[13px] leading-relaxed",
-                      mine
-                        ? "ml-auto rounded-[14px_14px_4px_14px] bg-primary text-primary-foreground"
-                        : "mr-auto rounded-[14px_14px_14px_4px] bg-secondary text-secondary-foreground",
-                    )}
-                  >
-                    {m.body}
-                    <div
-                      className={cn(
-                        "mt-1 text-[10.5px] tnum",
-                        mine
-                          ? "text-primary-foreground/70"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {formatRelativeTime(m.created_at)}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-5">
+              <MessageList messages={messages} perspective="customer" />
+            </div>
 
             <div className="border-t border-border p-3">
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2">
-                <input
-                  disabled
-                  placeholder="Messaging opens in a later phase"
-                  aria-label="Message (disabled — coming in a later phase)"
-                  className="flex-1 cursor-not-allowed bg-transparent text-sm text-muted-foreground outline-none placeholder:text-muted-foreground"
-                />
-                <button
-                  type="button"
-                  disabled
-                  className="cursor-not-allowed rounded-lg bg-muted px-3 py-1.5 text-xs text-muted-foreground"
-                >
-                  Send
-                </button>
-              </div>
-              <p className="mt-2 px-1 text-[11.5px] text-muted-foreground">
-                Read-only for now &mdash; sending messages to your hunter
-                arrives in a later phase.
-              </p>
+              <MessageComposer
+                requestId={activeId}
+                sendAction={sendCustomerMessageAction}
+                placeholder="Message your hunter…"
+              />
             </div>
           </>
         ) : (
