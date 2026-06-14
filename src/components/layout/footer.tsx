@@ -32,10 +32,18 @@ export function Footer() {
           >
             特定商取引法に基づく表記
           </Link>
-          {/* Terms & Privacy pages land in the legal/compliance phase; shown as
-              placeholders for now so the footer never links to a 404. */}
-          <span className="cursor-default">Terms</span>
-          <span className="cursor-default">Privacy</span>
+          <Link
+            href="/legal/terms"
+            className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          >
+            Terms
+          </Link>
+          <Link
+            href="/legal/privacy"
+            className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          >
+            Privacy
+          </Link>
         </nav>
       </div>
     </footer>

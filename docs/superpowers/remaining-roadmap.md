@@ -59,7 +59,9 @@ number) · four-line pricing never collapsed · 特商法 footer on every page.
 - **Phase 4 — Interactive messaging** — customer + operator composers
   (`dca3bba`).
 - **Phase 6 — Account writes** — save shipping country + display currency
-  (this commit).
+  (`941a0d1`).
+- **Phase 5 + 7 — Terms &amp; Privacy** — `/legal/terms`, `/legal/privacy`,
+  footer links (this commit).
 - Over-cap server guard, order-history refund display, Stripe env prep.
 - **77 Vitest tests**, all green without Stripe keys.
 
@@ -71,18 +73,7 @@ click-through with real uploads + messaging.
 
 ## Remaining phases (recommended order)
 
-### 1. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy  ▶ NEXT
-**Goal:** fill the placeholder footer links and any landing CTAs.
-**Recommended decisions:**
-- Real **Terms** + **Privacy** pages under `/legal/*`; make the footer
-  `Terms`/`Privacy` spans into real links (they're non-links today to avoid
-  404s — once the pages exist, link them). 特商法 already exists.
-- Optional marketing pages (how-it-works/pricing/FAQ) only if desired — the
-  landing already covers the core pitch. Keep YAGNI.
-- i18n (JP/EN) is a larger effort; **defer** unless explicitly wanted — if done,
-  scope to copy/dictionary + a locale switch, its own spec.
-
-### 2. Phase 8 — Hardening, CI, deploy  ▶ LAST
+### 1. Phase 8 — Hardening, CI, deploy  ▶ NEXT
 **Goal:** productionize.
 **Recommended decisions:**
 - **CI:** GitHub Actions running `npm ci && npm run typecheck && npm run lint &&
