@@ -57,8 +57,9 @@ export function ReceivedForm({ requestId }: { requestId: string }) {
         Approve &amp; ship
       </Button>
       <p className="text-[12px] leading-relaxed text-muted-foreground">
-        Approving releases your escrow to us and puts the item in transit to
-        you. This is the last step.
+        Approving settles your escrow — the real total is released to us, any
+        unused part of your cap is returned to you, and the item goes in transit.
+        This is the last step.
       </p>
     </div>
   );

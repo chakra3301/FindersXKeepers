@@ -147,15 +147,12 @@ export function CheckoutForm({
           Held, not charged
         </div>
         <p className="mt-2 text-[12.5px] leading-relaxed text-success">
-          This is an <strong className="font-[600]">estimate</strong> sized to
-          your budget cap — we hold up to this amount in escrow now, and it
-          isn&apos;t a charge. You&apos;re only ever charged the real four-line
-          total once we lock a match; any unused part of your cap is{" "}
-          <strong className="font-[600]">returned to you</strong>. Automatic
-          cap-difference refunds are a later phase, so for now the full estimate
-          stays held until your hunt settles. Funds release to us only when your
-          item ships, and if we can&apos;t find it by your deadline you&apos;re
-          refunded in full.
+          This is an estimate sized to your budget cap — we hold up to this amount
+          in escrow now, and it isn&apos;t a charge. When your item ships we settle
+          up: you&apos;re charged only the real four-line total, and any unused part
+          of your cap is <strong className="font-[600]">returned to you</strong>. Funds release to us only
+          when your item ships, and if we can&apos;t find it by your deadline
+          you&apos;re refunded in full.
         </p>
       </div>
 

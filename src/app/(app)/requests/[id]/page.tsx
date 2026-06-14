@@ -45,6 +45,7 @@ export default async function RequestDetailPage({
 
   // Real escrow state from payment rows
   const escrowState = escrowStateFromPayments(payments);
+  const settledPayment = payments.find((p) => p.status === "released") ?? null;
 
   // Neutral caption label derived from same order→candidate→budget precedence
   const capLabel: string = latestOrder
@@ -282,7 +283,17 @@ export default async function RequestDetailPage({
                 </>
               )}
               {escrowState === "released" && (
-                <>Escrow released — your item is on its way.</>
+                <>
+                  Escrow released — your item is on its way.
+                  {settledPayment &&
+                    settledPayment.refunded_jpy != null &&
+                    settledPayment.refunded_jpy > 0 && (
+                      <span className="mt-1 block text-success/80">
+                        {formatJpy(settledPayment.captured_jpy)} released to us ·{" "}
+                        {formatJpy(settledPayment.refunded_jpy)} returned to you.
+                      </span>
+                    )}
+                </>
               )}
               {escrowState === "refunded" && <>Refunded to you in full.</>}
               {escrowState === "failed" && (
