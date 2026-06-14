@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
 import { getProfile } from "@/lib/auth";
 import { escrowStateFromPayments } from "@/lib/escrow/display";
+import { escrow } from "@/lib/escrow";
 import { CheckoutForm } from "./checkout-form";
 
 export const metadata = { title: "Checkout — Finders Keepers" };
@@ -44,6 +45,8 @@ export default async function CheckoutPage({
           budgetCapJpy={request.budget_cap_jpy}
           initialRush={request.rush_tier}
           currencyPref={profile?.currency_pref ?? "JPY"}
+          // Stripe captures the cap now (refund-the-difference); the stub holds.
+          chargesNow={escrow.name === "stripe"}
         />
       </div>
     </div>

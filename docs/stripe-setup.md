@@ -1,19 +1,18 @@
 # Stripe setup (for Phase 1, Effort 2 — real escrow)
 
-> Status: **prep done, integration pending.** The env seam (`src/lib/escrow/stripe-env.ts`)
-> and `.env.example` placeholders are ready. The real `StripeEscrowProvider` +
-> webhook route are **not built yet** — they need the steps below completed
-> (Stripe account access) plus the Connect-vs-plain decision.
+> Status: **built + unit-tested; live smoke test pending keys.** The
+> `StripeEscrowProvider` (`src/lib/escrow/stripe.ts`) and webhook route
+> (`src/app/api/stripe/webhook/route.ts`) are implemented and covered by unit
+> tests (mocked Stripe client + signed test events). Flipping
+> `ESCROW_PROVIDER=stripe` switches the whole app onto Stripe with no other code
+> change. What remains is the **live test-mode smoke test** below — it needs real
+> `sk_test_…` / `whsec_…` keys.
 
-## One decision that shapes the build
-- **Plain Stripe** (we're merchant of record; the customer payment reimburses us +
-  our fee; sellers paid out-of-band) → only standard test keys needed. *Likely
-  recommendation.*
-- **Stripe Connect** (pay sellers/finders via connected accounts) → also enable
-  Connect in test mode.
-
-Standard test keys are needed either way; the decision is finalized in the
-Effort 2 brainstorm.
+## Decision (made): plain Stripe
+We're the **merchant of record** — the customer payment reimburses us + our
+finder's fee; Japanese sellers are paid out-of-band. **No Stripe Connect**, no
+connected accounts; standard PaymentIntents settle to our one account. Only
+standard test keys are needed.
 
 ## Steps (all in TEST MODE — no real money)
 1. **Account + test mode:** sign in at dashboard.stripe.com, toggle **Test mode** ON.

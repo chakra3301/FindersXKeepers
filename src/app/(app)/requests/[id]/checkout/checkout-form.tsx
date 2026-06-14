@@ -27,11 +27,14 @@ export function CheckoutForm({
   budgetCapJpy,
   initialRush,
   currencyPref,
+  chargesNow = false,
 }: {
   requestId: string;
   budgetCapJpy: number | null;
   initialRush: RushTier;
   currencyPref: string;
+  /** Stripe captures the cap immediately; the stub only holds. Drives the copy. */
+  chargesNow?: boolean;
 }) {
   const initial: CheckoutState = { status: "idle" };
   const action = submitDeposit.bind(null, requestId);
@@ -83,7 +86,9 @@ export function CheckoutForm({
           </div>
         ))}
         <div className="flex items-baseline justify-between pt-3">
-          <span className="text-sm font-[600]">Held in escrow today</span>
+          <span className="text-sm font-[600]">
+            {chargesNow ? "Charged today (refundable)" : "Held in escrow today"}
+          </span>
           <span className="tnum text-[19px] font-[600]">{formatJpy(total)}</span>
         </div>
         {local && (
@@ -140,19 +145,32 @@ export function CheckoutForm({
         </div>
       </fieldset>
 
-      {/* Trust framing — held, not charged. */}
+      {/* Trust framing — honest about whether this is a real charge. */}
       <div className="rounded-2xl border border-success-border bg-success-muted px-5 py-4">
         <div className="flex items-center gap-2 text-[12.5px] font-[560] text-success">
           <ShieldCheck size={16} />
-          Held, not charged
+          {chargesNow ? "Charged now, refunded at ship" : "Held, not charged"}
         </div>
         <p className="mt-2 text-[12.5px] leading-relaxed text-success">
-          This is an estimate sized to your budget cap — we hold up to this amount
-          in escrow now, and it isn&apos;t a charge. When your item ships we settle
-          up: you&apos;re charged only the real four-line total, and any unused part
-          of your cap is <strong className="font-[600]">returned to you</strong>. Funds release to us only
-          when your item ships, and if we can&apos;t find it by your deadline
-          you&apos;re refunded in full.
+          {chargesNow ? (
+            <>
+              We charge your budget cap now and the processor holds it in escrow.
+              When your item ships we keep only the real four-line total and{" "}
+              <strong className="font-[600]">refund the unused part</strong> of
+              your cap. If we can&apos;t find it by your deadline, you&apos;re
+              refunded in full.
+            </>
+          ) : (
+            <>
+              This is an estimate sized to your budget cap — we hold up to this
+              amount in escrow now, and it isn&apos;t a charge. When your item
+              ships we settle up: you&apos;re charged only the real four-line
+              total, and any unused part of your cap is{" "}
+              <strong className="font-[600]">returned to you</strong>. Funds
+              release to us only when your item ships, and if we can&apos;t find
+              it by your deadline you&apos;re refunded in full.
+            </>
+          )}
         </p>
       </div>
 
@@ -173,9 +191,11 @@ export function CheckoutForm({
           className="sr-only"
         />
         <span className="text-muted-foreground">
-          I authorise Finders Keepers to hold{" "}
+          I authorise Finders Keepers to{" "}
+          {chargesNow ? "charge" : "hold"}{" "}
           <span className="tnum font-[560] text-foreground">{formatJpy(total)}</span>{" "}
-          in escrow and agree to the Terms and escrow policy.
+          {chargesNow ? "now (refundable)" : "in escrow"} and agree to the Terms
+          and escrow policy.
         </span>
       </label>
 
@@ -186,7 +206,9 @@ export function CheckoutForm({
         className="h-12 w-full gap-2 text-[15px]"
       >
         {isPending ? <Loader2 className="size-4 animate-spin" /> : <Lock className="size-4" />}
-        Deposit {formatJpy(total)} into escrow
+        {chargesNow
+          ? `Continue to payment · ${formatJpy(total)}`
+          : `Deposit ${formatJpy(total)} into escrow`}
       </Button>
 
       {cap <= 0 ? (
@@ -195,7 +217,8 @@ export function CheckoutForm({
         </p>
       ) : (
         <p className="flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
-          <Lock size={12} /> Secured by Stripe
+          <Lock size={12} />{" "}
+          {chargesNow ? "Secured by Stripe" : "Funds held in escrow"}
         </p>
       )}
     </form>
