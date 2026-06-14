@@ -1,8 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Finders × Keepers wordmark. The circular emblem is the design-handoff mark —
- * a ring with a filled centre dot, rendered in the primary indigo via currentColor.
+ * Finders × Keepers wordmark — ring + centre dot in crimson via currentColor.
  */
 export function Logo({
   className,

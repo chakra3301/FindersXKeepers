@@ -13,7 +13,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+    <section className="surface p-5">
       <h2 className="mb-3 text-[13px] font-[600] uppercase tracking-[.03em] text-muted-foreground">
         {title}
       </h2>

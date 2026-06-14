@@ -9,18 +9,15 @@ const CANDIDATE_STATUS: Record<
 > = {
   proposed: {
     label: "Awaiting your call",
-    className:
-      "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-300",
+    className: "bg-accent text-accent-foreground ring-1 ring-primary/20",
   },
   approved: {
     label: "Approved",
-    className:
-      "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+    className: "bg-success-muted text-success ring-1 ring-success-border",
   },
   rejected: {
     label: "Passed",
-    className:
-      "bg-zinc-100 text-zinc-600 ring-zinc-500/15 dark:bg-zinc-400/10 dark:text-zinc-400",
+    className: "bg-secondary text-muted-foreground ring-1 ring-border",
   },
 };
 

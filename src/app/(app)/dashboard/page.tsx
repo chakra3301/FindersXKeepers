@@ -31,7 +31,7 @@ export default async function DashboardPage() {
     <div className="mx-auto w-full max-w-[1000px] px-10 py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-sans text-2xl font-medium tracking-tight sm:text-3xl">
+          <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             Your hunts
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
         <>
           {/* Trust banner — only shown when funds are actually held */}
           {activeCount > 0 && (
-            <div className="mb-3.5 mt-7 flex items-center gap-[18px] rounded-2xl border border-success-border bg-card px-[22px] py-[18px] shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+            <div className="mb-3.5 mt-7 flex items-center gap-[18px] surface px-[22px] py-[18px]">
               <span className="grid size-[46px] shrink-0 place-items-center rounded-xl bg-success-muted">
                 <ShieldCheck className="size-[22px] text-success" />
               </span>
@@ -82,7 +82,7 @@ export default async function DashboardPage() {
           {actionReqs.length > 0 && (
             <>
               <div className="mb-3.5 mt-6 flex items-center gap-2.5">
-                <span className="pulse-dot size-[7px] rounded-full bg-amber-600" />
+                <span className="pulse-dot size-[7px] rounded-full bg-warning" />
                 <h2 className="m-0 text-[13px] font-[600] uppercase tracking-[.02em] text-warning">
                   Your action needed
                 </h2>

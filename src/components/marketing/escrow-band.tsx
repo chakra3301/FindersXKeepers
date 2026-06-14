@@ -1,7 +1,5 @@
 import { computeQuote, totalJpy, formatJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 
-// Illustrative example built from the real pricing engine (NOT hardcoded numbers),
-// so the landing can never drift from how we actually price.
 const EXAMPLE_ITEM_JPY = 42_000;
 
 function ShieldIcon() {
@@ -26,49 +24,46 @@ export function EscrowBand() {
     { label: "Tax", note: "Consumption tax", value: quote.taxJpy },
   ];
   return (
-    <section className="px-6">
-      <div className="mx-auto max-w-5xl">
-        <div className="relative overflow-hidden rounded-[var(--radius-3xl)] bg-foreground px-7 py-14 text-background sm:px-12 sm:py-16">
-          {/* faint indigo glow in the corner — matches the app's atmosphere, inverted */}
+    <section className="px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="relative overflow-hidden rounded-[var(--radius-3xl)] border border-border bg-card px-7 py-14 sm:px-12 sm:py-16">
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl"
+            className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-primary/20 blur-3xl"
           />
           <div className="relative grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <div className="mb-5 inline-flex items-center gap-2 text-xs font-medium text-background/60">
+              <div className="mb-5 inline-flex items-center gap-2 text-xs font-medium text-primary">
                 <ShieldIcon />
                 Escrow, in plain terms
               </div>
-              <h2 className="text-balance text-3xl font-semibold leading-[1.12] tracking-tight sm:text-[2rem]">
+              <h2 className="font-display text-balance text-3xl font-semibold leading-[1.08] tracking-tight sm:text-[2.25rem]">
                 Held in escrow, released only when it ships.
               </h2>
-              <p className="mt-4 max-w-md text-pretty text-sm leading-relaxed text-background/70">
+              <p className="mt-4 max-w-md text-pretty text-sm leading-relaxed text-muted-foreground">
                 Four separate lines, always. You see exactly what you pay — item
                 cost is pass-through, our finder&apos;s fee is disclosed, and funds
                 release to us only once your item is in transit. If we can&apos;t
                 find it by the deadline, you&apos;re refunded in full.
               </p>
             </div>
-            <dl className="rounded-2xl bg-background/5 p-6 ring-1 ring-background/10">
-              <div className="mb-3 text-[11px] font-medium uppercase tracking-wider text-background/50">
-                Every price, four lines
-              </div>
+            <dl className="rounded-2xl border border-border bg-background/40 p-6">
+              <div className="mb-3 section-label">Every price, four lines</div>
               {lines.map((l) => (
                 <div
                   key={l.label}
-                  className="flex items-baseline justify-between border-b border-background/10 py-2.5"
+                  className="flex items-baseline justify-between border-b border-border py-2.5"
                 >
                   <dt className="flex flex-col">
                     <span className="text-sm">{l.label}</span>
-                    <span className="text-[11px] text-background/50">{l.note}</span>
+                    <span className="text-[11px] text-muted-foreground">{l.note}</span>
                   </dt>
                   <dd className="tnum text-sm font-medium">{formatJpy(l.value)}</dd>
                 </div>
               ))}
               <div className="flex items-baseline justify-between pt-3.5">
                 <span className="text-sm font-semibold">Total held in escrow</span>
-                <span className="tnum text-lg font-semibold">{formatJpy(totalJpy(quote))}</span>
+                <span className="tnum text-lg font-semibold text-primary">{formatJpy(totalJpy(quote))}</span>
               </div>
             </dl>
           </div>

@@ -237,7 +237,7 @@ export default async function RequestDetailPage({
         {/* LEFT column */}
         <div className="flex flex-col gap-5">
           {/* Lifecycle card */}
-          <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+          <section className="surface p-6">
             <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
               Lifecycle
             </h2>
@@ -246,7 +246,7 @@ export default async function RequestDetailPage({
 
           {/* Proof photos card — only when orders exist */}
           {orders.length > 0 && (
-            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+            <section className="surface p-6">
               <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
                 Proof photos
               </h2>
@@ -260,7 +260,7 @@ export default async function RequestDetailPage({
 
           {/* Updates from your hunter — only when team messages exist */}
           {teamMessages.length > 0 && (
-            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+            <section className="surface p-6">
               <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
                 Updates from your hunter
               </h2>
@@ -289,7 +289,7 @@ export default async function RequestDetailPage({
           {latestOrder ? (
             <PriceBreakdown order={latestOrder} />
           ) : (
-            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+            <section className="surface p-6">
               <h2 className="mb-3 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
                 What you&apos;ll pay
               </h2>
@@ -358,7 +358,7 @@ export default async function RequestDetailPage({
 
           {/* Tracking card — only when shipped and tracking number exists */}
           {showTracking && latestShipment && (
-            <section className="rounded-2xl border border-border bg-card p-6 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+            <section className="surface p-6">
               <h2 className="mb-3 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
                 Tracking
               </h2>

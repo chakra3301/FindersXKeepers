@@ -61,7 +61,7 @@ export default async function CandidatePage({
 
       <div className="mt-7 grid items-start gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Photos + listing detail */}
-        <section className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+        <section className="flex flex-col gap-5 surface p-5">
           <ProofImage
             src={heroUrl}
             label="listing photo · front"
@@ -96,7 +96,7 @@ export default async function CandidatePage({
 
         {/* Decision rail */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+          <div className="surface p-5">
             <h2 className="mb-4 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
               Checked against your cap
             </h2>

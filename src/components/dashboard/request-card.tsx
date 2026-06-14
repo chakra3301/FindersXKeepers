@@ -33,7 +33,7 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
     <Link
       href={actionHref ?? `/requests/${request.id}`}
       className={cn(
-        "group flex items-center gap-[18px] rounded-2xl border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)] transition-shadow hover:shadow-[0_8px_24px_rgba(15,17,21,.07)]",
+        "group flex items-center gap-[18px] surface p-5 transition-shadow hover:border-primary/20",
         needsAction ? "border-warning-border" : "border-border",
       )}
     >
@@ -89,7 +89,7 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
               "tnum mt-2 inline-block rounded-md px-2 py-0.5 text-[11.5px] font-[540]",
               chip.tone === "warning"
                 ? "bg-warning-muted text-warning"
-                : "bg-slate-100 text-slate-600",
+                : "bg-secondary text-muted-foreground",
             )}
           >
             {chip.label}

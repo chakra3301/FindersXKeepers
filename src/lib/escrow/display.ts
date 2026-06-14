@@ -27,7 +27,7 @@ export const ESCROW_META: Record<EscrowState, EscrowMeta> = {
   },
   held: {
     label: "In escrow",
-    tone: "indigo",
+    tone: "rose",
     icon: "shield-check",
     blurb: "Funds held by the processor, awaiting our release trigger.",
   },

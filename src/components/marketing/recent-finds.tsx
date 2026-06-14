@@ -1,7 +1,5 @@
 import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
 
-// Illustrative showcase only — a curated static array, NOT a DB query. Real
-// "recent finds" would come from released requests once we have volume.
 const RECENT_FINDS = [
   { title: "Seiko 'Pepsi' SKX009K diver, boxed", note: "Sourced from Osaka" },
   { title: "Comme des Garçons AW'90s wool tailoring", note: "Tokyo archive" },
@@ -10,20 +8,20 @@ const RECENT_FINDS = [
 
 export function RecentFinds() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 py-16">
-      <div className="mb-7 flex items-end justify-between">
-        <h2 className="text-2xl font-semibold tracking-tight">Recent finds</h2>
+    <section className="mx-auto w-full max-w-[1400px] px-6 py-20 lg:px-10">
+      <div className="mb-10 flex items-end justify-between gap-4">
+        <div>
+          <p className="section-label">Proof of hunt</p>
+          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight">Recent finds</h2>
+        </div>
         <span className="text-sm text-muted-foreground">
           Average hunt closed in <strong className="font-medium text-foreground">9 days</strong>
         </span>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
         {RECENT_FINDS.map((f) => (
-          <article
-            key={f.title}
-            className="lift-hover overflow-hidden rounded-2xl border border-border bg-card"
-          >
-            <PlaceholderThumb label="sourced" className="h-36 rounded-none border-0" />
+          <article key={f.title} className="lift-hover overflow-hidden surface">
+            <PlaceholderThumb label="sourced" className="h-40 rounded-none border-0" />
             <div className="p-5">
               <h3 className="text-pretty text-sm font-medium leading-snug tracking-tight">
                 {f.title}

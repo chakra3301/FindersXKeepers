@@ -97,11 +97,11 @@ export function CheckoutForm({
       )}
 
       {/* Estimate — four separate lines, never collapsed. */}
-      <dl className="rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,17,21,.04)]">
+      <dl className="surface p-5">
         {lines.map((l) => (
           <div
             key={l.label}
-            className="flex items-baseline justify-between border-b border-[#F4F5F7] py-2.5"
+            className="flex items-baseline justify-between border-b border-border py-2.5"
           >
             <dt className="flex flex-col">
               <span className="text-[13.5px]">{l.label}</span>

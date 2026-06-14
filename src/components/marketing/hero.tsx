@@ -6,9 +6,6 @@ import { formatJpy } from "@/lib/pricing";
 import { formatLocalApprox } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
-// Illustrative sample figure for the hero proof card — badged "Sample" in the
-// UI. Driven through the real formatters so it can't drift from how we display
-// money/indicative FX elsewhere.
 const SAMPLE_HELD_JPY = 48_000;
 
 function ShieldCheck({ className }: { className?: string }) {
@@ -33,18 +30,16 @@ function ShieldCheck({ className }: { className?: string }) {
 
 export function Hero() {
   return (
-    <header className="relative">
-      {/* Marketing top nav — the landing renders the root layout with no app
-          topbar, so it carries its own slim header. */}
-      <div className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-md">
-        <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-3.5">
+    <header className="relative min-h-[100dvh] flex flex-col">
+      <div className="sticky top-0 z-20 border-b border-border/60 bg-background/70 backdrop-blur-xl">
+        <nav className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-4 lg:px-10">
           <Link href="/" aria-label="Finders Keepers home">
             <Logo />
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex")}
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex text-muted-foreground hover:text-foreground")}
             >
               Sign in
             </Link>
@@ -55,18 +50,15 @@ export function Hero() {
         </nav>
       </div>
 
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-6 pb-16 pt-16 lg:grid-cols-[1.05fr_.95fr] lg:pb-20 lg:pt-24">
-        <div className="rise">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-accent py-1 pl-1.5 pr-3 text-xs font-medium text-primary">
-            <span className="inline-flex size-[18px] items-center justify-center rounded-full bg-primary text-[11px] text-primary-foreground">
-              ¥
-            </span>
-            A bounty board for Japanese goods
-          </div>
-          <h1 className="text-balance text-[2.6rem] font-semibold leading-[1.04] tracking-tight sm:text-5xl lg:text-[3.25rem]">
-            Tell us what you want from Japan. We hunt it down.
+      <div className="mx-auto grid w-full max-w-[1400px] flex-1 items-center gap-16 px-6 pb-20 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20 lg:px-10 lg:pb-28 lg:pt-16">
+        <div className="rise max-w-2xl">
+          <p className="section-label mb-6">Concierge sourcing · Japan</p>
+          <div className="accent-line mb-8" aria-hidden />
+          <h1 className="font-display text-balance text-[2.75rem] font-semibold leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+            Tell us what you want from Japan.
+            <span className="mt-2 block text-primary">We hunt it down.</span>
           </h1>
-          <p className="mt-5 max-w-xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
+          <p className="mt-7 max-w-xl text-pretty text-[1.0625rem] leading-relaxed text-muted-foreground">
             Post a request, set your budget cap and the condition you&apos;ll
             accept, and pay into escrow. We search Japanese auctions, secondhand
             shops and stores, send you proof, and ship only on your approval —{" "}
@@ -74,10 +66,10 @@ export function Hero() {
               you&apos;re charged only once it&apos;s in transit.
             </strong>
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
               href="/requests/new"
-              className={cn(buttonVariants({ size: "lg" }), "h-11 px-6 text-[0.95rem]")}
+              className={cn(buttonVariants({ size: "lg" }), "h-12 px-7 text-[0.95rem]")}
             >
               Post a request
             </Link>
@@ -85,23 +77,22 @@ export function Hero() {
               href="/login"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "h-11 px-5 text-[0.95rem]",
+                "h-12 border-border/80 bg-transparent px-6 text-[0.95rem] hover:bg-secondary",
               )}
             >
               Sign in
             </Link>
           </div>
-          <div className="mt-7 flex items-center gap-2.5 text-sm text-muted-foreground">
+          <div className="mt-8 flex items-center gap-2.5 text-sm text-muted-foreground">
             <ShieldCheck className="shrink-0 text-success" />
             Funds held in escrow · released only when your item ships
           </div>
         </div>
 
-        {/* Proof card — mirrors a real request mid-hunt */}
-        <div className="rise relative" style={{ animationDelay: "120ms" }}>
-          <div className="lift rounded-2xl border border-border bg-card p-5">
+        <div className="rise relative" style={{ animationDelay: "140ms" }}>
+          <div className="lift surface p-6">
             <div className="flex gap-4">
-              <PlaceholderThumb label="card front" className="h-[106px] w-[78px] flex-none" />
+              <PlaceholderThumb label="card front" className="h-[112px] w-[82px] flex-none" />
               <div className="min-w-0 flex-1">
                 <div className="text-[0.95rem] font-medium tracking-tight">Charizard ex — SAR</div>
                 <div className="mt-0.5 font-mono text-xs text-muted-foreground">151 · SV2a</div>
@@ -122,7 +113,7 @@ export function Hero() {
                 </div>
               </div>
             </div>
-            <div className="mt-4 flex items-end justify-between border-t border-border pt-4">
+            <div className="mt-5 flex items-end justify-between border-t border-border pt-4">
               <div>
                 <div className="flex items-center gap-1.5">
                   <div className="text-[11px] text-muted-foreground">Held in escrow</div>
@@ -139,8 +130,7 @@ export function Hero() {
               </div>
             </div>
           </div>
-          {/* floating "found" chip */}
-          <div className="lift absolute -bottom-5 -left-4 flex items-center gap-2.5 rounded-xl border border-border bg-card px-3.5 py-2.5">
+          <div className="lift absolute -bottom-5 -left-4 flex items-center gap-2.5 surface px-3.5 py-2.5">
             <span className="inline-flex size-7 items-center justify-center rounded-lg bg-success-muted text-success">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path

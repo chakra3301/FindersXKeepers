@@ -34,7 +34,7 @@ export function Sidebar({ escrowTotal, activeCount, isStaff = false }: SidebarPr
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-[100svh] w-[256px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 lg:flex">
+    <aside className="sticky top-0 hidden h-[100svh] w-[260px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
       <Link href="/dashboard" className="px-2 py-1.5">
         <Logo />
       </Link>
@@ -102,7 +102,7 @@ export function Sidebar({ escrowTotal, activeCount, isStaff = false }: SidebarPr
       </nav>
 
       <div className="mt-auto">
-        <div className="rounded-xl border border-success-border bg-secondary p-3.5">
+        <div className="rounded-xl border border-border bg-background/50 p-3.5">
           <div className="flex items-center gap-1.5 text-[11px] font-[540] text-success">
             <ShieldCheck size={13} className="shrink-0" />
             Held in escrow

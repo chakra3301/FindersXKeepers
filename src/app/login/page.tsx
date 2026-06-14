@@ -29,32 +29,22 @@ const POINTS = [
 export default function LoginPage() {
   return (
     <main className="grid min-h-[100svh] lg:grid-cols-[1.05fr_1fr]">
-      {/* Editorial brand panel */}
-      <section className="relative hidden flex-col justify-between overflow-hidden bg-primary px-12 py-12 text-primary-foreground lg:flex">
+      <section className="relative hidden flex-col justify-between overflow-hidden border-r border-border bg-card px-12 py-12 lg:flex">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-60"
-          style={{
-            backgroundImage:
-              "radial-gradient(60% 50% at 15% 0%, oklch(1 0 0 / 0.18) 0%, transparent 60%), radial-gradient(50% 40% at 100% 100%, oklch(0.7 0.13 80 / 0.25) 0%, transparent 55%)",
-          }}
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,oklch(0.52_0.2_25_/_0.18),transparent_55%)]"
         />
         <Link href="/" className="relative">
-          <span className="inline-flex items-center gap-2.5">
-            <span className="grid size-8 place-items-center rounded-[0.5rem] bg-primary-foreground/15 ring-1 ring-primary-foreground/25">
-              <span className="font-sans text-[15px] leading-none">探</span>
-            </span>
-            <span className="font-sans text-[15px] font-medium tracking-tight">
-              Finders Keepers
-            </span>
-          </span>
+          <Logo />
         </Link>
 
         <div className="relative max-w-md">
-          <h1 className="text-balance font-sans text-4xl font-medium leading-[1.1] tracking-tight">
+          <p className="section-label">Concierge desk</p>
+          <div className="accent-line my-6" aria-hidden />
+          <h1 className="font-display text-balance text-4xl font-semibold leading-[1.06] tracking-tight">
             A concierge desk for everything you want from Japan.
           </h1>
-          <p className="mt-5 text-pretty text-sm leading-relaxed text-primary-foreground/75">
+          <p className="mt-5 text-pretty text-sm leading-relaxed text-muted-foreground">
             Tell us what to find. We source it, send proof, and ship on your
             approval — and we&rsquo;re paid only once it&rsquo;s on its way to you.
           </p>
@@ -62,33 +52,30 @@ export default function LoginPage() {
           <ul className="mt-10 flex flex-col gap-5">
             {POINTS.map((p) => (
               <li key={p.title} className="flex gap-3.5">
-                <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-primary-foreground/10 ring-1 ring-primary-foreground/15">
+                <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-background text-primary">
                   <p.icon className="size-[18px]" />
                 </span>
                 <div>
                   <div className="text-sm font-medium">{p.title}</div>
-                  <div className="text-sm text-primary-foreground/70">
-                    {p.body}
-                  </div>
+                  <div className="text-sm text-muted-foreground">{p.body}</div>
                 </div>
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="relative text-xs text-primary-foreground/55">
+        <p className="relative text-xs text-muted-foreground">
           Agency sourcing · not resale · 特定商取引法に基づく表記
         </p>
       </section>
 
-      {/* Form */}
       <section className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm rise">
           <div className="mb-8 lg:hidden">
             <Logo />
           </div>
           <div className="mb-8">
-            <h2 className="text-2xl font-medium tracking-tight">Welcome back</h2>
+            <h2 className="font-display text-2xl font-semibold tracking-tight">Welcome back</h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Sign in to post requests and track your escrow.
             </p>

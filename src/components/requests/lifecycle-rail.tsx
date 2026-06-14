@@ -28,7 +28,7 @@ export function LifecycleRail({
             "mb-4 rounded-lg border px-3 py-2 text-sm",
             status === "refunded"
               ? "border-warning-border bg-warning-muted text-warning"
-              : "border-border bg-slate-100 text-slate-600",
+              : "border-border bg-secondary text-muted-foreground",
           )}
         >
           {meta.label} — {meta.blurb}

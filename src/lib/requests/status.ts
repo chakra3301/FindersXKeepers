@@ -46,7 +46,7 @@ export const STATUS_META: Record<RequestStatus, StatusMeta> = {
   sourcing: {
     label: "Sourcing",
     blurb: "Our finders are searching Japan.",
-    tone: "blue",
+    tone: "rose",
     bucket: "in_progress",
     rail: 1,
   },
@@ -60,14 +60,14 @@ export const STATUS_META: Record<RequestStatus, StatusMeta> = {
   approved: {
     label: "Approved",
     blurb: "You approved it — purchasing next.",
-    tone: "blue",
+    tone: "rose",
     bucket: "in_progress",
     rail: 3,
   },
   purchased: {
     label: "Purchased",
     blurb: "Bought and en route to our hub.",
-    tone: "blue",
+    tone: "rose",
     bucket: "in_progress",
     rail: 4,
   },
@@ -81,7 +81,7 @@ export const STATUS_META: Record<RequestStatus, StatusMeta> = {
   shipped: {
     label: "Shipped",
     blurb: "In transit to you — escrow released.",
-    tone: "blue",
+    tone: "rose",
     bucket: "in_transit",
     rail: 6,
   },
@@ -151,29 +151,27 @@ export const BUCKET_META: Record<
   },
 };
 
-// Calm, low-saturation badge tints (Tailwind palette). Light theme first;
-// dark variants keep contrast without shouting.
+// Badge tints — dark-first, crimson for in-progress states.
 export const TONE_BADGE: Record<Tone, string> = {
-  slate:   "bg-slate-100 text-slate-600 ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
-  zinc:    "bg-slate-100 text-slate-600 ring-slate-500/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20",
-  blue:    "bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
-  indigo:  "bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
-  cyan:    "bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/25",
-  amber:   "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
-  emerald: "bg-emerald-50 text-emerald-700 ring-emerald-600/15 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
-  teal:    "bg-emerald-50 text-emerald-700 ring-emerald-600/15 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20",
-  rose:    "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-300 dark:ring-red-400/25",
+  slate:   "bg-secondary text-muted-foreground ring-1 ring-border",
+  zinc:    "bg-secondary text-muted-foreground ring-1 ring-border",
+  blue:    "bg-accent text-accent-foreground ring-1 ring-primary/20",
+  indigo:  "bg-accent text-accent-foreground ring-1 ring-primary/20",
+  cyan:    "bg-accent text-accent-foreground ring-1 ring-primary/20",
+  amber:   "bg-warning-muted text-warning ring-1 ring-warning-border",
+  emerald: "bg-success-muted text-success ring-1 ring-success-border",
+  teal:    "bg-success-muted text-success ring-1 ring-success-border",
+  rose:    "bg-accent text-accent-foreground ring-1 ring-primary/25",
 };
 
-// Solid dot colors for the lifecycle rail nodes.
 export const TONE_DOT: Record<Tone, string> = {
-  slate: "bg-slate-400",
-  zinc: "bg-slate-400",
-  blue: "bg-blue-700",
-  indigo: "bg-blue-700",
-  cyan: "bg-blue-700",
-  amber: "bg-amber-600",
-  emerald: "bg-emerald-600",
-  teal: "bg-emerald-600",
-  rose: "bg-red-600",
+  slate: "bg-muted-foreground",
+  zinc: "bg-muted-foreground",
+  blue: "bg-primary",
+  indigo: "bg-primary",
+  cyan: "bg-primary",
+  amber: "bg-warning",
+  emerald: "bg-success",
+  teal: "bg-success",
+  rose: "bg-primary",
 };

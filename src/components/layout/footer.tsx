@@ -6,7 +6,7 @@ import Link from "next/link";
  */
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-card">
+    <footer className="mt-auto border-t border-border bg-background/80">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-6 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           {/* Inline mark — keeps the footer self-contained without importing Logo */}
