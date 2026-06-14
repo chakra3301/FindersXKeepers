@@ -30,8 +30,23 @@ export class StubEscrowProvider implements EscrowProvider {
     return intent;
   }
 
-  async release(paymentIntentId: string): Promise<EscrowIntent> {
-    return this.transition(paymentIntentId, "released");
+  async release(
+    paymentIntentId: string,
+    captureJpy?: number,
+  ): Promise<EscrowIntent> {
+    const existing = this.intents.get(paymentIntentId);
+    const held = existing?.amountJpy ?? 0;
+    const capturedJpy = Math.min(captureJpy ?? held, held);
+    const intent: EscrowIntent = {
+      paymentIntentId,
+      amountJpy: held,
+      status: "released",
+      capturedJpy,
+      refundedJpy: held - capturedJpy,
+    };
+    this.intents.set(paymentIntentId, intent);
+    this.log("released", intent);
+    return intent;
   }
 
   async refund(paymentIntentId: string): Promise<EscrowIntent> {

@@ -20,6 +20,10 @@ export interface EscrowIntent {
   paymentIntentId: string;
   amountJpy: number;
   status: PaymentStatus;
+  /** Set at settlement: amount captured to us. */
+  capturedJpy?: number;
+  /** Set at settlement: unused cap returned to the customer. */
+  refundedJpy?: number;
 }
 
 export interface CreateHoldParams {
@@ -36,8 +40,13 @@ export interface EscrowProvider {
   /** Create a hold: processor authorises + captures funds into escrow. */
   createHold(params: CreateHoldParams): Promise<EscrowIntent>;
 
-  /** Release held funds to us/supplier — OUR trigger (item in transit). */
-  release(paymentIntentId: string): Promise<EscrowIntent>;
+  /**
+   * Settle/release held funds to us/supplier — OUR trigger (item in transit).
+   * `captureJpy` omitted → full release (capturedJpy = held, refundedJpy = 0).
+   * When `captureJpy` < held, capture that amount to us and return the
+   * remainder to the customer.
+   */
+  release(paymentIntentId: string, captureJpy?: number): Promise<EscrowIntent>;
 
   /** Refund held funds back to the customer. */
   refund(paymentIntentId: string): Promise<EscrowIntent>;
