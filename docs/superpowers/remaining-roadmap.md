@@ -56,10 +56,12 @@ number) · four-line pricing never collapsed · 特商法 footer on every page.
   (`cc29b94`).
 - **Phase 2 — Storage proof-image upload** — private `proofs` bucket, upload
   seam, signed URLs at render (`b9ab09e`).
-- **Phase 4 — Interactive messaging** — customer + operator composers (this
-  commit).
+- **Phase 4 — Interactive messaging** — customer + operator composers
+  (`dca3bba`).
+- **Phase 6 — Account writes** — save shipping country + display currency
+  (this commit).
 - Over-cap server guard, order-history refund display, Stripe env prep.
-- **74 Vitest tests**, all green without Stripe keys.
+- **77 Vitest tests**, all green without Stripe keys.
 
 **Pending operator/manual steps (no code):** Stripe **live test-mode smoke test**
 (needs `sk_test_…`/`whsec_…` — see `docs/stripe-setup.md`); full lifecycle
@@ -69,17 +71,7 @@ click-through with real uploads + messaging.
 
 ## Remaining phases (recommended order)
 
-### 1. Phase 6 — Account writes  ▶ NEXT
-**Goal:** make the account screen save (currently read-only).
-**Recommended decisions:**
-- `updateProfile({ shippingCountry, currencyPref })` server action (RLS owner
-  update — but ensure it CANNOT touch `is_staff`, consistent with the Ph3 guard).
-- Wire the disabled controls in `account/page.tsx` (make it a client form with a
-  server action); validate currency against `SUPPORTED_CURRENCIES`.
-**Scope out:** email/password change, payment-method management (Stripe billing
-portal is a later add).
-
-### 2. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy
+### 1. Phase 5 — Marketing sub-pages + Phase 7 — Terms/Privacy  ▶ NEXT
 **Goal:** fill the placeholder footer links and any landing CTAs.
 **Recommended decisions:**
 - Real **Terms** + **Privacy** pages under `/legal/*`; make the footer
@@ -90,7 +82,7 @@ portal is a later add).
 - i18n (JP/EN) is a larger effort; **defer** unless explicitly wanted — if done,
   scope to copy/dictionary + a locale switch, its own spec.
 
-### 3. Phase 8 — Hardening, CI, deploy  ▶ LAST
+### 2. Phase 8 — Hardening, CI, deploy  ▶ LAST
 **Goal:** productionize.
 **Recommended decisions:**
 - **CI:** GitHub Actions running `npm ci && npm run typecheck && npm run lint &&

@@ -1,6 +1,7 @@
 import { Info, CreditCard } from "lucide-react";
 import { getProfile, requireUser } from "@/lib/auth";
-import { SUPPORTED_CURRENCIES } from "@/lib/currency";
+import { shippingCountryLabel } from "@/lib/profile/countries";
+import { AccountSettingsForm } from "@/components/account/account-settings-form";
 
 export const metadata = { title: "Account — Finders Keepers" };
 
@@ -63,7 +64,8 @@ function StaticToggle({ on }: { on: boolean }) {
 export default async function AccountPage() {
   const [user, profile] = await Promise.all([requireUser(), getProfile()]);
 
-  const currencyPref = profile?.currency_pref ?? "JPY";
+  const currencyPref = profile?.currency_pref ?? "USD";
+  const shippingCountry = profile?.shipping_country ?? null;
   const notifications = [
     { label: "Action needed (candidate found, item arrived)", on: true },
     { label: "Hunter updates & messages", on: true },
@@ -76,47 +78,30 @@ export default async function AccountPage() {
         Account &amp; settings
       </h1>
       <p className="mb-6 text-sm text-muted-foreground">
-        Editing and saving open in a later phase — every value below is real and
-        read-only for now.
+        Manage shipping country and display currency. Email and payment settings
+        open in a later phase.
       </p>
 
       <div className="flex flex-col gap-4">
         <Section title="Account">
-          <Row label="Email" value={user.email ?? "—"} />
-          <Row
-            label="Shipping country"
-            value={profile?.shipping_country ?? "Not set"}
-          />
-          <Row label="Display currency" value={currencyPref} last />
-          <div className="mt-3 flex items-start gap-2 border-t border-border/60 pt-3 text-[12.5px] text-muted-foreground">
-            <Info className="mt-px size-[15px] shrink-0 text-primary" />
-            <span>
-              Your country sets shipping options and customs estimates across
-              the app.
-            </span>
-          </div>
+          <Row label="Email" value={user.email ?? "—"} last />
         </Section>
 
-        <Section title="Currency &amp; language">
-          <label className="block text-sm">
-            <span className="text-muted-foreground">Display currency</span>
-            <select
-              disabled
-              defaultValue={currencyPref}
-              aria-label="Display currency (read-only)"
-              className="mt-1.5 w-full cursor-not-allowed rounded-lg border border-border bg-muted/40 px-3 py-2 text-foreground disabled:opacity-100"
-            >
-              <option value="JPY">JPY (¥)</option>
-              {SUPPORTED_CURRENCIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </label>
-          <p className="mt-2 text-[12px] text-muted-foreground">
-            Local-currency amounts are indicative; you always pay in JPY.
-          </p>
+        <Section title="Shipping &amp; currency">
+          <AccountSettingsForm
+            shippingCountry={shippingCountry}
+            currencyPref={currencyPref}
+          />
+          <div className="mt-4 flex items-start gap-2 border-t border-border/60 pt-3 text-[12.5px] text-muted-foreground">
+            <Info className="mt-px size-[15px] shrink-0 text-primary" />
+            <span>
+              Currently saved as{" "}
+              <span className="text-foreground">
+                {shippingCountryLabel(shippingCountry)}
+              </span>{" "}
+              · display {currencyPref}.
+            </span>
+          </div>
         </Section>
 
         <Section title="Payment method">
