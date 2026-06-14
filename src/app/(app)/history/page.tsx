@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/requests/status-badge";
 import { EscrowBadge } from "@/components/requests/escrow-badge";
 import { PriceBreakdown } from "@/components/requests/price-breakdown";
 import { buttonVariants } from "@/components/ui/button";
+import { formatJpy } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Order history — Finders Keepers" };
@@ -20,7 +21,7 @@ export default async function HistoryPage() {
         <p className="text-sm text-muted-foreground">No closed hunts yet.</p>
       ) : (
         <div className="flex flex-col gap-4">
-          {rows.map(({ request, order }) => {
+          {rows.map(({ request, order, refundedJpy }) => {
             const reorder = new URLSearchParams({
               title: request.title,
               condition: request.min_condition,
@@ -51,6 +52,11 @@ export default async function HistoryPage() {
                           : "none"
                     }
                   />
+                  {refundedJpy != null && refundedJpy > 0 && (
+                    <span className="text-[12px] text-success">
+                      {formatJpy(refundedJpy)} returned to you
+                    </span>
+                  )}
                   <Link
                     href={`/requests/new?${reorder}`}
                     className={cn(

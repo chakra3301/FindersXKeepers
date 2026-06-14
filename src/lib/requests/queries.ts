@@ -205,26 +205,35 @@ export async function getThreadMessages(requestId: string): Promise<Message[]> {
 export interface OrderHistoryRow {
   request: Request;
   order: Order | null;
+  refundedJpy: number | null;
 }
 
 /** Settled/closed hunts (released, refunded, cancelled) with their order. */
 export async function getOrderHistory(): Promise<OrderHistoryRow[]> {
   const supabase = await createClient();
-  const [reqRes, orderRes] = await Promise.all([
+  const [reqRes, orderRes, payRes] = await Promise.all([
     supabase
       .from("requests")
       .select("*")
       .in("status", ["released", "refunded", "cancelled"])
       .order("updated_at", { ascending: false }),
     supabase.from("orders").select("*"),
+    supabase
+      .from("payments")
+      .select("request_id, status, refunded_jpy, created_at"),
   ]);
   if (reqRes.error) throw reqRes.error;
   const orders = orderRes.data ?? [];
-  return (reqRes.data ?? []).map((request) => ({
-    request,
-    order:
+  const payments = payRes.data ?? [];
+  return (reqRes.data ?? []).map((request) => {
+    const order =
       orders
         .filter((o) => o.request_id === request.id)
-        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0] ?? null,
-  }));
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0] ?? null;
+    const settled =
+      payments
+        .filter((p) => p.request_id === request.id && p.status === "released")
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0] ?? null;
+    return { request, order, refundedJpy: settled?.refunded_jpy ?? null };
+  });
 }
