@@ -5,7 +5,13 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "./user-menu";
 
-export function Topbar({ email }: { email: string }) {
+export function Topbar({
+  email,
+  avatarUrl,
+}: {
+  email: string;
+  avatarUrl: string | null;
+}) {
   return (
     <header className="sticky top-0 z-20 border-b border-border/70 bg-background/75 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between gap-4 px-5 sm:px-8">
@@ -28,7 +34,7 @@ export function Topbar({ email }: { email: string }) {
             <Plus className="size-4" />
             New request
           </Link>
-          <UserMenu email={email} />
+          <UserMenu email={email} avatarUrl={avatarUrl} />
         </div>
       </div>
     </header>
