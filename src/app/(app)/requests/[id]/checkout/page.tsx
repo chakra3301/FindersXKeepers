@@ -2,7 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
-import { getProfile } from "@/lib/auth";
+import { getProfile, requireUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+import { listAddresses } from "@/lib/addresses/queries";
 import { escrowStateFromPayments } from "@/lib/escrow/display";
 import { escrow } from "@/lib/escrow";
 import { CheckoutForm } from "./checkout-form";
@@ -25,6 +27,11 @@ export default async function CheckoutPage({
   if (!detail) notFound();
   const { request, payments } = detail;
   const escrowState = escrowStateFromPayments(payments);
+
+  const user = await requireUser();
+  const supabase = await createClient();
+  const addresses = await listAddresses(user.id, supabase);
+  const defaultAddressId = addresses.find((a) => a.is_default)?.id ?? null;
 
   // Open + unfunded, or open + payment still authorising (Stripe back-button).
   if (
@@ -55,6 +62,8 @@ export default async function CheckoutPage({
           chargesNow={escrow.name === "stripe"}
           resuming={escrowState === "pending"}
           cancelled={checkoutParam === "cancelled"}
+          addresses={addresses}
+          defaultAddressId={defaultAddressId}
         />
       </div>
     </div>
