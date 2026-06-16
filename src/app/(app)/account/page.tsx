@@ -1,7 +1,11 @@
 import { Info, CreditCard } from "lucide-react";
 import { getProfile, requireUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { shippingCountryLabel } from "@/lib/profile/countries";
+import { listAddresses } from "@/lib/addresses/queries";
 import { AccountSettingsForm } from "@/components/account/account-settings-form";
+import { AvatarUploader } from "@/components/account/avatar-uploader";
+import { AddressBook } from "@/components/account/address-book";
 
 export const metadata = { title: "Account — Finders Keepers" };
 
@@ -63,6 +67,9 @@ function StaticToggle({ on }: { on: boolean }) {
 
 export default async function AccountPage() {
   const [user, profile] = await Promise.all([requireUser(), getProfile()]);
+  const supabase = await createClient();
+  const addresses = await listAddresses(user.id, supabase);
+  const avatarInitial = (user.email ?? "?").charAt(0).toUpperCase();
 
   const currencyPref = profile?.currency_pref ?? "USD";
   const shippingCountry = profile?.shipping_country ?? null;
@@ -83,6 +90,14 @@ export default async function AccountPage() {
       </p>
 
       <div className="flex flex-col gap-4">
+        <Section title="Profile">
+          <AvatarUploader
+            userId={user.id}
+            avatarUrl={profile?.avatar_url ?? null}
+            initial={avatarInitial}
+          />
+        </Section>
+
         <Section title="Account">
           <Row label="Email" value={user.email ?? "—"} last />
         </Section>
@@ -102,6 +117,10 @@ export default async function AccountPage() {
               · display {currencyPref}.
             </span>
           </div>
+        </Section>
+
+        <Section title="Shipping addresses">
+          <AddressBook addresses={addresses} />
         </Section>
 
         <Section title="Payment method">
