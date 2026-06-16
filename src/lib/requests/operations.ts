@@ -3,7 +3,7 @@ import { escrow, type EscrowIntent } from "@/lib/escrow";
 import { assertTransition, IllegalTransitionError } from "./state-machine";
 import type { PriceLines } from "@/lib/pricing";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
-import type { RequestStatus, RushTier } from "@/lib/db/types";
+import type { RequestStatus, RushTier, AddressSnapshot } from "@/lib/db/types";
 
 /**
  * Team/system operations on a request. These run with the service-role client
@@ -22,6 +22,7 @@ import type { RequestStatus, RushTier } from "@/lib/db/types";
 export async function depositForRequest(
   requestId: string,
   rushTier: RushTier,
+  shippingAddress: AddressSnapshot | null = null,
   admin: AdminClient = createAdminClient(),
 ): Promise<{ checkoutUrl?: string }> {
   const { data: req, error } = await admin
@@ -40,6 +41,14 @@ export async function depositForRequest(
       .update({ rush_tier: rushTier })
       .eq("id", requestId);
     if (rushErr) throw rushErr;
+  }
+
+  if (shippingAddress) {
+    const { error: addrErr } = await admin
+      .from("requests")
+      .update({ shipping_address: shippingAddress })
+      .eq("id", requestId);
+    if (addrErr) throw addrErr;
   }
 
   // Hosted checkout (Stripe): if the customer backed out mid-flow, resume the

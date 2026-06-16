@@ -39,7 +39,7 @@ describe("depositForRequest", () => {
       payments: [],
     });
 
-    await depositForRequest("req_seed", "standard", client);
+    await depositForRequest("req_seed", "standard", null, client);
 
     const expected = totalJpy(
       computeQuote({ itemCostJpy: 50_000, shippingJpy: SHIPPING_ESTIMATE_JPY, rushTier: "standard" }),
@@ -55,7 +55,7 @@ describe("depositForRequest", () => {
       requests: [baseRequest({ status: "open", rush_tier: "standard" })],
       payments: [],
     });
-    await depositForRequest("req_seed", "express", client);
+    await depositForRequest("req_seed", "express", null, client);
     const expected = totalJpy(
       computeQuote({ itemCostJpy: 50_000, shippingJpy: SHIPPING_ESTIMATE_JPY, rushTier: "express" }),
     );
@@ -68,7 +68,7 @@ describe("depositForRequest", () => {
       requests: [baseRequest({ status: "candidate_sent" })],
       payments: [],
     });
-    await expect(depositForRequest("req_seed", "standard", client)).rejects.toThrow();
+    await expect(depositForRequest("req_seed", "standard", null, client)).rejects.toThrow();
     expect(tables.payments).toHaveLength(0);
     expect(tables.requests[0].status).toBe("candidate_sent");
   });
@@ -86,7 +86,7 @@ describe("depositForRequest", () => {
       checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test",
     });
     try {
-      const result = await depositForRequest("req_seed", "standard", client);
+      const result = await depositForRequest("req_seed", "standard", null, client);
       expect(result).toEqual({
         checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test",
       });
@@ -118,7 +118,7 @@ describe("depositForRequest", () => {
       .spyOn(escrow, "resumeCheckout")
       .mockResolvedValue("https://checkout.stripe.com/c/pay/cs_test_open");
     try {
-      const result = await depositForRequest("req_seed", "standard", client);
+      const result = await depositForRequest("req_seed", "standard", null, client);
       expect(result).toEqual({
         checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_open",
       });
