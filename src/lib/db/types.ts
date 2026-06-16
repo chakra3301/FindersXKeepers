@@ -32,8 +32,36 @@ export type Profile = {
   id: string;
   shipping_country: string | null;
   currency_pref: string;
+  avatar_url: string | null;
   is_staff: boolean;
   created_at: string;
+}
+
+export type Address = {
+  id: string;
+  user_id: string;
+  recipient_name: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  region: string | null;
+  postal_code: string;
+  country: string;
+  phone: string | null;
+  is_default: boolean;
+  created_at: string;
+}
+
+/** Frozen address copy stored on a request at deposit time. */
+export type AddressSnapshot = {
+  recipient_name: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  region: string | null;
+  postal_code: string;
+  country: string;
+  phone: string | null;
 }
 
 export type Request = {
@@ -50,6 +78,7 @@ export type Request = {
   rush_tier: RushTier;
   status: RequestStatus;
   deadline_at: string | null;
+  shipping_address: AddressSnapshot | null;
   created_at: string;
   updated_at: string;
 }
@@ -119,11 +148,19 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<Profile, Partial<Profile> & { id: string }>;
+      addresses: Table<
+        Address,
+        Omit<Address, "id" | "created_at"> & { id?: string }
+      >;
       requests: Table<
         Request,
-        Omit<Request, "id" | "created_at" | "updated_at" | "status"> & {
+        Omit<
+          Request,
+          "id" | "created_at" | "updated_at" | "status" | "shipping_address"
+        > & {
           id?: string;
           status?: RequestStatus;
+          shipping_address?: AddressSnapshot | null;
         }
       >;
       candidates: Table<Candidate, Omit<Candidate, "id" | "created_at">>;
