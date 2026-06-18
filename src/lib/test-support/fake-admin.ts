@@ -14,7 +14,10 @@ function makeId(prefix: string, store: { n: number }) {
   return `${prefix}_${store.n}`;
 }
 
-export function createFakeAdmin(seed: Tables) {
+/** Map of auth user id → user record, for the auth.admin.getUserById surface. */
+export type Users = Record<string, { email?: string } | undefined>;
+
+export function createFakeAdmin(seed: Tables, users: Users = {}) {
   const tables: Tables = JSON.parse(JSON.stringify(seed));
   const counter = { n: 0 };
 
@@ -24,6 +27,7 @@ export function createFakeAdmin(seed: Tables) {
     let payload: Row | null = null;
     let wantReturn = false;
     const filters: [string, unknown][] = [];
+    const notNullCols: string[] = [];
     let inFilter: [string, unknown[]] | null = null;
     let limitN: number | null = null;
 
@@ -34,12 +38,15 @@ export function createFakeAdmin(seed: Tables) {
       update(p: Row) { op = "update"; payload = p; return builder; },
       eq(col: string, val: unknown) { filters.push([col, val]); return builder; },
       in(col: string, vals: unknown[]) { inFilter = [col, vals]; return builder; },
+      // Only the `.not(col, "is", null)` form (column IS NOT NULL) is modelled.
+      not(col: string) { notNullCols.push(col); return builder; },
       order() { return builder; },
       limit(n: number) { limitN = n; return builder; },
       match(rows: Row[]) {
         return rows.filter(
           (r) =>
             filters.every(([c, v]) => r[c] === v) &&
+            notNullCols.every((c) => r[c] != null) &&
             (!inFilter || inFilter[1].includes(r[inFilter[0]])),
         );
       },
@@ -89,6 +96,17 @@ export function createFakeAdmin(seed: Tables) {
     return builder;
   }
 
+  const auth = {
+    admin: {
+      getUserById(id: string) {
+        return Promise.resolve({
+          data: { user: users[id] ?? null },
+          error: null,
+        });
+      },
+    },
+  };
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the fake builder duck-types the AdminClient surface the operations use; full typing would mean reproducing supabase-js generics
-  return { tables, client: { from } as any };
+  return { tables, client: { from, auth } as any };
 }

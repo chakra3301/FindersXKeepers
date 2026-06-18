@@ -34,6 +34,9 @@ export type Profile = {
   currency_pref: string;
   avatar_url: string | null;
   is_staff: boolean;
+  notify_action_needed: boolean;
+  notify_messages: boolean;
+  notify_shipped: boolean;
   created_at: string;
 }
 
