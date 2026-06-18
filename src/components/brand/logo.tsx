@@ -1,28 +1,22 @@
 import { cn } from "@/lib/utils";
+import { FkMark } from "@/components/brand/fk-mark";
 
 /**
- * Finders × Keepers wordmark — ring + centre dot in crimson via currentColor.
+ * Finders × Keepers wordmark: the Targeted Shield mark + optional text label.
  */
 export function Logo({
   className,
   showWordmark = true,
+  markClassName,
 }: {
   className?: string;
   showWordmark?: boolean;
+  /** Size/position tweaks for the mark (defaults by wordmark mode). */
+  markClassName?: string;
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <svg
-        aria-hidden
-        width="26"
-        height="26"
-        viewBox="0 0 28 28"
-        fill="none"
-        className="shrink-0 text-primary"
-      >
-        <circle cx="14" cy="14" r="11" stroke="currentColor" strokeWidth="2" />
-        <circle cx="14" cy="14" r="3.6" fill="currentColor" />
-      </svg>
+      <FkMark className={cn(showWordmark ? "h-9 w-9" : "h-7 w-7", markClassName)} />
       {showWordmark && (
         <span className="font-sans text-[15px] font-[600] tracking-tight text-foreground">
           Finders&nbsp;Keepers
