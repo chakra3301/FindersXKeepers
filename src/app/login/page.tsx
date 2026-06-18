@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShieldCheck, PackageSearch, ReceiptText } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { LoginForm } from "@/components/auth/login-form";
+import { LoginOrbit } from "@/components/auth/login-orbit";
 
 export const metadata = {
   title: "Sign in — Finders Keepers",
@@ -34,6 +35,7 @@ export default function LoginPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,oklch(0.52_0.2_25_/_0.18),transparent_55%)]"
         />
+        <LoginOrbit />
         <Link href="/" className="relative">
           <Logo />
         </Link>
