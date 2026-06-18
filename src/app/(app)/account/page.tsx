@@ -6,6 +6,7 @@ import { listAddresses } from "@/lib/addresses/queries";
 import { AccountSettingsForm } from "@/components/account/account-settings-form";
 import { AvatarUploader } from "@/components/account/avatar-uploader";
 import { AddressBook } from "@/components/account/address-book";
+import { NotificationsForm } from "@/components/account/notifications-form";
 
 export const metadata = { title: "Account — Finders Keepers" };
 
@@ -47,24 +48,6 @@ function Row({
   );
 }
 
-/** Read-only, decorative toggle pinned to a fixed state (no interactivity). */
-function StaticToggle({ on }: { on: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className={`relative inline-block h-[22px] w-[38px] rounded-full transition-colors ${
-        on ? "bg-primary" : "bg-muted-foreground/30"
-      }`}
-    >
-      <span
-        className={`absolute top-[2px] h-[18px] w-[18px] rounded-full bg-white shadow-sm ${
-          on ? "right-[2px]" : "left-[2px]"
-        }`}
-      />
-    </span>
-  );
-}
-
 export default async function AccountPage() {
   const [user, profile] = await Promise.all([requireUser(), getProfile()]);
   const supabase = await createClient();
@@ -73,11 +56,11 @@ export default async function AccountPage() {
 
   const currencyPref = profile?.currency_pref ?? "USD";
   const shippingCountry = profile?.shipping_country ?? null;
-  const notifications = [
-    { label: "Action needed (candidate found, item arrived)", on: true },
-    { label: "Hunter updates & messages", on: true },
-    { label: "Item shipped", on: true },
-  ];
+  const notificationPrefs = {
+    notify_action_needed: profile?.notify_action_needed ?? true,
+    notify_messages: profile?.notify_messages ?? true,
+    notify_shipped: profile?.notify_shipped ?? true,
+  };
 
   return (
     <div className="mx-auto w-full max-w-[680px]">
@@ -85,8 +68,8 @@ export default async function AccountPage() {
         Account &amp; settings
       </h1>
       <p className="mb-6 text-sm text-muted-foreground">
-        Manage shipping country and display currency. Email and payment settings
-        open in a later phase.
+        Manage your profile, shipping, display currency, and notifications.
+        Saved cards open with real checkout in a later phase.
       </p>
 
       <div className="flex flex-col gap-4">
@@ -136,23 +119,7 @@ export default async function AccountPage() {
         </Section>
 
         <Section title="Notifications">
-          {notifications.map((n, i) => (
-            <div
-              key={n.label}
-              className={`flex items-center justify-between py-3 text-sm ${
-                i === notifications.length - 1
-                  ? ""
-                  : "border-b border-border/60"
-              }`}
-            >
-              <span>{n.label}</span>
-              <StaticToggle on={n.on} />
-            </div>
-          ))}
-          <p className="mt-2 text-[12px] text-muted-foreground">
-            Notification preferences are presentational — managing them comes in
-            a later phase.
-          </p>
+          <NotificationsForm prefs={notificationPrefs} />
         </Section>
       </div>
     </div>

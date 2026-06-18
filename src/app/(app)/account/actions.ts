@@ -65,6 +65,40 @@ export async function updateProfileAction(
 
 export { initialState as updateProfileInitialState };
 
+export interface NotificationPrefsState {
+  status: "idle" | "success" | "error";
+  message?: string;
+}
+
+export const notificationPrefsInitialState: NotificationPrefsState = {
+  status: "idle",
+};
+
+// Unchecked checkboxes are absent from FormData; presence === opted in.
+export async function updateNotificationPrefsAction(
+  _prev: NotificationPrefsState,
+  formData: FormData,
+): Promise<NotificationPrefsState> {
+  const user = await requireUser();
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      notify_action_needed: formData.get("notify_action_needed") === "on",
+      notify_messages: formData.get("notify_messages") === "on",
+      notify_shipped: formData.get("notify_shipped") === "on",
+    })
+    .eq("id", user.id);
+  if (error) {
+    return {
+      status: "error",
+      message: "Couldn't save your preferences. Please try again.",
+    };
+  }
+  revalidatePath("/account");
+  return { status: "success", message: "Notification preferences saved." };
+}
+
 export interface AddressFormState {
   status: "idle" | "success" | "error";
   message?: string;
