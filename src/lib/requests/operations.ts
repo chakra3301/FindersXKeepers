@@ -4,6 +4,11 @@ import { assertTransition, IllegalTransitionError } from "./state-machine";
 import type { PriceLines } from "@/lib/pricing";
 import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
 import type { RequestStatus, RushTier, AddressSnapshot } from "@/lib/db/types";
+import {
+  notifyPaymentConfirmed,
+  notifyItemShipped,
+  notifyRefundIssued,
+} from "@/lib/email/notify";
 
 /**
  * Team/system operations on a request. These run with the service-role client
@@ -360,6 +365,13 @@ export async function createEscrowHold(
     status: intent.status,
   });
   if (error) throw error;
+
+  // Synchronous (stub) holds confirm here; async (Stripe Checkout) holds stay
+  // `pending` until the webhook flips them to held, which sends the receipt
+  // there instead. Gating on `held` keeps it exactly-once across both modes.
+  if (intent.status === "held") {
+    await notifyPaymentConfirmed(requestId, admin);
+  }
   return intent;
 }
 
@@ -422,6 +434,8 @@ export async function refundEscrow(
     .from("payments")
     .update({ status: intent.status })
     .eq("id", payment.id);
+
+  await notifyRefundIssued(requestId, admin);
 }
 
 /**
@@ -465,6 +479,7 @@ export async function recordShipment(
   if (params.trackingNumber) {
     await releaseEscrow(order.request_id, order.total_jpy, admin);
     await setRequestStatus(order.request_id, "shipped", admin);
+    await notifyItemShipped(order.request_id, admin);
   }
 
   return shipment;
