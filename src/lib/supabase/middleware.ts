@@ -3,8 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/db/types";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./env";
 
-// Routes reachable without a session.
-const PUBLIC_PREFIXES = ["/login", "/auth", "/legal", "/api/stripe"];
+// Routes reachable without a session. `/finds` holds public, anonymised
+// share pages for completed finds (and their OG/preview images).
+const PUBLIC_PREFIXES = ["/login", "/auth", "/legal", "/api/stripe", "/finds"];
 
 /**
  * Refreshes the Supabase session on every request and gates protected routes.

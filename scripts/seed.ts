@@ -297,6 +297,12 @@ async function seed() {
     admin,
   );
   await addMessage(shipping, "team", "Shipped via EMS — escrow released. Tracking attached.");
+  // Backdate the post date so the completed-find card shows a realistic
+  // time-to-fulfill (shipped_at is ~now from recordShipment above).
+  await admin
+    .from("requests")
+    .update({ created_at: new Date(Date.now() - 6 * 86_400_000).toISOString() })
+    .eq("id", shipping);
 
   // 8. released — driven to shipped, then settled on delivery
   const released = await insertRequest(userId, {
@@ -322,6 +328,10 @@ async function seed() {
     admin,
   );
   await setRequestStatus(released, "released", admin); // delivered + settled
+  await admin
+    .from("requests")
+    .update({ created_at: new Date(Date.now() - 11 * 86_400_000).toISOString() })
+    .eq("id", released);
 
   // 9. cancelled — closed before purchase
   await insertRequest(userId, {
