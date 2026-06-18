@@ -1,4 +1,6 @@
 import { computeQuote, totalJpy, formatJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
+import { SectionTag } from "@/components/marketing/decor";
+import { Reveal } from "@/components/marketing/reveal";
 
 const EXAMPLE_ITEM_JPY = 42_000;
 
@@ -26,17 +28,20 @@ export function EscrowBand() {
   return (
     <section className="px-6 lg:px-10">
       <div className="mx-auto max-w-[1400px]">
-        <div className="relative overflow-hidden rounded-[var(--radius-3xl)] border border-border bg-card px-7 py-14 sm:px-12 sm:py-16">
+        <Reveal className="relative overflow-hidden rounded-[var(--radius-3xl)] border border-border bg-card px-7 py-14 sm:px-12 sm:py-16">
+          <div
+            aria-hidden
+            className="dot-grid pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(70%_80%_at_0%_50%,#000,transparent)]"
+          />
           <div
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-primary/20 blur-3xl"
           />
           <div className="relative grid items-center gap-12 lg:grid-cols-2">
             <div>
-              <div className="mb-5 inline-flex items-center gap-2 text-xs font-medium text-primary">
-                <ShieldIcon />
+              <SectionTag index="02" className="mb-5 text-primary">
                 Escrow, in plain terms
-              </div>
+              </SectionTag>
               <h2 className="font-display text-balance text-3xl font-semibold leading-[1.08] tracking-tight sm:text-[2.25rem]">
                 Held in escrow, released only when it ships.
               </h2>
@@ -47,27 +52,37 @@ export function EscrowBand() {
                 find it by the deadline, you&apos;re refunded in full.
               </p>
             </div>
-            <dl className="rounded-2xl border border-border bg-background/40 p-6">
-              <div className="mb-3 section-label">Every price, four lines</div>
+
+            {/* terminal-style receipt — the four-line breakdown as a readout */}
+            <dl className="scanlines relative overflow-hidden rounded-2xl border border-border bg-background/50 p-6">
+              <div className="mb-4 flex items-center justify-between border-b border-dashed border-border pb-3">
+                <span className="mono-label">Every price · four lines</span>
+                <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-success">
+                  <ShieldIcon />
+                  Escrow
+                </span>
+              </div>
               {lines.map((l) => (
                 <div
                   key={l.label}
-                  className="flex items-baseline justify-between border-b border-border py-2.5"
+                  className="flex items-baseline justify-between border-b border-border/70 py-2.5"
                 >
                   <dt className="flex flex-col">
                     <span className="text-sm">{l.label}</span>
-                    <span className="text-[11px] text-muted-foreground">{l.note}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                      {l.note}
+                    </span>
                   </dt>
                   <dd className="tnum text-sm font-medium">{formatJpy(l.value)}</dd>
                 </div>
               ))}
-              <div className="flex items-baseline justify-between pt-3.5">
+              <div className="mt-1 flex items-baseline justify-between pt-3.5">
                 <span className="text-sm font-semibold">Total held in escrow</span>
                 <span className="tnum text-lg font-semibold text-primary">{formatJpy(totalJpy(quote))}</span>
               </div>
             </dl>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

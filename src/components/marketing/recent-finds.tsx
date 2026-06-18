@@ -1,47 +1,53 @@
-import { PlaceholderThumb } from "@/components/ui/placeholder-thumb";
+import { SectionTag } from "@/components/marketing/decor";
+import { Reveal } from "@/components/marketing/reveal";
+import { FindsCarousel, type Find } from "@/components/marketing/finds-carousel";
 
-const RECENT_FINDS = [
-  { title: "Seiko 'Pepsi' SKX009K diver, boxed", note: "Sourced from Osaka" },
-  { title: "Comme des Garçons AW'90s wool tailoring", note: "Tokyo archive" },
-  { title: "Onitsuka Tiger Mexico 66, deadstock", note: "New, original box" },
+const RECENT_FINDS: Find[] = [
+  {
+    title: "Grand Seiko SBGA211, Heritage Collection",
+    note: "Sourced from Osaka",
+    days: "07",
+    img: "/brand/finds/seiko.jpg",
+    alt: "Grand Seiko SBGA211 'Snowflake' Spring Drive watch on snow",
+    fit: "cover",
+  },
+  {
+    title: "Kapital boro hooded jacket",
+    note: "Tokyo archive",
+    days: "12",
+    img: "/brand/finds/boro.jpg",
+    alt: "Kapital sashiko boro patchwork hooded jacket",
+    fit: "cover",
+  },
+  {
+    title: "Onitsuka Tiger Mexico 66 SD",
+    note: "New, original box",
+    days: "05",
+    img: "/brand/finds/onitsuka.jpg",
+    alt: "Onitsuka Tiger Mexico 66 SD sneakers in yellow and black",
+    fit: "cover",
+  },
 ];
 
 export function RecentFinds() {
   return (
-    <section className="mx-auto w-full max-w-[1400px] px-6 py-20 lg:px-10">
-      <div className="mb-10 flex items-end justify-between gap-4">
+    <section className="mx-auto w-full max-w-[1400px] px-6 py-24 lg:px-10">
+      <Reveal className="mb-12 flex items-end justify-between gap-4">
         <div>
-          <p className="section-label">Proof of hunt</p>
-          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight">Recent finds</h2>
+          <SectionTag index="03">Proof of hunt</SectionTag>
+          <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-[2.5rem]">
+            Recent finds
+          </h2>
         </div>
-        <span className="text-sm text-muted-foreground">
-          Average hunt closed in <strong className="font-medium text-foreground">9 days</strong>
+        <span className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+          Avg. closed in{" "}
+          <strong className="font-semibold text-foreground">9 days</strong>
         </span>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        {RECENT_FINDS.map((f) => (
-          <article key={f.title} className="lift-hover overflow-hidden surface">
-            <PlaceholderThumb label="sourced" className="h-40 rounded-none border-0" />
-            <div className="p-5">
-              <h3 className="text-pretty text-sm font-medium leading-snug tracking-tight">
-                {f.title}
-              </h3>
-              <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path
-                    d="M5 13l4 4 10-11"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                {f.note}
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+      </Reveal>
+
+      <Reveal>
+        <FindsCarousel items={RECENT_FINDS} />
+      </Reveal>
     </section>
   );
 }

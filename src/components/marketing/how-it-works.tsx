@@ -1,3 +1,6 @@
+import { SectionTag, GlitchRule } from "@/components/marketing/decor";
+import { Reveal } from "@/components/marketing/reveal";
+
 const STEPS = [
   {
     n: "01",
@@ -18,20 +21,34 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="mx-auto w-full max-w-[1400px] px-6 py-20 lg:px-10">
-      <div className="mb-10 max-w-xl">
-        <p className="section-label">How it works</p>
-        <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+    <section className="mx-auto w-full max-w-[1400px] px-6 py-24 lg:px-10">
+      <Reveal className="mb-12 max-w-xl">
+        <SectionTag index="01">How it works</SectionTag>
+        <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-[2.5rem]">
           Three steps from wish list to your door
         </h2>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        {STEPS.map((s) => (
-          <div key={s.n} className="lift-hover surface p-8">
-            <div className="font-mono text-xs font-medium text-primary">{s.n}</div>
-            <h3 className="mt-4 font-display text-xl font-semibold tracking-tight">{s.title}</h3>
-            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-          </div>
+      </Reveal>
+
+      <GlitchRule className="mb-12" />
+
+      <div className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+        {STEPS.map((s, i) => (
+          <Reveal
+            key={s.n}
+            delay={i * 90}
+            className="group relative bg-card p-8 transition-colors duration-300 hover:bg-secondary/60"
+          >
+            <div className="flex items-baseline justify-between">
+              <span className="font-mono text-xs font-medium tracking-[0.2em] text-primary">
+                {s.n}
+              </span>
+              <span className="font-display text-5xl font-semibold leading-none text-foreground/[0.06] transition-colors duration-300 group-hover:text-primary/15">
+                {s.n}
+              </span>
+            </div>
+            <h3 className="mt-6 font-display text-xl font-semibold tracking-tight">{s.title}</h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+          </Reveal>
         ))}
       </div>
     </section>
