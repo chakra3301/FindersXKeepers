@@ -11,6 +11,12 @@ import { Label } from "@/components/ui/label";
 
 type Mode = "signin" | "signup";
 
+// Apple sign-in only renders once the provider is configured in Supabase Auth.
+// Flip NEXT_PUBLIC_APPLE_AUTH_ENABLED=true after wiring it up there; until then
+// we hide the button rather than ship an auth path that errors on click.
+const APPLE_AUTH_ENABLED =
+  process.env.NEXT_PUBLIC_APPLE_AUTH_ENABLED === "true";
+
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -83,22 +89,26 @@ export function LoginForm() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Button
-        type="button"
-        variant="outline"
-        className="h-11 w-full gap-2 border-border bg-card text-[0.9rem] font-medium"
-        onClick={handleApple}
-        disabled={loading}
-      >
-        <AppleGlyph className="size-4" />
-        Continue with Apple
-      </Button>
+      {APPLE_AUTH_ENABLED && (
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-full gap-2 border-border bg-card text-[0.9rem] font-medium"
+            onClick={handleApple}
+            disabled={loading}
+          >
+            <AppleGlyph className="size-4" />
+            Continue with Apple
+          </Button>
 
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        or with email
-        <span className="h-px flex-1 bg-border" />
-      </div>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            or with email
+            <span className="h-px flex-1 bg-border" />
+          </div>
+        </>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
