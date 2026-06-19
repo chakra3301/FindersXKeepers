@@ -7,6 +7,7 @@ import type {
 } from "./types";
 import { StubEstimator } from "./stub";
 import { DeepseekEstimator } from "./deepseek";
+import { DailyCapEstimator, readDailyCap } from "./daily-cap";
 import { readDeepseekEnv } from "./env";
 
 export type {
@@ -31,7 +32,13 @@ function createEstimator(): Estimator {
     case "stub":
       return new StubEstimator();
     case "deepseek":
-      return new MemoizingEstimator(new DeepseekEstimator(readDeepseekEnv()));
+      // Memoize (cache hits are free) → daily cap (spend valve) → model + Exa.
+      return new MemoizingEstimator(
+        new DailyCapEstimator(
+          new DeepseekEstimator(readDeepseekEnv()),
+          readDailyCap(),
+        ),
+      );
     default:
       throw new Error(`Unknown ESTIMATOR_PROVIDER: ${provider}`);
   }
