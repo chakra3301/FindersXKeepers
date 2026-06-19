@@ -12,12 +12,16 @@ const schema = z.object({
     .url()
     .default("https://api.deepseek.com/v1"),
   DEEPSEEK_MODEL: z.string().min(1).default("deepseek-chat"),
+  // Optional: enables live web grounding via Exa. Absent → skill-only prompting.
+  EXA_API_KEY: z.string().min(1).optional(),
 });
 
 export interface DeepseekEnv {
   apiKey: string;
   baseUrl: string;
   model: string;
+  /** Exa key for live web grounding; undefined disables grounding. */
+  exaApiKey?: string;
 }
 
 export function readDeepseekEnv(): DeepseekEnv {
@@ -32,5 +36,6 @@ export function readDeepseekEnv(): DeepseekEnv {
     apiKey: parsed.data.DEEPSEEK_API_KEY,
     baseUrl: parsed.data.DEEPSEEK_BASE_URL,
     model: parsed.data.DEEPSEEK_MODEL,
+    exaApiKey: parsed.data.EXA_API_KEY,
   };
 }

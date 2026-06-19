@@ -1,6 +1,7 @@
 import { StubEstimator } from "./stub";
 import type { DeepseekEnv } from "./env";
 import { itemValueSkill, shippingSkill } from "./pricing-skill";
+import { gatherWebContext } from "./web-grounding";
 import type {
   Estimator,
   ItemValueEstimate,
@@ -37,7 +38,13 @@ export class DeepseekEstimator implements Estimator {
   ): Promise<ShippingEstimate> {
     const skill = shippingSkill(input);
     try {
-      const data = await this.ask(skill.system, skill.user);
+      const comps = await gatherWebContext(
+        `international parcel shipping cost from Japan to ${input.destinationCountry ?? "USA"} small parcel courier`,
+        skill.domains,
+        this.env.exaApiKey,
+      );
+      const user = withComps(skill.user, comps);
+      const data = await this.ask(skill.system, user);
       const shippingJpy = clamp(
         Math.round(Number(data.shippingJpy)),
         SHIPPING_MIN_JPY,
@@ -67,7 +74,13 @@ export class DeepseekEstimator implements Estimator {
     const cap = input.budgetCapJpy ?? 0;
     const skill = itemValueSkill(input);
     try {
-      const data = await this.ask(skill.system, skill.user);
+      const comps = await gatherWebContext(
+        `${input.title} ${input.description ?? ""} sold price`.trim(),
+        skill.domains,
+        this.env.exaApiKey,
+      );
+      const user = withComps(skill.user, comps);
+      const data = await this.ask(skill.system, user);
       let itemValueJpy = clamp(
         Math.round(Number(data.itemValueJpy)),
         1,
@@ -150,4 +163,13 @@ function asStringArray(v: unknown): string[] | undefined {
   if (!Array.isArray(v)) return undefined;
   const out = v.filter((x): x is string => typeof x === "string");
   return out.length ? out : undefined;
+}
+
+/** Append live web comps to the skill prompt when grounding is available. */
+function withComps(user: string, comps: string | undefined): string {
+  if (!comps) return user;
+  return `${user}
+
+LIVE WEB COMPS (recent listings from trusted sources — weigh these heavily over memory):
+${comps}`;
 }
