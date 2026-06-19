@@ -34,7 +34,7 @@ export async function depositForRequest(
   const { data: req, error } = await admin
     .from("requests")
     .select(
-      "status, budget_cap_jpy, rush_tier, title, description, min_condition, shipping_address",
+      "status, budget_cap_jpy, rush_tier, title, description, min_condition, must_haves, nice_to_haves, shipping_address",
     )
     .eq("id", requestId)
     .single();
@@ -83,15 +83,47 @@ export async function depositForRequest(
       .eq("id", pendingPayment.id);
   }
 
-  // Estimate the Japan→customer shipping for this specific request (DeepSeek or
-  // the deterministic stub). The same estimator answers the checkout display, so
-  // the displayed estimate and the hold are still built from one input.
-  const { shippingJpy } = await estimator.estimateShipping({
-    title: req.title,
-    description: req.description,
-    minCondition: req.min_condition,
-    destinationCountry: req.shipping_address?.country ?? shippingAddress?.country,
-  });
+  // Estimate shipping AND item value in parallel (so the deposit waits on the
+  // slower of the two, not the sum). Shipping feeds the hold + the checkout
+  // display (one input); the item-value estimate is advisory — persisted for the
+  // operator console, never changing what the customer is charged.
+  const [shippingEst, itemEst] = await Promise.all([
+    estimator.estimateShipping({
+      title: req.title,
+      description: req.description,
+      minCondition: req.min_condition,
+      destinationCountry:
+        req.shipping_address?.country ?? shippingAddress?.country,
+    }),
+    estimator
+      .estimateItemValue({
+        title: req.title,
+        description: req.description,
+        minCondition: req.min_condition,
+        mustHaves: req.must_haves,
+        niceToHaves: req.nice_to_haves,
+        budgetCapJpy: req.budget_cap_jpy,
+      })
+      .catch(() => null),
+  ]);
+  const shippingJpy = shippingEst.shippingJpy;
+
+  if (itemEst) {
+    const { error: estErr } = await admin
+      .from("requests")
+      .update({
+        est_value_jpy: itemEst.itemValueJpy,
+        est_value_low_jpy: itemEst.lowJpy,
+        est_value_high_jpy: itemEst.highJpy,
+        est_confidence: itemEst.confidence,
+        est_needs_review: itemEst.needsReview ?? false,
+        est_category: itemEst.category ?? null,
+        est_sources: itemEst.sources ?? [],
+        est_updated_at: new Date().toISOString(),
+      })
+      .eq("id", requestId);
+    if (estErr) console.warn(`[deposit] estimate persist failed: ${estErr.message}`);
+  }
 
   const lines = computeQuote({
     itemCostJpy: req.budget_cap_jpy ?? 0,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, AlertTriangle } from "lucide-react";
 import { getOperatorQueue, type OperatorQueueItem } from "@/lib/requests/operator-queries";
 import { StatusBadge } from "@/components/requests/status-badge";
 import { formatJpy } from "@/lib/pricing";
@@ -43,9 +43,22 @@ function QueueRow({ item }: { item: OperatorQueueItem }) {
             {item.title}
           </span>
           <StatusBadge status={item.status} className="shrink-0" />
+          {item.est_needs_review && (
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-md border border-warning-border bg-warning-muted px-1.5 py-0.5 text-[11px] font-[560] text-warning">
+              <AlertTriangle size={11} /> Review price
+            </span>
+          )}
         </div>
         <p className="mt-0.5 text-[12.5px] text-muted-foreground">
           Cap {formatJpy(item.budget_cap_jpy ?? 0)}
+          {item.est_value_jpy != null && (
+            <>
+              {" "}· est. value {formatJpy(item.est_value_jpy)}
+              {item.est_confidence != null && (
+                <> ({Math.round(item.est_confidence * 100)}% conf)</>
+              )}
+            </>
+          )}
           {item.latestCandidate?.price_jpy != null && (
             <>
               {" "}

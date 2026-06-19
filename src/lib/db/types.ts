@@ -83,6 +83,14 @@ export type Request = {
   status: RequestStatus;
   deadline_at: string | null;
   shipping_address: AddressSnapshot | null;
+  est_value_jpy: number | null;
+  est_value_low_jpy: number | null;
+  est_value_high_jpy: number | null;
+  est_confidence: number | null;
+  est_needs_review: boolean;
+  est_category: string | null;
+  est_sources: string[];
+  est_updated_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -160,11 +168,31 @@ export type Database = {
         Request,
         Omit<
           Request,
-          "id" | "created_at" | "updated_at" | "status" | "shipping_address"
+          | "id"
+          | "created_at"
+          | "updated_at"
+          | "status"
+          | "shipping_address"
+          | "est_value_jpy"
+          | "est_value_low_jpy"
+          | "est_value_high_jpy"
+          | "est_confidence"
+          | "est_needs_review"
+          | "est_category"
+          | "est_sources"
+          | "est_updated_at"
         > & {
           id?: string;
           status?: RequestStatus;
           shipping_address?: AddressSnapshot | null;
+          est_value_jpy?: number | null;
+          est_value_low_jpy?: number | null;
+          est_value_high_jpy?: number | null;
+          est_confidence?: number | null;
+          est_needs_review?: boolean;
+          est_category?: string | null;
+          est_sources?: string[];
+          est_updated_at?: string | null;
         }
       >;
       candidates: Table<Candidate, Omit<Candidate, "id" | "created_at">>;

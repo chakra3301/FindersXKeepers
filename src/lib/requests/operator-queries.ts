@@ -44,6 +44,9 @@ export interface OperatorQueueItem {
   budget_cap_jpy: number | null;
   user_id: string;
   updated_at: string;
+  est_value_jpy: number | null;
+  est_confidence: number | null;
+  est_needs_review: boolean;
   bucket: OperatorBucket;
   latestCandidate: Candidate | null;
   latestOrder: Order | null;
@@ -61,7 +64,9 @@ export async function getOperatorQueue(): Promise<OperatorQueue> {
   const [requestsRes, candidatesRes, ordersRes] = await Promise.all([
     admin
       .from("requests")
-      .select("id, title, status, budget_cap_jpy, user_id, updated_at")
+      .select(
+        "id, title, status, budget_cap_jpy, user_id, updated_at, est_value_jpy, est_confidence, est_needs_review",
+      )
       .in("status", ACTIVE_STATUSES)
       .order("updated_at", { ascending: false }),
     admin
