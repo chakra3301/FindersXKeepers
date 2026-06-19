@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fix the /account 500 · Finders × Keepers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0A0A0D;--card:#141318;--card2:#1B1A20;--ink:#EDEDEF;--muted:#8B8B93;
+    --faint:#6B6B73;--line:#26262E;--gold:#F0C84A;--gold-soft:rgba(240,200,74,.12);
+    --green:#4CBE8E;--green-soft:rgba(76,190,142,.12);--red:#E5736B;--red-soft:rgba(229,115,107,.1);
+    --radius:16px;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Geist",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:0 22px}
+  code,.mono{font-family:var(--mono)}
+  a{color:var(--gold)}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:radial-gradient(120% 130% at 80% -10%,var(--gold-soft),transparent 55%),var(--bg)}
+  .hero .wrap{padding:54px 22px 40px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--gold-soft)}
+  h1{font-size:clamp(28px,5vw,42px);line-height:1.07;letter-spacing:-.02em;margin:18px 0 14px;font-weight:700}
+  h1 .g{color:var(--gold)}
+  .lede{font-size:17px;color:var(--muted);max-width:620px;margin:0}
+
+  section{padding:38px 0}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  h2{font-size:22px;letter-spacing:-.01em;margin:0 0 16px;font-weight:600}
+
+  .why{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .why .ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--red-soft);color:var(--red)}
+  .why h3{margin:0 0 5px;font-size:15px;font-weight:600}
+  .why p{margin:0;font-size:14px;color:var(--muted)}
+  .why code{font-family:var(--mono);font-size:12.5px;color:var(--gold);background:var(--gold-soft);padding:1px 6px;border-radius:5px}
+
+  /* steps */
+  ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+  ol.steps>li{counter-increment:s;position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 20px 20px 64px}
+  ol.steps>li::before{content:counter(s);position:absolute;left:18px;top:18px;width:32px;height:32px;border-radius:10px;background:var(--gold-soft);border:1px solid rgba(240,200,74,.3);color:var(--gold);font-family:var(--mono);font-weight:600;display:grid;place-items:center}
+  ol.steps h3{margin:0 0 6px;font-size:16px;font-weight:600}
+  ol.steps p{margin:0 0 8px;font-size:14px;color:var(--muted)}
+  ol.steps p:last-child{margin-bottom:0}
+  ol.steps code{font-family:var(--mono);font-size:12.5px;color:var(--gold);background:var(--gold-soft);padding:1px 6px;border-radius:5px}
+  .sub{margin:8px 0 0;padding-left:14px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:5px}
+  .sub li{font-size:13px;color:var(--muted);list-style:none;position:relative;padding-left:14px}
+  .sub li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--faint)}
+
+  pre{margin:10px 0 0;background:#0d0d12;border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#e6e6ea}
+  pre .c{color:var(--faint)} pre .k{color:#9DBBFF}
+
+  .mig{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+  @media(max-width:620px){.mig{grid-template-columns:1fr}}
+  .mig .m{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px}
+  .mig .m .tick{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .mig .m.ok .tick{background:var(--green-soft);color:var(--green)} .mig .m.q .tick{background:var(--gold-soft);color:var(--gold)}
+  .mig .m b{font-family:var(--mono);font-size:12px}
+  .mig .m span{color:var(--muted);font-size:12px}
+
+  .note{margin-top:16px;display:flex;gap:12px;align-items:flex-start;border-radius:12px;padding:14px 16px;background:var(--green-soft);border:1px solid rgba(76,190,142,.25)}
+  .note .ic{flex:none;width:20px;height:20px;color:var(--green)}
+  .note p{margin:0;font-size:13.5px;color:#bfe6d4}
+  .note code{font-family:var(--mono);font-size:12px;color:var(--ink);background:#0d0d12;padding:1px 5px;border-radius:5px}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--faint);font-size:12.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> [ Hotfix ]</span>
+    <h1>Bring the app <span class="g">back up.</span></h1>
+    <p class="lede">The <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">/account</code> 500 (and the whole app) traced to a query in the shared layout
+      that crashed every page. The crash is fixed in code — here's exactly how to ship it and clear the root cause.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="why">
+      <div class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg></div>
+      <div>
+        <h3>What broke</h3>
+        <p>The shared <code>(app)</code> layout loads your dashboard data on <em>every</em> page. That query
+          <code>threw</code> on an error, so one bad query 500'd the entire app — account, dashboard, all of it.
+          A likely DB column was missing because a migration hadn't been applied. The fix makes that query
+          <strong>log the cause and return empty</strong> instead of crashing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">Do this, in order</p>
+    <h2>Three steps to green.</h2>
+
+    <ol class="steps">
+      <li>
+        <h3>Apply the missing migration in Supabase</h3>
+        <p>Open <strong>Supabase → SQL Editor → New query</strong>, paste the file, click <strong>Run</strong>.
+          You've confirmed 0006–0008; the usual missing one is <strong>0005</strong> (it adds
+          <code>requests.shipping_address</code>, the <code>addresses</code> table, and avatars).</p>
+        <div class="mig">
+          <div class="m ok"><span class="tick">✓</span><b>0005</b><span>avatars · addresses · shipping_address</span></div>
+          <div class="m ok"><span class="tick">✓</span><b>0006</b><span>notification prefs</span></div>
+          <div class="m ok"><span class="tick">✓</span><b>0007</b><span>profile email mirror</span></div>
+          <div class="m ok"><span class="tick">✓</span><b>0008</b><span>request estimate</span></div>
+        </div>
+        <p style="margin-top:10px">All four must show as applied. If unsure, just re-run each in order — they use
+          <code>add column if not exists</code>, so re-running is safe.</p>
+      </li>
+
+      <li>
+        <h3>Ship the code fix to production</h3>
+        <p>The fix is on branch <code>feat/launch-prep</code> (commit <code>c63ebea</code>). Merge it to
+          <code>main</code> so production rebuilds with it.</p>
+        <div class="sub">
+          <li>Open the PR: <a href="https://github.com/chakra3301/FindersXKeepers/pull/1" target="_blank">github.com/chakra3301/FindersXKeepers/pull/1</a></li>
+          <li>Click <strong>Merge pull request</strong> → Vercel auto-deploys <code>main</code> to production.</li>
+          <li>Wait for the deployment to go <strong>Ready</strong> (and confirm it shows commit <code>c63ebea</code> or later).</li>
+        </div>
+      </li>
+
+      <li>
+        <h3>Reload and verify</h3>
+        <p>Hard-refresh <code>findersxkeepers.com/account</code>. It should load now. Then click into the
+          dashboard and add a profile picture to confirm writes work.</p>
+        <p>If a page loads but looks empty, the real query error is now in your logs — see below.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">If anything still looks off</p>
+    <h2>Read the cause in Vercel logs.</h2>
+    <ol class="steps">
+      <li>
+        <h3>Open the runtime logs</h3>
+        <p>Vercel → your project → the <strong>Production</strong> deployment → <strong>Logs</strong> tab
+          (a.k.a. Runtime Logs / Functions).</p>
+      </li>
+      <li>
+        <h3>Trigger it, then read the line</h3>
+        <p>Reload the broken page to generate a log entry, then look for one of these — it names the exact
+          failing table/column:</p>
+        <pre><span class="c"># examples you might see</span>
+[getDashboardRequests] <span class="k">42703</span> column requests.shipping_address does not exist
+[getProfile] <span class="k">42P01</span> relation "profiles" ...
+[listAddresses] could not find the table 'public.addresses'</pre>
+        <p style="margin-top:8px">A <code>does not exist</code> / <code>could not find the table</code> message = a migration still
+          isn't applied. Run it (step 1) and you're done.</p>
+      </li>
+    </ol>
+
+    <div class="note">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+      <p>After this, the app is hardened: the layout query, profile/address loads, and the estimator/email
+        config all <strong>degrade gracefully + log</strong> instead of crashing — so a missing migration or a
+        mis-pasted env var can never take the whole site down again.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><strong>Finders × Keepers</strong> · account 500 hotfix</span>
+    <span>migration → merge → verify</span>
+  </div>
+</footer>
+
+</body>
+</html>

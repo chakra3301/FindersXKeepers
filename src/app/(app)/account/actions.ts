@@ -12,14 +12,11 @@ import {
   setDefaultAddress,
 } from "@/lib/addresses/operations";
 import { addressSchema } from "@/lib/addresses/validation";
-
-export interface UpdateProfileState {
-  status: "idle" | "success" | "error";
-  message?: string;
-  fieldErrors?: Record<string, string>;
-}
-
-const initialState: UpdateProfileState = { status: "idle" };
+import type {
+  UpdateProfileState,
+  NotificationPrefsState,
+  AddressFormState,
+} from "./form-state";
 
 export async function updateProfileAction(
   _prev: UpdateProfileState,
@@ -63,17 +60,6 @@ export async function updateProfileAction(
   };
 }
 
-export { initialState as updateProfileInitialState };
-
-export interface NotificationPrefsState {
-  status: "idle" | "success" | "error";
-  message?: string;
-}
-
-export const notificationPrefsInitialState: NotificationPrefsState = {
-  status: "idle",
-};
-
 // Unchecked checkboxes are absent from FormData; presence === opted in.
 export async function updateNotificationPrefsAction(
   _prev: NotificationPrefsState,
@@ -98,14 +84,6 @@ export async function updateNotificationPrefsAction(
   revalidatePath("/account");
   return { status: "success", message: "Notification preferences saved." };
 }
-
-export interface AddressFormState {
-  status: "idle" | "success" | "error";
-  message?: string;
-  fieldErrors?: Record<string, string>;
-}
-
-export const addressInitialState: AddressFormState = { status: "idle" };
 
 function parseAddress(formData: FormData) {
   return addressSchema.safeParse({

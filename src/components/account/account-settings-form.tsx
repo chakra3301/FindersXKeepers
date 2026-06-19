@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
-import {
-  updateProfileAction,
-  updateProfileInitialState,
-} from "@/app/(app)/account/actions";
+import { updateProfileAction } from "@/app/(app)/account/actions";
+import { updateProfileInitialState } from "@/app/(app)/account/form-state";
 import { SHIPPING_COUNTRIES } from "@/lib/profile/countries";
 import { DISPLAY_CURRENCIES } from "@/lib/profile/validation";
 import { Button } from "@/components/ui/button";

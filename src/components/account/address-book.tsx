@@ -7,8 +7,8 @@ import {
   updateAddressAction,
   deleteAddressAction,
   setDefaultAddressAction,
-  addressInitialState,
 } from "@/app/(app)/account/actions";
+import { addressInitialState } from "@/app/(app)/account/form-state";
 import { SHIPPING_COUNTRIES } from "@/lib/profile/countries";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";

@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
-import {
-  updateNotificationPrefsAction,
-  notificationPrefsInitialState,
-} from "@/app/(app)/account/actions";
+import { updateNotificationPrefsAction } from "@/app/(app)/account/actions";
+import { notificationPrefsInitialState } from "@/app/(app)/account/form-state";
 import { Button } from "@/components/ui/button";
 
 interface Prefs {
