@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, AlertCircle, ShieldCheck, Share2 } from "lucide-react";
+import { ChevronLeft, AlertCircle, ShieldCheck, Share2, Sparkles } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -149,6 +149,20 @@ export default async function RequestDetailPage({
           <p className="font-mono text-[13.5px] text-muted-foreground">
             {conditionLabel(request.min_condition)} · {RUSH_LABEL[request.rush_tier]}
           </p>
+
+          {/* Light market estimate — only while still hunting (no candidate/order yet) */}
+          {request.est_value_jpy != null && !latestCandidate && !latestOrder && (
+            <p className="flex items-center gap-1.5 text-[12.5px] text-muted-foreground">
+              <Sparkles size={12} className="text-primary" />
+              Est. market value{" "}
+              <span className="tnum font-[540] text-foreground">
+                {request.est_value_low_jpy != null &&
+                request.est_value_high_jpy != null
+                  ? `${formatJpy(request.est_value_low_jpy)}–${formatJpy(request.est_value_high_jpy)}`
+                  : formatJpy(request.est_value_jpy)}
+              </span>
+            </p>
+          )}
 
           {/* Progress bar */}
           <div className="flex max-w-[420px] gap-[3px]">
