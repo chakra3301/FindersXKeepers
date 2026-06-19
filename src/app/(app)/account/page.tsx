@@ -50,11 +50,16 @@ function Row({
 }
 
 export default async function AccountPage() {
-  // requireUser may redirect — keep it OUTSIDE the diagnostic try so the redirect propagates.
-  const user = await requireUser();
   try {
+    const user = await requireUser();
     return await renderAccount(user);
   } catch (e) {
+    // Let framework redirect/notFound signals propagate normally.
+    const digest =
+      typeof e === "object" && e && "digest" in e ? String((e as { digest?: unknown }).digest) : "";
+    if (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND")) {
+      throw e;
+    }
     // TEMP diagnostic: surface the real error on the page (prod hides it otherwise).
     const msg = e instanceof Error ? `${e.name}: ${e.message}\n\n${e.stack ?? ""}` : String(e);
     console.error("[AccountPage]", msg);
