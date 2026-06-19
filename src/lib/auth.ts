@@ -25,11 +25,15 @@ export async function getProfile(): Promise<Profile | null> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
+  if (error) {
+    console.error(`[getProfile] ${error.code ?? ""} ${error.message}`);
+    return null;
+  }
   return data;
 }
 

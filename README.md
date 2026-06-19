@@ -59,6 +59,8 @@ order (paste file contents, run):
 5. [`supabase/migrations/0005_profile_avatars_addresses.sql`](supabase/migrations/0005_profile_avatars_addresses.sql)
 6. [`supabase/migrations/0006_notification_prefs.sql`](supabase/migrations/0006_notification_prefs.sql)
 7. [`supabase/migrations/0007_profile_email.sql`](supabase/migrations/0007_profile_email.sql)
+8. [`supabase/migrations/0008_request_estimate.sql`](supabase/migrations/0008_request_estimate.sql)
+9. [`supabase/migrations/0009_avatars_storage_select.sql`](supabase/migrations/0009_avatars_storage_select.sql)
 
 Or, with the Supabase CLI linked: `supabase db push`.
 

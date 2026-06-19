@@ -1,6 +1,7 @@
 import { Info, CreditCard } from "lucide-react";
 import { getProfile, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { resolveAvatarUrl } from "@/lib/profile/avatar";
 import { shippingCountryLabel } from "@/lib/profile/countries";
 import { listAddresses } from "@/lib/addresses/queries";
 import { AccountSettingsForm } from "@/components/account/account-settings-form";
@@ -53,6 +54,7 @@ export default async function AccountPage() {
   const supabase = await createClient();
   const addresses = await listAddresses(user.id, supabase);
   const avatarInitial = (user.email ?? "?").charAt(0).toUpperCase();
+  const avatarDisplayUrl = resolveAvatarUrl(profile?.avatar_url);
 
   const currencyPref = profile?.currency_pref ?? "USD";
   const shippingCountry = profile?.shipping_country ?? null;
@@ -76,7 +78,7 @@ export default async function AccountPage() {
         <Section title="Profile">
           <AvatarUploader
             userId={user.id}
-            avatarUrl={profile?.avatar_url ?? null}
+            avatarUrl={avatarDisplayUrl}
             initial={avatarInitial}
           />
         </Section>
