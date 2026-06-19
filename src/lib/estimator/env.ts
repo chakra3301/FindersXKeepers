@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cleanEnvValue } from "@/lib/env-clean";
 
 /**
  * DeepSeek estimator config. Read + validated only when
@@ -30,7 +31,18 @@ export interface DeepseekEnv {
 }
 
 export function readDeepseekEnv(): DeepseekEnv {
-  const parsed = schema.safeParse(process.env);
+  // Tolerate pasted "KEY=value" lines / trailing spaces from dashboards.
+  const raw = {
+    DEEPSEEK_API_KEY: cleanEnvValue("DEEPSEEK_API_KEY", process.env.DEEPSEEK_API_KEY),
+    DEEPSEEK_BASE_URL: cleanEnvValue("DEEPSEEK_BASE_URL", process.env.DEEPSEEK_BASE_URL),
+    DEEPSEEK_MODEL: cleanEnvValue("DEEPSEEK_MODEL", process.env.DEEPSEEK_MODEL),
+    DEEPSEEK_REASONER_MODEL: cleanEnvValue(
+      "DEEPSEEK_REASONER_MODEL",
+      process.env.DEEPSEEK_REASONER_MODEL,
+    ),
+    EXA_API_KEY: cleanEnvValue("EXA_API_KEY", process.env.EXA_API_KEY),
+  };
+  const parsed = schema.safeParse(raw);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => i.message).join("; ");
     throw new Error(
