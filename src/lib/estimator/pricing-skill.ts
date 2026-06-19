@@ -53,7 +53,7 @@ const CATEGORIES: Record<Exclude<ItemCategory, "general">, CategorySpec> = {
       "Cardmarket", "PSA Price Guide", "Yahoo! Auctions Japan", "Mercari Japan",
     ],
     domains: [
-      "tcgplayer.com", "pricecharting.com", "ebay.com", "cardmarket.com",
+      "tcgplayer.com", "pricecharting.com", "cardmarket.com",
       "psacard.com",
     ],
     method:
@@ -95,7 +95,7 @@ const CATEGORIES: Record<Exclude<ItemCategory, "general">, CategorySpec> = {
     sources: [
       "Chrono24", "WatchCharts", "Yahoo! Auctions Japan", "Rakuten", "Mercari Japan",
     ],
-    domains: ["chrono24.com", "watchcharts.com", "ebay.com"],
+    domains: ["chrono24.com", "watchcharts.com"],
     method:
       "Reference, box/papers, and condition drive value. Use Chrono24/WatchCharts market data; JDM models often cheaper in Japan. Price insured.",
     weight: "~0.4–1 kg, insured",
@@ -108,7 +108,7 @@ const CATEGORIES: Record<Exclude<ItemCategory, "general">, CategorySpec> = {
     sources: [
       "Map Camera (Japan)", "Kakaku.com", "eBay sold listings", "Mercari Japan", "Suruga-ya",
     ],
-    domains: ["mapcamera.com", "kakaku.com", "ebay.com"],
+    domains: ["mapcamera.com", "kakaku.com"],
     method:
       "Grade on cosmetic + optical condition (haze/fungus/dust). Map Camera grades are the JDM benchmark; bodies and lenses priced separately.",
     weight: "~0.8–3 kg, padded",
@@ -122,7 +122,7 @@ const CATEGORIES: Record<Exclude<ItemCategory, "general">, CategorySpec> = {
     sources: [
       "PriceCharting", "Suruga-ya (Japan)", "Mercari Japan", "Yahoo! Auctions Japan", "eBay sold",
     ],
-    domains: ["pricecharting.com", "suruga-ya.jp", "ebay.com"],
+    domains: ["pricecharting.com", "suruga-ya.jp"],
     method:
       "Use PriceCharting loose/CIB/new columns. Complete-in-box and region (JP/NTSC-J) matter; manuals and spine cards add value.",
     weight: "~0.3–1.2 kg",
@@ -135,7 +135,7 @@ const CATEGORIES: Record<Exclude<ItemCategory, "general">, CategorySpec> = {
     sources: [
       "Mandarake", "Suruga-ya", "Mercari Japan", "Yahoo! Auctions Japan", "AmiAmi",
     ],
-    domains: ["mandarake.co.jp", "suruga-ya.jp", "amiami.com", "ebay.com"],
+    domains: ["mandarake.co.jp", "suruga-ya.jp", "amiami.com"],
     method:
       "Sealed vs opened and exclusivity drive price. Mandarake/Suruga-ya are the JDM benchmarks; limited/event editions trade higher.",
     weight: "~0.5–2 kg, boxed and padded",
@@ -147,7 +147,7 @@ const GENERAL: CategorySpec = {
   sources: [
     "Mercari Japan", "Yahoo! Auctions Japan", "Rakuten", "eBay sold listings",
   ],
-  domains: ["mercari.com", "rakuten.co.jp", "ebay.com"],
+  domains: ["mercari.com", "rakuten.co.jp"],
   method:
     "Match the exact item against recent sold comps on Japanese marketplaces; use eBay sold listings as an international cross-check.",
   weight: "~0.5–2 kg",

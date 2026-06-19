@@ -26,6 +26,34 @@ describe("exaSearch", () => {
   });
 });
 
+describe("exaSearch domain fallback", () => {
+  it("strips Exa-unavailable domains and retries", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            error: "The following requested domains are not available: ebay.com. Remove them.",
+            tag: "SOURCE_NOT_AVAILABLE",
+          }),
+          { status: 403 },
+        ),
+      )
+      .mockResolvedValueOnce(exaBody([{ title: "ok", url: "u", text: "t" }]));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const comps = await exaSearch({
+      query: "q",
+      apiKey: "k",
+      includeDomains: ["ebay.com", "tcgplayer.com"],
+    });
+    expect(comps).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const secondBody = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(secondBody.includeDomains).toEqual(["tcgplayer.com"]);
+  });
+});
+
 describe("gatherWebContext", () => {
   it("returns undefined without an api key (grounding disabled)", async () => {
     mockFetch(() => exaBody([]));

@@ -35,6 +35,13 @@ interface ExaResult {
 
 /** One Exa search restricted to trusted domains, returning trimmed snippets. */
 export async function exaSearch(params: ExaSearchParams): Promise<Comp[]> {
+  return searchWithDomains(params, params.includeDomains);
+}
+
+async function searchWithDomains(
+  params: ExaSearchParams,
+  includeDomains: string[] | undefined,
+): Promise<Comp[]> {
   const res = await fetch(EXA_SEARCH_URL, {
     method: "POST",
     headers: {
@@ -45,13 +52,23 @@ export async function exaSearch(params: ExaSearchParams): Promise<Comp[]> {
       query: params.query,
       numResults: params.numResults ?? 6,
       type: "auto",
-      includeDomains: params.includeDomains,
+      includeDomains,
       contents: { text: { maxCharacters: 600 } },
     }),
     signal: params.signal,
   });
   if (!res.ok) {
-    throw new Error(`Exa HTTP ${res.status}: ${await res.text()}`);
+    const body = await res.text();
+    // Exa rejects the whole request if any requested domain isn't crawlable.
+    // Strip the unavailable ones and retry once (or go unrestricted if none left).
+    if (res.status === 403 && includeDomains?.length) {
+      const bad = parseUnavailableDomains(body);
+      const remaining = includeDomains.filter((d) => !bad.includes(d));
+      if (bad.length && remaining.length !== includeDomains.length) {
+        return searchWithDomains(params, remaining.length ? remaining : undefined);
+      }
+    }
+    throw new Error(`Exa HTTP ${res.status}: ${body}`);
   }
   const json = (await res.json()) as { results?: ExaResult[] };
   return (json.results ?? []).map((r) => ({
@@ -62,6 +79,22 @@ export async function exaSearch(params: ExaSearchParams): Promise<Comp[]> {
       .trim()
       .slice(0, 600),
   }));
+}
+
+/**
+ * Pull the domain list out of Exa's SOURCE_NOT_AVAILABLE error message, e.g.
+ * "...not available: ebay.com, foo.com. Remove them..." -> ["ebay.com","foo.com"].
+ */
+function parseUnavailableDomains(body: string): string[] {
+  const m =
+    body.match(/not available:\s*(.+?)\s*\.\s*(?:Remove|try again|$)/i) ??
+    body.match(/not available:\s*([^"}]+)/i);
+  return m
+    ? m[1]
+        .split(",")
+        .map((s) => s.trim().replace(/\.+$/, ""))
+        .filter(Boolean)
+    : [];
 }
 
 /** Render comps as a compact context block for the model prompt. */
