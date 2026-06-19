@@ -10,30 +10,6 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  try {
-    return await renderAppLayout(children);
-  } catch (e) {
-    const digest =
-      typeof e === "object" && e && "digest" in e
-        ? String((e as { digest?: unknown }).digest)
-        : "";
-    if (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND")) {
-      throw e;
-    }
-    const msg = e instanceof Error ? `${e.name}: ${e.message}\n\n${e.stack ?? ""}` : String(e);
-    console.error("[AppLayout]", msg);
-    return (
-      <main className="mx-auto max-w-[820px] px-6 py-12">
-        <h1 className="mb-3 text-2xl font-semibold tracking-tight">App layout debug</h1>
-        <pre className="overflow-auto rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-[12px] whitespace-pre-wrap text-destructive">
-          {msg}
-        </pre>
-      </main>
-    );
-  }
-}
-
-async function renderAppLayout(children: React.ReactNode) {
   const [user, profile, requests] = await Promise.all([
     requireUser(),
     getProfile(),

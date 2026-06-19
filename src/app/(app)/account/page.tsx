@@ -50,34 +50,7 @@ function Row({
 }
 
 export default async function AccountPage() {
-  try {
-    const user = await requireUser();
-    return await renderAccount(user);
-  } catch (e) {
-    // Let framework redirect/notFound signals propagate normally.
-    const digest =
-      typeof e === "object" && e && "digest" in e ? String((e as { digest?: unknown }).digest) : "";
-    if (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND")) {
-      throw e;
-    }
-    // TEMP diagnostic: surface the real error on the page (prod hides it otherwise).
-    const msg = e instanceof Error ? `${e.name}: ${e.message}\n\n${e.stack ?? ""}` : String(e);
-    console.error("[AccountPage]", msg);
-    return (
-      <div className="mx-auto w-full max-w-[680px]">
-        <h1 className="mb-3 text-2xl font-semibold tracking-tight">Account debug</h1>
-        <pre className="overflow-auto rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-[12px] whitespace-pre-wrap text-destructive">
-          {msg}
-        </pre>
-      </div>
-    );
-  }
-}
-
-async function renderAccount(
-  user: NonNullable<Awaited<ReturnType<typeof requireUser>>>,
-) {
-  const profile = await getProfile();
+  const [user, profile] = await Promise.all([requireUser(), getProfile()]);
   const supabase = await createClient();
   const addresses = await listAddresses(user.id, supabase);
   const avatarInitial = (user.email ?? "?").charAt(0).toUpperCase();
