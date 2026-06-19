@@ -35,7 +35,16 @@ export async function getDashboardRequests(): Promise<DashboardRequest[]> {
         .select("id, request_id, price_jpy, status, created_at"),
     ]);
 
-  if (requestsRes.error) throw requestsRes.error;
+  // This runs in the shared (app) layout, so a thrown error 500s EVERY app page.
+  // Log the real cause and degrade to an empty dashboard instead of crashing.
+  const firstErr =
+    requestsRes.error ?? paymentsRes.error ?? ordersRes.error ?? candidatesRes.error;
+  if (firstErr) {
+    console.error(
+      `[getDashboardRequests] ${firstErr.code ?? ""} ${firstErr.message}`,
+    );
+    return [];
+  }
   const requests = requestsRes.data ?? [];
   const payments = paymentsRes.data ?? [];
   const orders = ordersRes.data ?? [];
