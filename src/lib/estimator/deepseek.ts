@@ -119,26 +119,52 @@ export class DeepseekEstimator implements Estimator {
     }
   }
 
-  /** One JSON round-trip to the chat-completions endpoint. */
+  /**
+   * One JSON round-trip to the chat-completions endpoint. Works against any
+   * OpenAI-compatible gateway (DeepSeek direct, opencode Zen, OpenRouter, …):
+   * tries strict JSON mode first, retries plain if the gateway rejects the
+   * `response_format` param, and extracts JSON tolerantly from the reply.
+   */
   private async ask(
     system: string,
     user: string,
   ): Promise<Record<string, unknown>> {
+    let content: string;
+    try {
+      content = await this.complete(system, user, true);
+    } catch (e) {
+      // Some gateways 400/422 on response_format — retry without JSON mode.
+      if (/\b4\d\d\b/.test(asText(e) ?? "")) {
+        content = await this.complete(system, user, false);
+      } else {
+        throw e;
+      }
+    }
+    return extractJson(content);
+  }
+
+  private async complete(
+    system: string,
+    user: string,
+    jsonMode: boolean,
+  ): Promise<string> {
+    const body: Record<string, unknown> = {
+      model: this.env.model,
+      temperature: 0,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+    };
+    if (jsonMode) body.response_format = { type: "json_object" };
+
     const res = await fetch(`${this.env.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.env.apiKey}`,
       },
-      body: JSON.stringify({
-        model: this.env.model,
-        temperature: 0,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
+      body: JSON.stringify(body),
       // Never let a slow model wedge checkout.
       signal: AbortSignal.timeout(15_000),
     });
@@ -150,7 +176,24 @@ export class DeepseekEstimator implements Estimator {
     };
     const content = json.choices?.[0]?.message?.content;
     if (!content) throw new Error("empty completion");
-    return JSON.parse(content) as Record<string, unknown>;
+    return content;
+  }
+}
+
+/** Tolerant JSON extraction: handles ```json fences and surrounding prose. */
+function extractJson(text: string): Record<string, unknown> {
+  let t = text.trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) t = fence[1].trim();
+  try {
+    return JSON.parse(t) as Record<string, unknown>;
+  } catch {
+    const start = t.indexOf("{");
+    const end = t.lastIndexOf("}");
+    if (start !== -1 && end > start) {
+      return JSON.parse(t.slice(start, end + 1)) as Record<string, unknown>;
+    }
+    throw new Error("no JSON object in completion");
   }
 }
 
