@@ -3,7 +3,7 @@ import type { Database } from "@/lib/db/types";
 
 /**
  * Supabase client for Client Components (browser). Used for interactive auth
- * (email/password sign-in, Apple OAuth) on the login page.
+ * (email one-time-code sign-in, Apple/Google OAuth) on the login page.
  */
 export function createClient() {
   return createBrowserClient<Database>(

@@ -22,7 +22,8 @@ Ask before adding a major dependency or deviating from this stack.
 
 See `README.md`. Short version: fill `.env.local` from `.env.example`, apply
 `supabase/migrations/0001_init.sql` in the Supabase SQL editor, `npm run seed`,
-`npm run dev`. Demo login: `demo@finderskeepers.test` / `concierge123`.
+`npm run dev`. Login is passwordless (email OTP) — the seeded demo account is
+`luca47hall@gmail.com`; enter it at `/login` and use the one-time code.
 
 ## The five non-negotiable constraints (legal + trust — never simplify away)
 

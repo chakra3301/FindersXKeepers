@@ -30,6 +30,7 @@ export type MessageSender = "customer" | "team";
 
 export type Profile = {
   id: string;
+  email: string | null;
   shipping_country: string | null;
   currency_pref: string;
   avatar_url: string | null;

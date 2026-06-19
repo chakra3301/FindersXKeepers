@@ -77,9 +77,12 @@ export default function LoginPage() {
             <Logo />
           </div>
           <div className="mb-8">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">Welcome back</h2>
+            <h2 className="font-display text-2xl font-semibold tracking-tight">
+              Sign in or create an account
+            </h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Sign in to post requests and track your escrow.
+              Enter your email — we&rsquo;ll send a one-time code. New here? We&rsquo;ll
+              set you up in the same step.
             </p>
           </div>
           <Suspense>

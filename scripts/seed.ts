@@ -21,7 +21,10 @@ import type {
   RushTier,
 } from "@/lib/db/types";
 
-const DEMO_EMAIL = "demo@finderskeepers.test";
+// Login is passwordless (email OTP), so the demo account must be a real inbox
+// that can actually receive the one-time code. The password is kept only so
+// `admin.createUser` has one on file; the UI never uses it.
+const DEMO_EMAIL = "luca47hall@gmail.com";
 const DEMO_PASSWORD = "concierge123";
 
 const admin = createAdminClient();
@@ -367,9 +370,8 @@ async function seed() {
   await addMessage(refunded, "team", "The item didn't match the disclosed condition — we've refunded your escrow in full.");
 
   console.info("\n✓ Seed complete.");
-  console.info("  Sign in with:");
-  console.info(`    email:    ${DEMO_EMAIL}`);
-  console.info(`    password: ${DEMO_PASSWORD}\n`);
+  console.info("  Sign in at /login with this email — we'll send a one-time code:");
+  console.info(`    email: ${DEMO_EMAIL}\n`);
 }
 
 seed().catch((err) => {
