@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pricing estimator · opencode setup · Finders × Keepers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0A0A0D;--card:#141318;--card2:#1B1A20;--ink:#EDEDEF;--muted:#8B8B93;
+    --faint:#6B6B73;--line:#26262E;--gold:#F0C84A;--gold-soft:rgba(240,200,74,.12);
+    --green:#4CBE8E;--green-soft:rgba(76,190,142,.12);--red:#E5736B;--red-soft:rgba(229,115,107,.1);
+    --radius:16px;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Geist",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:840px;margin:0 auto;padding:0 22px}
+  code,.mono{font-family:var(--mono)}
+  a{color:var(--gold)}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:radial-gradient(120% 130% at 80% -10%,var(--gold-soft),transparent 55%),
+      radial-gradient(90% 120% at 0% 0%,rgba(29,78,216,.10),transparent 55%),var(--bg)}
+  .hero .wrap{padding:56px 22px 42px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--gold-soft)}
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.07;letter-spacing:-.02em;margin:18px 0 14px;font-weight:700}
+  h1 .g{color:var(--gold)}
+  .lede{font-size:17px;color:var(--muted);max-width:600px;margin:0}
+
+  section{padding:42px 0}
+  .kicker{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  h2{font-size:23px;letter-spacing:-.01em;margin:0 0 18px;font-weight:600}
+
+  /* pipeline */
+  .flow{display:flex;flex-direction:column;gap:0}
+  .step{display:grid;grid-template-columns:42px 1fr;gap:16px;position:relative;padding-bottom:24px}
+  .step:last-child{padding-bottom:0}
+  .step .n{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;z-index:1;font-family:var(--mono);font-weight:600;font-size:15px;background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,200,74,.3)}
+  .step:not(:last-child)::before{content:"";position:absolute;left:20.5px;top:42px;bottom:0;width:1.5px;background:linear-gradient(var(--line),transparent)}
+  .step h3{margin:1px 0 4px;font-size:16px;font-weight:600}
+  .step p{margin:0;font-size:14px;color:var(--muted)}
+  .step code{font-family:var(--mono);font-size:12.5px;background:var(--gold-soft);color:var(--gold);padding:1px 6px;border-radius:5px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .grid{display:grid;gap:14px}
+  .grid-2{grid-template-columns:1fr 1fr}
+  @media(max-width:700px){.grid-2{grid-template-columns:1fr}}
+
+  /* env block */
+  .codewrap{position:relative;background:#0d0d12;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .codewrap .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .codewrap .bar .fname{font-family:var(--mono)}
+  .copy{margin-left:auto;cursor:pointer;border:1px solid var(--line);background:var(--card);border-radius:7px;font-size:11px;padding:4px 11px;color:var(--muted);font-family:inherit;display:inline-flex;gap:6px;align-items:center}
+  .copy:hover{border-color:var(--gold);color:var(--gold)}
+  pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.75;color:#e6e6ea}
+  pre .k{color:#9DBBFF}.pre .v{color:var(--gold)}
+  pre .v{color:var(--gold)}
+  pre .c{color:var(--faint)}
+
+  table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;font-size:13.5px}
+  th{text-align:left;background:#0f0f14;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:11px 14px;font-weight:600}
+  td{padding:11px 14px;border-top:1px solid var(--line);vertical-align:top}
+  td.cat{font-weight:600;white-space:nowrap}
+  td.src{color:var(--muted);font-family:var(--mono);font-size:12px}
+
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .pill{font-size:12px;border:1px solid var(--line);background:var(--card2);border-radius:999px;padding:6px 12px;color:var(--ink)}
+  .pill b{color:var(--gold);font-weight:600}
+
+  .note{display:flex;gap:13px;align-items:flex-start;border-radius:14px;padding:16px 18px}
+  .note.warn{background:var(--red-soft);border:1px solid rgba(229,115,107,.25)}
+  .note.ok{background:var(--green-soft);border:1px solid rgba(76,190,142,.25)}
+  .note .ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#0d0d12}
+  .note.warn .ic{color:var(--red)} .note.ok .ic{color:var(--green)}
+  .note h3{margin:0 0 3px;font-size:14.5px;font-weight:600}
+  .note.warn h3{color:var(--red)} .note.ok h3{color:var(--green)}
+  .note p{margin:0;font-size:13.5px;color:var(--muted)}
+  .note code{font-family:var(--mono);font-size:12px;background:#0d0d12;padding:1px 5px;border-radius:5px;color:var(--ink)}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--faint);font-size:12.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#1a1500;font-weight:600;font-size:13px;padding:9px 16px;border-radius:10px;opacity:0;transition:all .25s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> [ Pricing estimator ]</span>
+    <h1>Run the estimator through<br><span class="g">your opencode key.</span></h1>
+    <p class="lede">The estimator talks to any OpenAI-compatible gateway. Point three env vars at
+      opencode Zen, drop in your key, and every request gets web-grounded shipping &amp; item pricing.</p>
+  </div>
+</header>
+
+<!-- pipeline -->
+<section>
+  <div class="wrap">
+    <p class="kicker">How a price is made</p>
+    <h2>Four steps, fully fenced.</h2>
+    <div class="flow">
+      <div class="step"><div class="n">1</div><div>
+        <h3>Classify the item</h3>
+        <p>A deterministic keyword pass tags the request — <code>trading_card</code>, <code>sneakers</code>,
+          <code>apparel</code>, <code>watch</code>, <code>camera</code>, <code>video_game</code>, <code>figure</code> — no model call.</p>
+      </div></div>
+      <div class="step"><div class="n">2</div><div>
+        <h3>Pull live comps from trusted sites (Exa)</h3>
+        <p>Searches that category's trusted domains only and returns recent listings. Optional — add
+          <code>EXA_API_KEY</code> to switch it on; skipped silently if absent or slow (10s cap).</p>
+      </div></div>
+      <div class="step"><div class="n">3</div><div>
+        <h3>Reason over them (opencode / DeepSeek)</h3>
+        <p>The model gets the category skill + live comps and returns JSON: price, low/high, confidence,
+          carrier, and which sources it used. Gateway-agnostic with JSON-mode retry + tolerant parsing.</p>
+      </div></div>
+      <div class="step"><div class="n">4</div><div>
+        <h3>Clamp, cap &amp; fall back</h3>
+        <p>Figures are clamped to safe bounds and never exceed the budget cap. Any failure falls back to the
+          deterministic stub, so <b style="color:var(--gold)">checkout never blocks</b>. Memoized 10&nbsp;min so a view + deposit
+          don't double-bill.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- setup -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">Setup</p>
+    <h2>Paste your opencode key, restart.</h2>
+    <div class="codewrap">
+      <div class="bar"><span class="fname">.env.local</span>
+        <button class="copy" id="copyEnv"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> copy</button>
+      </div>
+<pre id="env"><span class="k">ESTIMATOR_PROVIDER</span>=<span class="v">deepseek</span>
+<span class="k">DEEPSEEK_BASE_URL</span>=<span class="v">https://opencode.ai/zen/v1</span>
+<span class="k">DEEPSEEK_API_KEY</span>=<span class="v">&lt;your opencode key&gt;</span>
+<span class="k">DEEPSEEK_MODEL</span>=<span class="v">deepseek-v4-flash</span>   <span class="c"># or deepseek-v4-pro</span>
+
+<span class="c"># optional — live web comps</span>
+<span class="k">EXA_API_KEY</span>=<span class="v">&lt;your exa key&gt;</span></pre>
+    </div>
+    <div class="grid grid-2" style="margin-top:14px">
+      <div class="card">
+        <h3 style="margin:0 0 6px;font-size:15px">Other gateways, same vars</h3>
+        <p style="margin:0;font-size:13.5px;color:var(--muted)">It's just “base URL + key + model.” Swap in
+          DeepSeek-direct (<code style="font-family:var(--mono);font-size:12px;color:var(--gold)">api.deepseek.com/v1</code>) or
+          OpenRouter (<code style="font-family:var(--mono);font-size:12px;color:var(--gold)">openrouter.ai/api/v1</code>) with zero code change.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 6px;font-size:15px">Then mirror in Vercel</h3>
+        <p style="margin:0;font-size:13.5px;color:var(--muted)">Settings → Environment Variables → add the same
+          four (or five) keys → redeploy. <code style="font-family:var(--mono);font-size:12px">.env.local</code> is local only.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- sources -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">The skill</p>
+    <h2>Trusted sources, per category.</h2>
+    <table>
+      <tr><th>Category</th><th>Anchored on</th></tr>
+      <tr><td class="cat">Trading cards</td><td class="src">tcgplayer · pricecharting · ebay sold · cardmarket · psacard</td></tr>
+      <tr><td class="cat">Sneakers</td><td class="src">stockx · goat · snkrdunk · grailed</td></tr>
+      <tr><td class="cat">Apparel</td><td class="src">grailed · mercari · vinted · depop</td></tr>
+      <tr><td class="cat">Watches</td><td class="src">chrono24 · watchcharts · ebay</td></tr>
+      <tr><td class="cat">Cameras</td><td class="src">mapcamera · kakaku · ebay</td></tr>
+      <tr><td class="cat">Games / figures</td><td class="src">pricecharting · suruga-ya · mandarake · amiami</td></tr>
+      <tr><td class="cat">Shipping</td><td class="src">dhl · fedex · ups · japanpost (EMS)</td></tr>
+    </table>
+    <div class="pills">
+      <span class="pill"><b>Classify</b> deterministic</span>
+      <span class="pill"><b>Ground</b> Exa · trusted domains only</span>
+      <span class="pill"><b>Reason</b> opencode / DeepSeek</span>
+      <span class="pill"><b>Never</b> exceeds budget cap</span>
+      <span class="pill"><b>Always</b> 4 separate price lines</span>
+    </div>
+  </div>
+</section>
+
+<!-- cautions -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">Read before production</p>
+    <h2>Two honest cautions on opencode Go.</h2>
+    <div class="grid" style="gap:12px">
+      <div class="note warn">
+        <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg></div>
+        <div><h3>Intended use / terms</h3>
+          <p>opencode Go is a flat-fee plan for the <strong>coding agent</strong>, not a production app backend.
+            Powering every checkout's pricing call may breach their terms and risks the key being throttled or
+            revoked. For a live customer feature, prefer per-token <strong>opencode Zen</strong>, DeepSeek-direct, or OpenRouter.</p>
+        </div>
+      </div>
+      <div class="note warn">
+        <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg></div>
+        <div><h3>Reliability</h3>
+          <p>A coding-agent gateway isn't SLA'd for checkout traffic. If it's slow or down, the estimator
+            silently uses the flat stub (¥4,000) — safe, but not the smart pricing you want.</p>
+        </div>
+      </div>
+      <div class="note ok">
+        <div class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div><h3>Recommended path</h3>
+          <p>Use opencode Go now to <strong>verify end-to-end</strong> (cheap, instant). For production, switch the
+            <code>DEEPSEEK_*</code> values to a dedicated inference key — zero code change, just different env.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><strong>Finders × Keepers</strong> · pricing estimator</span>
+    <span>Classify → ground → reason → clamp · never blocks checkout</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied .env block</div>
+
+<script>
+  const ENV = `ESTIMATOR_PROVIDER=deepseek
+DEEPSEEK_BASE_URL=https://opencode.ai/zen/v1
+DEEPSEEK_API_KEY=<your opencode key>
+DEEPSEEK_MODEL=deepseek-v4-flash
+EXA_API_KEY=<your exa key>`;
+  const toast = document.getElementById("toast");
+  document.getElementById("copyEnv").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(ENV); } catch {}
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1500);
+  });
+</script>
+</body>
+</html>
