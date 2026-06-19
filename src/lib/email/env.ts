@@ -24,7 +24,4 @@ export function readResendEnv(): ResendEnv {
   return { apiKey, from };
 }
 
-/** Base URL used to build absolute links in emails. */
-export function siteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-}
+export { siteUrl } from "@/lib/site-url";
