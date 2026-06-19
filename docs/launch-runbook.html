@@ -154,7 +154,7 @@
       <li><span class="num">4</span><span class="t">Legal review + shipping estimate</span><span class="tag">human / counsel</span></li>
       <li><span class="num">5</span><span class="t">Error visibility — free (Vercel logs)</span><span class="tag">~20 min</span></li>
     </ol>
-    <div class="note info" style="margin-top:14px"><span class="ic">◆</span><span><b>Golden rule:</b> run the whole sequence in <b>test mode</b> end-to-end (test Stripe keys, a real test purchase, a real shipped email) <i>before</i> swapping in live keys. The only difference at the end is <code>sk_live_…</code> instead of <code>sk_test_…</code>.</span></div>
+    <div class="note tip" style="margin-top:14px"><span class="ic">✓</span><span><b>Stripe already validated in test mode</b> — step 2 now covers wiring the <b>live</b> keys + production webhook. Real keys live only in Vercel / <code>.env.local</code>, never in this committed file.</span></div>
   </div>
 
   <!-- STEP 1 -->
@@ -202,7 +202,7 @@ EMAIL_FROM=<span class="tok">Finders Keepers &lt;hello@yourdomain.com&gt;</span>
         <div class="note info"><span class="ic">◆</span><span>Leaving <code>EMAIL_PROVIDER=stub</code> (the default) is safe — it just logs emails to the server console and sends nothing. That's how dev works with no key.</span></div>
       </div></div>
 
-      <div class="done-when"><span>✓</span><span><b>Done when:</b> a test deposit (next step) produces a real “Deposit confirmed” email in your inbox, and the <code>/account</code> notification toggles save and persist on reload.</span></div>
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> a deposit (verified in step 2) produces a real “Deposit confirmed” email in your inbox, and the <code>/account</code> notification toggles save and persist on reload.</span></div>
     </div>
   </section>
 
@@ -218,51 +218,43 @@ EMAIL_FROM=<span class="tok">Finders Keepers &lt;hello@yourdomain.com&gt;</span>
       </div>
     </div>
     <div class="body">
-      <div class="note info"><span class="ic">◆</span><span>Do <b>2A in test mode first</b> and complete a full test purchase. Only then do <b>2B</b> (live keys). Test cards: success <code>4242 4242 4242 4242</code>, declined <code>4000 0000 0000 0002</code>.</span></div>
+      <div class="note tip"><span class="ic">✓</span><span><b>Test mode validated.</b> The flow works against test keys, so the remaining work is wiring the <b>live</b> credentials. From here on this is real money — every charge is real.</span></div>
 
       <div class="task"><input type="checkbox" data-id="2a" /><div class="task-body">
-        <strong>Get your API keys</strong>
-        <p><a href="https://dashboard.stripe.com" target="_blank" rel="noopener">dashboard.stripe.com</a> → Developers → API keys. Copy the <b>Secret</b> (<code>sk_test_…</code>) and <b>Publishable</b> (<code>pk_test_…</code>) keys.</p>
+        <strong>Switch Stripe to Live mode &amp; copy the live keys</strong>
+        <p><a href="https://dashboard.stripe.com" target="_blank" rel="noopener">dashboard.stripe.com</a> → toggle <b>Test mode OFF</b> (you're now in Live). Developers → API keys → copy the <b>live</b> Secret (<code>sk_live_…</code>) and Publishable (<code>pk_live_…</code>).</p>
+        <div class="note warn"><span class="ic">▲</span><span>Live activation requires a completed Stripe business profile (entity, bank account, identity). If the dashboard shows "activate your account," finish that first — live keys won't charge until it's approved.</span></div>
       </div></div>
 
       <div class="task"><input type="checkbox" data-id="2b" /><div class="task-body">
-        <strong>Smoke-test webhooks locally with the Stripe CLI</strong>
-        <p>With <code>npm run dev</code> running, in a second terminal:</p>
-        <pre><code>brew install stripe/stripe-cli/stripe
-stripe login
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-<span class="cmt"># copy the printed whsec_… signing secret</span></code></pre>
-        <div class="note warn"><span class="ic">▲</span><span>Expect <b>[200]</b> responses. A <b>[307]</b> means the route got redirected by auth — <code>/api/stripe</code> must stay public (it already is in <code>middleware.ts</code>; don't change that).</span></div>
-      </div></div>
-
-      <div class="task"><input type="checkbox" data-id="2c" /><div class="task-body">
-        <strong>Set the Stripe env vars &amp; flip the provider</strong>
-        <pre><code>ESCROW_PROVIDER=<span class="tok">stripe</span>
-STRIPE_SECRET_KEY=<span class="tok">sk_test_…</span>
-STRIPE_WEBHOOK_SECRET=<span class="tok">whsec_…</span>
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<span class="tok">pk_test_…</span>
-NEXT_PUBLIC_SITE_URL=<span class="tok">https://your-domain.com</span>   <span class="cmt"># used for Checkout redirects</span></code></pre>
-      </div></div>
-
-      <div class="task"><input type="checkbox" data-id="2d" /><div class="task-body">
-        <strong>Run one full test purchase</strong>
-        <p>Create a request → fund the deposit → complete Stripe Checkout with the success card.
-          Confirm the request moves <code>open → sourcing</code>, the payment row flips to <code>held</code>,
-          and the deposit email arrives.</p>
-      </div></div>
-
-      <div class="task"><input type="checkbox" data-id="2e" /><div class="task-body">
-        <strong>Go live: register the production webhook &amp; swap to live keys</strong>
-        <p>In Stripe (Live mode) → Developers → <b>Webhooks</b> → <b>Add endpoint</b>:</p>
+        <strong>Register the production webhook endpoint (Live)</strong>
+        <p>Still in Live mode → Developers → <b>Webhooks</b> → <b>Add endpoint</b>:</p>
         <pre><code>URL:    <span class="tok">https://your-domain.com/api/stripe/webhook</span>
 Events: <span class="tok">checkout.session.completed</span>,
         <span class="tok">payment_intent.payment_failed</span>,
         <span class="tok">charge.refunded</span></code></pre>
-        <p>Copy that endpoint's live <code>whsec_…</code>, then set the <b>live</b> values
-          (<code>sk_live_…</code>, <code>pk_live_…</code>, live <code>whsec_…</code>) in <b>Vercel Production</b> env vars. Redeploy.</p>
+        <p>Open the new endpoint → reveal its <b>Signing secret</b> and copy the live <code>whsec_…</code>. This is the production webhook secret (different from the CLI one you used in test).</p>
       </div></div>
 
-      <div class="done-when"><span>✓</span><span><b>Done when:</b> the production webhook shows successful (2xx) deliveries in the Stripe dashboard after a live transaction, and funds appear as held in your Stripe balance.</span></div>
+      <div class="task"><input type="checkbox" data-id="2c" /><div class="task-body">
+        <strong>Set the live env vars in Vercel Production &amp; redeploy</strong>
+        <p><b>Vercel → Project → Settings → Environment Variables</b>, scope = <b>Production</b>. Paste your real values in place of these placeholders, then redeploy:</p>
+        <pre><code>ESCROW_PROVIDER=<span class="tok">stripe</span>
+STRIPE_SECRET_KEY=<span class="tok">sk_live_…</span>
+STRIPE_WEBHOOK_SECRET=<span class="tok">whsec_…</span>           <span class="cmt"># the LIVE endpoint's signing secret</span>
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<span class="tok">pk_live_…</span>
+NEXT_PUBLIC_SITE_URL=<span class="tok">https://your-domain.com</span>   <span class="cmt"># must match the webhook URL host</span></code></pre>
+        <div class="note warn"><span class="ic">▲</span><span>Put real keys <b>only</b> in Vercel (and local <code>.env.local</code>) — never in committed files. This runbook is in git; keep the placeholders here.</span></div>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="2d" /><div class="task-body">
+        <strong>Verify with one real transaction</strong>
+        <p>On the live site, fund a small real deposit. Confirm: the request moves <code>open → sourcing</code>,
+          the payment flips to <code>held</code>, the deposit email arrives, the webhook shows a <b>2xx</b> delivery
+          in the Stripe dashboard, and the funds appear held in your Stripe balance. (You can refund it after.)</p>
+      </div></div>
+
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> a real live transaction holds funds, the production webhook reports 2xx, and the deposit email lands.</span></div>
     </div>
   </section>
 

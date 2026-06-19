@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- shield — Keepers (near-white on the dark email hero) -->
+  <path d="M16 2.6 L27.2 6.9 L27.2 14.8 C27.2 22.4 22.3 27.1 16 29.6 C9.7 27.1 4.8 22.4 4.8 14.8 L4.8 6.9 Z"
+        stroke="#EDEDEF" stroke-width="2" stroke-linejoin="round"/>
+  <!-- crosshair arms — Finders (gold) -->
+  <g stroke="#F0C84A" stroke-width="2" stroke-linecap="round">
+    <path d="M16 6.4 L16 11.6"/>
+    <path d="M16 18.4 L16 23.6"/>
+    <path d="M8.4 15 L12.6 15"/>
+    <path d="M19.4 15 L23.6 15"/>
+  </g>
+  <!-- locked centre (gold) -->
+  <circle cx="16" cy="15" r="3.4" stroke="#F0C84A" stroke-width="2"/>
+  <circle cx="16" cy="15" r="1.05" fill="#F0C84A"/>
+</svg>
