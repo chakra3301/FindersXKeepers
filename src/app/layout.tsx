@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/sonner";
+import { metadataBaseUrl } from "@/lib/metadata-base";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -21,11 +22,39 @@ const syne = Syne({
 });
 
 
-export const metadata: Metadata = {
-  title: "Finders Keepers — sourced from Japan, held in escrow",
-  description:
-    "Post what you want from Japan. We source it, send proof, and ship on approval. Funds held in escrow, released only once your item is in transit.",
-};
+const shareTitle = "Finders Keepers — sourced from Japan, held in escrow";
+const shareDescription =
+  "Tell us what you want from Japan. We source it, send proof, and ship on approval. Funds held in escrow until transit.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const metadataBase = await metadataBaseUrl();
+
+  return {
+    metadataBase,
+    title: shareTitle,
+    description: shareDescription,
+    openGraph: {
+      title: shareTitle,
+      description: shareDescription,
+      type: "website",
+      siteName: "Finders Keepers",
+      images: [
+        {
+          url: "/brand/og-share.png",
+          width: 1200,
+          height: 630,
+          alt: "Finders Keepers — tell us what you want from Japan, we hunt it down",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: shareTitle,
+      description: shareDescription,
+      images: ["/brand/og-share.png"],
+    },
+  };
+}
 
 export default function RootLayout({
   children,

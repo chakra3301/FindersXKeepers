@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { Loader2, Upload, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { resolveAvatarUrl } from "@/lib/profile/avatar";
 import { saveAvatarAction } from "@/app/(app)/account/actions";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -47,15 +48,15 @@ export function AvatarUploader({
     const path = `${userId}/avatar-${Date.now()}.${EXT[file.type]}`;
     const { error: upErr } = await supabase.storage
       .from("avatars")
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .upload(path, file, { contentType: file.type });
     if (upErr) {
       setBusy(false);
+      console.error("[avatar upload]", upErr);
       setError("Upload failed. Please try again.");
       return;
     }
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
     const fd = new FormData();
-    fd.set("avatarUrl", data.publicUrl);
+    fd.set("avatarUrl", path);
     startTransition(async () => {
       await saveAvatarAction(fd);
       setBusy(false);

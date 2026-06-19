@@ -1,6 +1,7 @@
 import { Info, CreditCard } from "lucide-react";
 import { getProfile, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { resolveAvatarUrl } from "@/lib/profile/avatar";
 import { shippingCountryLabel } from "@/lib/profile/countries";
 import { listAddresses } from "@/lib/addresses/queries";
 import { AccountSettingsForm } from "@/components/account/account-settings-form";
@@ -49,10 +50,38 @@ function Row({
 }
 
 export default async function AccountPage() {
-  const [user, profile] = await Promise.all([requireUser(), getProfile()]);
+  try {
+    const user = await requireUser();
+    return await renderAccount(user);
+  } catch (e) {
+    // Let framework redirect/notFound signals propagate normally.
+    const digest =
+      typeof e === "object" && e && "digest" in e ? String((e as { digest?: unknown }).digest) : "";
+    if (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND")) {
+      throw e;
+    }
+    // TEMP diagnostic: surface the real error on the page (prod hides it otherwise).
+    const msg = e instanceof Error ? `${e.name}: ${e.message}\n\n${e.stack ?? ""}` : String(e);
+    console.error("[AccountPage]", msg);
+    return (
+      <div className="mx-auto w-full max-w-[680px]">
+        <h1 className="mb-3 text-2xl font-semibold tracking-tight">Account debug</h1>
+        <pre className="overflow-auto rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-[12px] whitespace-pre-wrap text-destructive">
+          {msg}
+        </pre>
+      </div>
+    );
+  }
+}
+
+async function renderAccount(
+  user: NonNullable<Awaited<ReturnType<typeof requireUser>>>,
+) {
+  const profile = await getProfile();
   const supabase = await createClient();
   const addresses = await listAddresses(user.id, supabase);
   const avatarInitial = (user.email ?? "?").charAt(0).toUpperCase();
+  const avatarDisplayUrl = resolveAvatarUrl(profile?.avatar_url);
 
   const currencyPref = profile?.currency_pref ?? "USD";
   const shippingCountry = profile?.shipping_country ?? null;
@@ -76,7 +105,7 @@ export default async function AccountPage() {
         <Section title="Profile">
           <AvatarUploader
             userId={user.id}
-            avatarUrl={profile?.avatar_url ?? null}
+            avatarUrl={avatarDisplayUrl}
             initial={avatarInitial}
           />
         </Section>

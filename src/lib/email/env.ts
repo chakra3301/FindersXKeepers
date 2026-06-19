@@ -7,9 +7,11 @@ export interface ResendEnv {
   from: string;
 }
 
+import { cleanEnvValue } from "@/lib/env-clean";
+
 export function readResendEnv(): ResendEnv {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
+  const apiKey = cleanEnvValue("RESEND_API_KEY", process.env.RESEND_API_KEY);
+  const from = cleanEnvValue("EMAIL_FROM", process.env.EMAIL_FROM);
   if (!apiKey) {
     throw new Error(
       "Missing RESEND_API_KEY. Required when EMAIL_PROVIDER=resend; see .env.example.",
@@ -24,7 +26,4 @@ export function readResendEnv(): ResendEnv {
   return { apiKey, from };
 }
 
-/** Base URL used to build absolute links in emails. */
-export function siteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-}
+export { siteUrl } from "@/lib/site-url";

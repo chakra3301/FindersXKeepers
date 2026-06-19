@@ -1,4 +1,5 @@
 import { requireUser, getProfile } from "@/lib/auth";
+import { resolveAvatarUrl } from "@/lib/profile/avatar";
 import { getDashboardRequests } from "@/lib/requests/queries";
 import { STATUS_META } from "@/lib/requests/status";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -36,7 +37,7 @@ export default async function AppLayout({
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
           email={user.email ?? "you"}
-          avatarUrl={profile?.avatar_url ?? null}
+          avatarUrl={resolveAvatarUrl(profile?.avatar_url)}
         />
         <main className="flex-1 min-w-0 px-5 py-7 sm:px-8 sm:py-9">
           {children}

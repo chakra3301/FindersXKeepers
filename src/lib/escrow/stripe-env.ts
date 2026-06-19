@@ -15,7 +15,7 @@ export interface StripeEnv {
   siteUrl: string;
 }
 
-const DEFAULT_SITE_URL = "http://localhost:3000";
+import { siteUrl as resolveSiteUrl } from "@/lib/site-url";
 
 export function readStripeEnv(
   env: Record<string, string | undefined> = process.env,
@@ -36,10 +36,5 @@ export function readStripeEnv(
     );
   }
 
-  const siteUrl = (env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL).replace(
-    /\/+$/,
-    "",
-  );
-
-  return { secretKey, webhookSecret, siteUrl };
+  return { secretKey, webhookSecret, siteUrl: resolveSiteUrl(env) };
 }

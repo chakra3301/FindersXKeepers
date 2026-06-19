@@ -9,6 +9,7 @@ import { StubEstimator } from "./stub";
 import { DeepseekEstimator } from "./deepseek";
 import { DailyCapEstimator, readDailyCap } from "./daily-cap";
 import { readDeepseekEnv } from "./env";
+import { cleanEnvValue } from "@/lib/env-clean";
 
 export type {
   Estimator,
@@ -27,11 +28,10 @@ export type {
  * shipping + item-value estimates through the model with no other code change.
  */
 function createEstimator(): Estimator {
-  const provider = process.env.ESTIMATOR_PROVIDER ?? "stub";
-  switch (provider) {
-    case "stub":
-      return new StubEstimator();
-    case "deepseek":
+  const provider =
+    cleanEnvValue("ESTIMATOR_PROVIDER", process.env.ESTIMATOR_PROVIDER) ?? "stub";
+  if (provider === "deepseek") {
+    try {
       // Memoize (cache hits are free) → daily cap (spend valve) → model + Exa.
       return new MemoizingEstimator(
         new DailyCapEstimator(
@@ -39,9 +39,18 @@ function createEstimator(): Estimator {
           readDailyCap(),
         ),
       );
-    default:
-      throw new Error(`Unknown ESTIMATOR_PROVIDER: ${provider}`);
+    } catch (e) {
+      // A bad key/URL must never break the build or 500 a route — degrade to stub.
+      console.error(
+        `[estimator] deepseek config invalid, using stub: ${e instanceof Error ? e.message : e}`,
+      );
+      return new StubEstimator();
+    }
   }
+  if (provider !== "stub") {
+    console.error(`[estimator] Unknown ESTIMATOR_PROVIDER "${provider}", using stub`);
+  }
+  return new StubEstimator();
 }
 
 /**

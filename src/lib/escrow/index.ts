@@ -3,6 +3,7 @@ import { StubEscrowProvider } from "./stub";
 import { StripeEscrowProvider } from "./stripe";
 import { readStripeEnv } from "./stripe-env";
 import { createStripeClient } from "./stripe-client";
+import { cleanEnvValue } from "@/lib/env-clean";
 
 export type { EscrowProvider, EscrowIntent, CreateHoldParams } from "./types";
 
@@ -14,7 +15,8 @@ export type { EscrowProvider, EscrowIntent, CreateHoldParams } from "./types";
  * app onto Stripe with no other code change.
  */
 function createEscrowProvider(): EscrowProvider {
-  const provider = process.env.ESCROW_PROVIDER ?? "stub";
+  const provider =
+    cleanEnvValue("ESCROW_PROVIDER", process.env.ESCROW_PROVIDER) ?? "stub";
   switch (provider) {
     case "stub":
       return new StubEscrowProvider();

@@ -214,10 +214,14 @@ export async function saveAvatarAction(formData: FormData): Promise<void> {
   const user = await requireUser();
   const url = String(formData.get("avatarUrl") ?? "").trim();
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from("profiles")
     .update({ avatar_url: url === "" ? null : url })
     .eq("id", user.id);
+  if (error) {
+    console.error(`[saveAvatarAction] ${error.code ?? ""} ${error.message}`);
+    return; // never throw to the error boundary
+  }
   revalidatePath("/account");
   revalidatePath("/dashboard");
 }
