@@ -8,7 +8,6 @@ import {
   computeQuote,
   totalJpy,
   formatJpy,
-  SHIPPING_ESTIMATE_JPY,
 } from "@/lib/pricing";
 import { formatLocalApprox } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ export function CheckoutForm({
   budgetCapJpy,
   initialRush,
   currencyPref,
+  shippingEstimateJpy,
   chargesNow = false,
   resuming = false,
   cancelled = false,
@@ -38,6 +38,8 @@ export function CheckoutForm({
   budgetCapJpy: number | null;
   initialRush: RushTier;
   currencyPref: string;
+  /** Server-computed Japan→you shipping estimate; equals the hold's input. */
+  shippingEstimateJpy: number;
   /** Stripe captures the cap immediately; the stub only holds. Drives the copy. */
   chargesNow?: boolean;
   /** A pending payment already exists — customer is finishing hosted checkout. */
@@ -64,7 +66,7 @@ export function CheckoutForm({
   const cap = budgetCapJpy ?? 0;
   const quote = computeQuote({
     itemCostJpy: cap,
-    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    shippingJpy: shippingEstimateJpy,
     rushTier: rush,
   });
   const total = totalJpy(quote);
@@ -138,14 +140,14 @@ export function CheckoutForm({
             const tierTotal = totalJpy(
               computeQuote({
                 itemCostJpy: cap,
-                shippingJpy: SHIPPING_ESTIMATE_JPY,
+                shippingJpy: shippingEstimateJpy,
                 rushTier: t,
               }),
             );
             const delta = tierTotal - totalJpy(
               computeQuote({
                 itemCostJpy: cap,
-                shippingJpy: SHIPPING_ESTIMATE_JPY,
+                shippingJpy: shippingEstimateJpy,
                 rushTier: "standard",
               }),
             );

@@ -1,8 +1,9 @@
 import { createAdminClient, type AdminClient } from "@/lib/supabase/admin";
 import { escrow, type EscrowIntent } from "@/lib/escrow";
+import { estimator } from "@/lib/estimator";
 import { assertTransition, IllegalTransitionError } from "./state-machine";
 import type { PriceLines } from "@/lib/pricing";
-import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
+import { computeQuote, totalJpy } from "@/lib/pricing";
 import type { RequestStatus, RushTier, AddressSnapshot } from "@/lib/db/types";
 import {
   notifyPaymentConfirmed,
@@ -32,7 +33,9 @@ export async function depositForRequest(
 ): Promise<{ checkoutUrl?: string }> {
   const { data: req, error } = await admin
     .from("requests")
-    .select("status, budget_cap_jpy, rush_tier")
+    .select(
+      "status, budget_cap_jpy, rush_tier, title, description, min_condition, shipping_address",
+    )
     .eq("id", requestId)
     .single();
   if (error || !req) throw new Error(`Request ${requestId} not found.`);
@@ -80,9 +83,19 @@ export async function depositForRequest(
       .eq("id", pendingPayment.id);
   }
 
+  // Estimate the Japan→customer shipping for this specific request (DeepSeek or
+  // the deterministic stub). The same estimator answers the checkout display, so
+  // the displayed estimate and the hold are still built from one input.
+  const { shippingJpy } = await estimator.estimateShipping({
+    title: req.title,
+    description: req.description,
+    minCondition: req.min_condition,
+    destinationCountry: req.shipping_address?.country ?? shippingAddress?.country,
+  });
+
   const lines = computeQuote({
     itemCostJpy: req.budget_cap_jpy ?? 0,
-    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    shippingJpy,
     rushTier,
   });
 
@@ -113,7 +126,9 @@ export async function approveCandidate(
 ): Promise<void> {
   const { data: req, error: reqErr } = await admin
     .from("requests")
-    .select("status, rush_tier, budget_cap_jpy")
+    .select(
+      "status, rush_tier, budget_cap_jpy, title, description, min_condition, shipping_address",
+    )
     .eq("id", requestId)
     .single();
   if (reqErr || !req) throw new Error(`Request ${requestId} not found.`);
@@ -136,9 +151,18 @@ export async function approveCandidate(
     );
   }
 
+  // Re-use the same estimator (memoized for the model provider) so the locked
+  // order's shipping line agrees with the estimate the hold was sized to.
+  const { shippingJpy } = await estimator.estimateShipping({
+    title: req.title,
+    description: req.description,
+    minCondition: req.min_condition,
+    destinationCountry: req.shipping_address?.country,
+  });
+
   const lines = computeQuote({
     itemCostJpy: cand.price_jpy ?? 0,
-    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    shippingJpy,
     rushTier: req.rush_tier,
   });
 
