@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Paste-ready auth email templates · Finders × Keepers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ground:#FCFCFD;--card:#FFFFFF;--ink:#0B0B0F;--muted:#5B616E;
+    --line:#ECEDF1;--line-strong:#E0E2E8;
+    --accent:#1D4ED8;--accent-soft:#EEF3FF;
+    --success:#047857;--success-soft:#E8F5EF;
+    --warning:#B45309;--warning-soft:#FBF1E4;
+    --radius:16px;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+    --shadow:0 1px 2px rgba(11,11,15,.04),0 8px 30px rgba(11,11,15,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"Geist",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+  code,.mono{font-family:var(--mono)}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:radial-gradient(1100px 380px at 85% -20%,rgba(29,78,216,.12),transparent 60%),
+      radial-gradient(800px 320px at 0% 0%,rgba(4,120,87,.08),transparent 55%),var(--card)}
+  .hero .wrap{padding:52px 22px 38px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:7px 13px;border-radius:999px;border:1px solid rgba(29,78,216,.14)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(29,78,216,.14)}
+  h1{font-size:clamp(27px,5vw,40px);line-height:1.08;letter-spacing:-.02em;margin:18px 0 12px;font-weight:700}
+  h1 .grad{background:linear-gradient(100deg,var(--accent),#3b82f6 55%,var(--success));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:16px;color:var(--muted);max-width:600px;margin:0}
+
+  section{padding:34px 0}
+  .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  h2{font-size:22px;letter-spacing:-.01em;margin:0 0 16px;font-weight:600}
+
+  .warnbox{display:flex;gap:13px;align-items:flex-start;background:var(--warning-soft);border:1px solid rgba(180,83,9,.2);border-radius:var(--radius);padding:16px 18px}
+  .warnbox .ic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#fff;color:var(--warning)}
+  .warnbox h3{margin:0 0 3px;font-size:14.5px;font-weight:600;color:#7a3d06}
+  .warnbox p{margin:0;font-size:13.5px;color:#7a3d06}
+  .warnbox code{font-family:var(--mono);font-size:12px;background:#fff;padding:1px 5px;border-radius:5px}
+
+  .tpl{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+  .tpl-head{display:flex;align-items:center;gap:11px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .tpl-head .tag{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:6px}
+  .tpl-head h3{margin:0;font-size:16px;font-weight:600}
+  .tpl-head .where{margin-left:auto;font-size:12px;color:var(--muted)}
+  .tpl-body{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.tpl-body{grid-template-columns:1fr}}
+  .col label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .copy{margin-left:auto;cursor:pointer;border:1px solid var(--line-strong);background:var(--card);border-radius:7px;font-size:11px;padding:3px 10px;color:var(--muted);font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+  .copy:hover{border-color:var(--accent);color:var(--accent)}
+  .copy svg{width:12px;height:12px}
+  .field{font-family:var(--mono);font-size:12.5px;background:#0d1117;color:#e6edf3;border-radius:11px;padding:11px 14px;border:1px solid #1b2230;white-space:pre-wrap;word-break:break-word}
+  .field.subject{white-space:nowrap;overflow-x:auto}
+  .field.tall{max-height:300px;overflow:auto;line-height:1.5;font-size:11.5px}
+  .tok{color:#7ee787}
+
+  .preview-wrap{margin-top:8px}
+  .preview-frame{border:1px solid var(--line-strong);border-radius:12px;overflow:hidden;background:#0A0A0D}
+  .preview-bar{display:flex;gap:6px;padding:8px 11px;background:#16161b;border-bottom:1px solid #26262E}
+  .preview-bar span{width:9px;height:9px;border-radius:50%;background:#3a3a42}
+  iframe{width:100%;height:600px;border:0;background:#0A0A0D;display:block}
+
+  .checks{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+  .checks h3{margin:0 0 12px;font-size:15px;font-weight:600}
+  .checks ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+  .checks li{display:flex;gap:11px;font-size:14px}
+  .checks li .n{flex:none;width:22px;height:22px;border-radius:6px;background:var(--success-soft);color:var(--success);font-size:12px;font-weight:600;display:grid;place-items:center;font-family:var(--mono)}
+  .checks li code{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:1px 5px;border-radius:5px}
+  .checks li .mut{color:var(--muted)}
+
+  .note{margin-top:16px;display:flex;gap:11px;align-items:flex-start;border-radius:12px;padding:13px 15px;font-size:13px;background:var(--accent-soft);border:1px solid rgba(29,78,216,.16);color:#1e3a8a}
+  .note .ic{flex:none;width:18px;height:18px;margin-top:1px;color:var(--accent)}
+  .note code{font-family:var(--mono);font-size:12px;background:#fff;padding:1px 5px;border-radius:5px}
+
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:12.5px;margin-top:14px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:13px;padding:9px 16px;border-radius:10px;opacity:0;transition:all .25s;pointer-events:none;z-index:5}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> Brand templates · paste-ready</span>
+    <h1>Branded code emails with a <span class="grad">3D item orbit.</span></h1>
+    <p class="lede">Full branded HTML in the site's dark + gold palette — mono eyebrow, gold target mark,
+      your real finds spinning in a faux-3D orbit, and the big gold code. Copy each field straight into Supabase.
+      <code style="font-family:var(--mono);font-size:13px">{{ .Token }}</code> renders as the 6-digit code.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="warnbox">
+      <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
+      <div>
+        <h3>Two prerequisites for this to render right</h3>
+        <p>1) The SMTP <strong>Sender email</strong> must be on a Resend-<strong>verified domain</strong>
+          (e.g. <code>noreply@findersxkeepers.com</code>), not <code>@gmail.com</code>.
+          2) The item images load from <code>https://www.findersxkeepers.com/brand/finds/…</code>, so they
+          appear once the site is deployed. Until then the orbit shows its colored gradient tiles —
+          which is also the fallback when a mail client blocks images.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap" id="tpls"></div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="checks">
+      <h3>Where each field goes</h3>
+      <ul>
+        <li><span class="n">1</span><span><strong>Supabase → Authentication → Email Templates</strong> → open <strong>Magic Link</strong>. <span class="mut">Returning users get a sign-in code here.</span></span></li>
+        <li><span class="n">2</span><span>Replace <strong>Subject heading</strong> and <strong>Message body</strong> with the copied fields. <span class="mut">Clear whatever's there first — paste the whole document.</span></span></li>
+        <li><span class="n">3</span><span>Repeat for <strong>Confirm signup</strong> <span class="mut">(first-time emails).</span></span></li>
+        <li><span class="n">4</span><span>Save both, then resend a code from <code>/login</code>.</span></li>
+      </ul>
+      <div class="note">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9z"/></svg>
+        <span>The orbit <strong>spins/floats in Apple Mail &amp; iOS Mail</strong> (they honor
+          <code>&lt;style&gt;</code> keyframes). Gmail &amp; Outlook strip animation and show the same
+          tiles, just static — so it looks intentional everywhere.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><strong>Finders × Keepers</strong> · branded auth emails</span>
+    <span>Supabase mints the code · Resend delivers it</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+/* Shared email shell so both templates stay identical except the copy. */
+function shell({ eyebrow, heading, intro, linkLabel, preheader }){
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>Finders × Keepers</title>
+<style>
+  @keyframes fkFloat { 0%,100% { transform: rotate(-3deg) translateY(0) } 50% { transform: rotate(-3deg) translateY(-8px) } }
+  .fk-hero { animation: fkFloat 6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce){ .fk-hero { animation: none !important } }
+  a { text-decoration: none; }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#0A0A0D;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${preheader}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0A0A0D;">
+    <tr><td align="center" style="padding:28px 16px;">
+      <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="width:480px;max-width:480px;background:#141318;border:1px solid #26262E;border-radius:20px;overflow:hidden;">
+        <tr>
+          <td align="center" bgcolor="#0E0D12" style="background:#0E0D12;background:radial-gradient(120% 120% at 50% 0%, rgba(240,200,74,0.16) 0%, rgba(30,58,138,0.10) 35%, rgba(14,13,18,0) 62%);padding:28px 24px 30px;">
+            <div style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#F0C84A;margin-bottom:16px;">${eyebrow}</div>
+            <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+              <td valign="middle" style="padding-right:10px;">
+                <img src="https://www.findersxkeepers.com/brand/fk-mark-email.png" width="32" height="32" alt="Finders Keepers" style="display:block;border:0;outline:none;text-decoration:none;width:32px;height:32px;">
+              </td>
+              <td valign="middle">
+                <span style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;letter-spacing:.2px;color:#EDEDEF;">Finders&nbsp;<span style="color:#F0C84A;">×</span>&nbsp;Keepers</span>
+              </td>
+            </tr></table>
+            <div style="margin:22px auto 4px;line-height:0;">
+              <div class="fk-hero" style="display:inline-block;width:152px;height:212px;border-radius:13px;background:#15151c;background-image:url('https://www.findersxkeepers.com/brand/finds/charizard.webp');background-size:cover;background-position:center;border:2px solid rgba(240,200,74,.5);box-shadow:0 26px 60px rgba(0,0,0,.62),0 0 60px rgba(240,200,74,.12);transform:rotate(-3deg);"></div>
+            </div>
+            <div style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8B8B93;margin-top:16px;">Tokyo&nbsp;↔&nbsp;Worldwide</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 30px 4px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+            <h1 style="margin:0 0 7px;font-size:20px;font-weight:700;color:#EDEDEF;letter-spacing:-.2px;">${heading}</h1>
+            <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#8B8B93;">${intro}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 30px;font-family:'SFMono-Regular',Menlo,Consolas,monospace;">
+            <div style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8B8B93;margin-bottom:8px;">Your 6-digit code</div>
+            <div style="font-size:36px;font-weight:700;letter-spacing:12px;text-align:center;color:#F0C84A;background:#1B1A20;border:1px solid #3A3320;border-radius:14px;padding:20px 0;">
+              {{ .Token }}
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:18px 30px 28px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+            <p style="margin:0 0 4px;font-size:13px;line-height:1.6;color:#8B8B93;">
+              Prefer a link? <a href="{{ .ConfirmationURL }}" style="color:#F0C84A;font-weight:600;">${linkLabel}</a>.
+            </p>
+            <p style="margin:14px 0 0;font-size:12px;line-height:1.6;color:#6B6B73;">
+              Didn't request this? You can safely ignore this email — no account changes were made.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:18px 30px 24px;border-top:1px solid #26262E;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+            <p style="margin:0;font-size:11.5px;line-height:1.7;color:#6B6B73;">
+              <strong style="color:#A8A8B0;">Finders × Keepers</strong> · Agency sourcing, not resale.<br>
+              <span style="color:#4CBE8E;">●</span> Funds held in escrow — released only once your item is in transit.<br>
+              特定商取引法に基づく表記
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+const BODY_MAGIC = shell({
+  eyebrow: "[ One-time code ]",
+  heading: "Here's your sign-in code",
+  intro: "Use this code to finish signing in. It expires shortly and can only be used once.",
+  linkLabel: "Sign in here",
+  preheader: "Your one-time sign-in code is inside — it expires shortly.",
+});
+const BODY_SIGNUP = shell({
+  eyebrow: "[ Welcome ]",
+  heading: "Welcome — confirm your email",
+  intro: "Enter this code to confirm your email and finish creating your account. It expires shortly and can only be used once.",
+  linkLabel: "Confirm here",
+  preheader: "Welcome — confirm your email with the code inside.",
+});
+
+const TEMPLATES = [
+  { id:"magic",  tag:"Magic Link",     where:"Returning sign-in", subject:"Your Finders × Keepers code: {{ .Token }}", body:BODY_MAGIC },
+  { id:"signup", tag:"Confirm signup", where:"New accounts",       subject:"Confirm your Finders × Keepers email: {{ .Token }}", body:BODY_SIGNUP },
+];
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const hl = s => esc(s).replace(/\{\{ \.Token \}\}/g,'<span class="tok">{{ .Token }}</span>').replace(/\{\{ \.ConfirmationURL \}\}/g,'<span class="tok">{{ .ConfirmationURL }}</span>');
+const copyIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
+const host = document.getElementById("tpls");
+TEMPLATES.forEach(t => {
+  // Preview only: resolve brand assets locally so the logo + card show before deploy.
+  // The copied body (RAW) keeps the absolute findersxkeepers.com URLs.
+  const previewHtml = t.body
+    .replace(/\{\{ \.Token \}\}/g,"793120")
+    .replace(/\{\{ \.ConfirmationURL \}\}/g,"#")
+    .replace(/https:\/\/www\.findersxkeepers\.com\/brand\//g, "../public/brand/");
+  const el = document.createElement("div");
+  el.className = "tpl";
+  el.innerHTML = `
+    <div class="tpl-head">
+      <span class="tag">${t.tag}</span>
+      <h3>Template</h3>
+      <span class="where">${t.where}</span>
+    </div>
+    <div class="tpl-body">
+      <div class="col">
+        <label>Subject heading <button class="copy" data-copy="${t.id}-subject">${copyIco} copy</button></label>
+        <div class="field subject">${hl(t.subject)}</div>
+        <label style="margin-top:16px">Message body (full HTML) <button class="copy" data-copy="${t.id}-body">${copyIco} copy</button></label>
+        <div class="field tall">${hl(t.body)}</div>
+      </div>
+      <div class="col">
+        <label>Live preview (animated)</label>
+        <div class="preview-wrap">
+          <div class="preview-frame">
+            <div class="preview-bar"><span></span><span></span><span></span></div>
+            <iframe id="${t.id}-frame"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  host.appendChild(el);
+  el.querySelector(`#${t.id}-frame`).srcdoc = previewHtml;
+});
+
+const RAW = {};
+TEMPLATES.forEach(t => { RAW[t.id+"-subject"] = t.subject; RAW[t.id+"-body"] = t.body; });
+
+const toast = document.getElementById("toast");
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest(".copy");
+  if(!b) return;
+  try{ await navigator.clipboard.writeText(RAW[b.dataset.copy]); }catch{}
+  const label = b.dataset.copy.endsWith("subject") ? "Subject" : "Body";
+  toast.textContent = label + " copied — paste into Supabase";
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 1500);
+});
+</script>
+</body>
+</html>

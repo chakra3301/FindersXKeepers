@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import type { AdminClient } from "@/lib/supabase/admin";
 import { setRequestStatus } from "@/lib/requests/operations";
+import { notifyPaymentConfirmed } from "@/lib/email/notify";
 
 /**
  * Stripe webhook handling. The webhook is the money-confirmed moment for the
@@ -55,6 +56,12 @@ export async function processStripeEvent(
         .maybeSingle();
       if (req?.status === "open") {
         await setRequestStatus(requestId, "sourcing", admin);
+      }
+
+      // Receipt for the just-confirmed deposit. `payment` is truthy only on the
+      // flip from pending → held, so webhook re-delivery never double-sends.
+      if (payment) {
+        await notifyPaymentConfirmed(requestId, admin);
       }
       return;
     }

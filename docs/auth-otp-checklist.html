@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OTP Login · Go-live checklist · Finders × Keepers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ground:#FCFCFD;--card:#FFFFFF;--ink:#0B0B0F;--muted:#5B616E;
+    --line:#ECEDF1;--line-strong:#E0E2E8;
+    --accent:#1D4ED8;--accent-soft:#EEF3FF;
+    --success:#047857;--success-soft:#E8F5EF;
+    --warning:#B45309;--warning-soft:#FBF1E4;
+    --radius:16px;--mono:"Geist Mono",ui-monospace,Menlo,monospace;
+    --shadow:0 1px 2px rgba(11,11,15,.04),0 8px 30px rgba(11,11,15,.05);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"Geist",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:0 22px}
+  .tnum{font-variant-numeric:tabular-nums}
+  code,.mono{font-family:var(--mono)}
+
+  /* Hero */
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:radial-gradient(1100px 380px at 85% -20%,rgba(29,78,216,.12),transparent 60%),
+      radial-gradient(800px 320px at 0% 0%,rgba(4,120,87,.08),transparent 55%),var(--card)}
+  .hero .wrap{padding:56px 22px 40px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:7px 13px;border-radius:999px;border:1px solid rgba(29,78,216,.14)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(29,78,216,.14)}
+  h1{font-size:clamp(28px,5vw,40px);line-height:1.08;letter-spacing:-.02em;margin:18px 0 12px;font-weight:700}
+  h1 .grad{background:linear-gradient(100deg,var(--accent),#3b82f6 55%,var(--success));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:16.5px;color:var(--muted);max-width:560px;margin:0}
+
+  /* Progress */
+  .progress{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .progress-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500}
+  .progress-top .count{font-family:var(--mono);color:var(--accent)}
+  .bar{height:8px;border-radius:99px;background:var(--line);margin-top:10px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--success));transition:width .4s cubic-bezier(.4,0,.2,1)}
+  .done-msg{margin-top:12px;font-size:13px;color:var(--success);font-weight:500;display:none;align-items:center;gap:7px}
+  .done-msg.show{display:flex}
+
+  /* Settings */
+  details.settings{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  details.settings > summary{list-style:none;cursor:pointer;padding:13px 18px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px}
+  details.settings > summary::-webkit-details-marker{display:none}
+  .key-dot{width:8px;height:8px;border-radius:50%;background:var(--warning)}
+  .key-dot.ok{background:var(--success)}
+  .settings-body{padding:0 18px 18px;display:flex;flex-direction:column;gap:12px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:12px;font-weight:600;color:var(--muted)}
+  .field input{font-family:var(--mono);font-size:13px;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--ground);color:var(--ink)}
+  .field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .hint{font-size:12px;color:var(--muted)}
+  .hint a{color:var(--accent)}
+
+  /* Steps */
+  main{padding:34px 0 70px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 18px 16px;box-shadow:var(--shadow);margin-bottom:14px;transition:border-color .2s,box-shadow .2s,opacity .2s}
+  .step:hover{border-color:var(--line-strong)}
+  .step.done{opacity:.62}
+  .step-row{display:flex;gap:14px;align-items:flex-start}
+  .check{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--line-strong);background:var(--ground);cursor:pointer;display:grid;place-items:center;transition:all .18s;margin-top:1px}
+  .check:hover{border-color:var(--accent)}
+  .check svg{width:15px;height:15px;stroke:#fff;stroke-width:3.2;opacity:0;transform:scale(.5);transition:all .18s}
+  .step.done .check{background:var(--success);border-color:var(--success)}
+  .step.done .check svg{opacity:1;transform:scale(1)}
+  .step-main{flex:1;min-width:0}
+  .step-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .num{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px}
+  .tag{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px}
+  .tag.req{background:var(--success-soft);color:var(--success)}
+  .tag.opt{background:var(--warning-soft);color:var(--warning)}
+  .step h3{margin:0;font-size:16px;font-weight:600;line-height:1.3}
+  .step.done h3{text-decoration:line-through;text-decoration-color:var(--line-strong)}
+  .step p{margin:6px 0 0;font-size:14px;color:var(--muted)}
+  .step p code{font-family:var(--mono);font-size:12.5px;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:5px}
+  .actions{margin-top:13px;display:flex;gap:9px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;border-radius:9px;padding:8px 13px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink);transition:all .16s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:#1842b8}
+  .btn svg{width:15px;height:15px}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(11,11,15,.42);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .overlay.show{display:flex}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:20px;width:100%;max-width:560px;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(11,11,15,.28);animation:pop .22s cubic-bezier(.4,0,.2,1)}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;align-items:flex-start;gap:12px;padding:20px 22px;border-bottom:1px solid var(--line)}
+  .spark{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff}
+  .spark svg{width:18px;height:18px}
+  .modal-head h4{margin:0;font-size:15px;font-weight:600}
+  .modal-head .sub{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+  .modal-x{margin-left:auto;border:none;background:transparent;cursor:pointer;color:var(--muted);font-size:22px;line-height:1;padding:0 2px}
+  .modal-body{padding:20px 22px;overflow-y:auto;font-size:14px;line-height:1.62}
+  .modal-body h2{font-size:15px;margin:18px 0 8px;font-weight:600}
+  .modal-body h3{font-size:13.5px;margin:15px 0 6px;font-weight:600;color:var(--muted)}
+  .modal-body p{margin:0 0 10px}
+  .modal-body ul,.modal-body ol{margin:0 0 12px;padding-left:22px}
+  .modal-body li{margin:4px 0}
+  .modal-body code{font-family:var(--mono);font-size:12.5px;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:5px}
+  .modal-body pre{background:#0d1117;color:#e6edf3;border-radius:12px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;margin:0 0 12px}
+  .modal-body pre code{background:none;color:inherit;padding:0}
+  .modal-body a{color:var(--accent)}
+  .loading{display:flex;align-items:center;gap:11px;color:var(--muted);font-size:14px;padding:8px 0}
+  .spin{width:18px;height:18px;border:2.4px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .src-note{font-size:11.5px;color:var(--muted);padding:11px 22px;border-top:1px solid var(--line);display:flex;align-items:center;gap:7px}
+  .src-note .pulse{width:7px;height:7px;border-radius:50%;background:var(--success)}
+  .src-note .pulse.static{background:var(--warning)}
+  .err{background:var(--warning-soft);border:1px solid rgba(180,83,9,.2);color:var(--warning);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:12px}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:12.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .reset{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:12.5px;font-family:inherit}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> Go-live checklist</span>
+    <h1>Ship the <span class="grad">passwordless OTP login.</span></h1>
+    <p class="lede">Work top to bottom. Check things off as you go — your progress
+      is saved in this browser. Stuck on a step? Hit <strong>Ask Haiku</strong> for
+      live, tailored instructions.</p>
+
+    <div class="progress">
+      <div class="progress-top">
+        <span>Progress</span>
+        <span class="count"><span id="doneCount">0</span> / <span id="totalCount">0</span></span>
+      </div>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="done-msg" id="doneMsg">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#047857" stroke-width="2.4"><path d="M20 7L9 18l-5-5"/></svg>
+        All set — your OTP login is ready to fly. 🚀
+      </div>
+    </div>
+
+    <details class="settings" id="settings">
+      <summary><span class="key-dot" id="keyDot"></span> Ask-Haiku settings (optional API key)</summary>
+      <div class="settings-body">
+        <p class="hint">Each “Ask Haiku” button calls Claude Haiku live to write help for that exact step.
+          Paste your Anthropic API key to enable it — it’s stored only in <em>this browser</em>
+          (<code>localStorage</code>), never sent anywhere but Anthropic. No key? Each step still has
+          built-in instructions.</p>
+        <div class="field">
+          <label for="apiKey">Anthropic API key</label>
+          <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
+          <span class="hint">Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.</span>
+        </div>
+        <div class="field">
+          <label for="model">Model</label>
+          <input id="model" type="text" placeholder="claude-haiku-4-5" />
+          <span class="hint">Default <code>claude-haiku-4-5</code>. If that 404s, try <code>claude-3-5-haiku-latest</code>.</span>
+        </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="steps"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><strong>Finders × Keepers</strong> · OTP login go-live</span>
+    <button class="reset" id="resetBtn">Reset checklist</button>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <span class="spark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6zM18 14l.8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8zM6 14l.8 2.2L9 17l-2.2.8L6 20l-.8-2.2L3 17l2.2-.8z"/></svg></span>
+      <div>
+        <h4 id="mTitle">Step help</h4>
+        <p class="sub" id="mSub">Generated for this step</p>
+      </div>
+      <button class="modal-x" id="modalClose" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="src-note" id="mSrc"><span class="pulse"></span> <span id="mSrcText">Generated by Claude Haiku</span></div>
+  </div>
+</div>
+
+<script>
+const PROJECT_CONTEXT = `Finders × Keepers is a Next.js 16 (App Router) + TypeScript + Tailwind app with Supabase (Postgres, Auth, Storage). Login was just rebuilt to be PASSWORDLESS: an email one-time-code (OTP) flow that detects new vs returning emails (via an 'email' column on the profiles table, migration 0007) and shows either a "create account" or "enter code" screen. signInWithOtp sends the code; verifyOtp({type:'email'}) checks it. Optional Apple/Google OAuth buttons are gated behind NEXT_PUBLIC_APPLE_AUTH_ENABLED / NEXT_PUBLIC_GOOGLE_AUTH_ENABLED. The seeded demo account email is luca47hall@gmail.com. Relevant files: src/components/auth/login-form.tsx, src/app/login/actions.ts (lookupAccount), supabase/migrations/0007_profile_email.sql, docs/auth-otp-email-templates.md.`;
+
+const STEPS = [
+  {
+    id:"env",
+    tag:"req",
+    title:"Fill in .env.local with your Supabase keys",
+    desc:"Copy <code>.env.example</code> → <code>.env.local</code> and set <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, and the server-only <code>SUPABASE_SERVICE_ROLE_KEY</code> (powers account detection).",
+    task:"How do I find my Supabase URL, anon key, and service role key, and put them in .env.local for this Next.js project? Where in the Supabase dashboard are they?",
+    help:`<p>Open your project in the <a href="https://supabase.com/dashboard" target="_blank">Supabase dashboard</a>.</p>
+<ol>
+<li>Go to <strong>Project Settings → API</strong>.</li>
+<li>Copy <strong>Project URL</strong> → <code>NEXT_PUBLIC_SUPABASE_URL</code>.</li>
+<li>Copy the <strong>anon / public</strong> key → <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>.</li>
+<li>Copy the <strong>service_role</strong> key → <code>SUPABASE_SERVICE_ROLE_KEY</code> (server-only — never commit it).</li>
+</ol>
+<pre><code>cp .env.example .env.local
+# then paste the three values in .env.local</code></pre>
+<p>The service-role key is what <code>lookupAccount()</code> uses to tell a new email from a returning one.</p>`
+  },
+  {
+    id:"migration",
+    tag:"req",
+    title:"Run migration 0007_profile_email.sql",
+    desc:"Adds the <code>email</code> column to <code>profiles</code>, a unique index, backfills it, and updates the new-user trigger. Without it, account detection can't work.",
+    task:"How do I run the SQL migration file supabase/migrations/0007_profile_email.sql against my Supabase database using the SQL editor?",
+    help:`<ol>
+<li>Open <strong>Supabase dashboard → SQL Editor</strong>.</li>
+<li>Click <strong>New query</strong>.</li>
+<li>Open <code>supabase/migrations/0007_profile_email.sql</code> in your editor, copy the whole file.</li>
+<li>Paste into the SQL editor and click <strong>Run</strong>.</li>
+</ol>
+<p>You should see "Success. No rows returned." If you use the Supabase CLI instead, run <code>supabase db push</code>.</p>
+<p><strong>Tip:</strong> if you haven't applied 0001–0006 yet, run those first, in order.</p>`
+  },
+  {
+    id:"templates",
+    tag:"req",
+    title:"Add {{ .Token }} to the email templates",
+    desc:"Edit the <strong>Magic Link</strong> and <strong>Confirm signup</strong> templates so they send a 6-digit code, not just a link. Paste from <code>docs/auth-otp-email-templates.md</code>.",
+    task:"In Supabase Auth, how do I edit the Magic Link and Confirm signup email templates to include a 6-digit code using {{ .Token }} so my passwordless OTP login works?",
+    help:`<ol>
+<li>Go to <strong>Supabase → Authentication → Email Templates</strong>.</li>
+<li>Select <strong>Magic Link</strong>. In the message body, make sure <code>{{ .Token }}</code> appears (that's the 6-digit code). Keep <code>{{ .ConfirmationURL }}</code> as a fallback link.</li>
+<li>Repeat for <strong>Confirm signup</strong> (used the first time a new email signs up).</li>
+<li>Save each one.</li>
+</ol>
+<p>Ready-to-paste subject + HTML body live in <code>docs/auth-otp-email-templates.md</code> — open it and copy both into the two templates.</p>
+<p><strong>Why two?</strong> <code>signInWithOtp</code> sends "Magic Link" to existing users and "Confirm signup" to brand-new ones.</p>`
+  },
+  {
+    id:"otpcfg",
+    tag:"opt",
+    title:"Set code length to 6 and pick an expiry",
+    desc:"The login input expects exactly 6 digits. Confirm the OTP length is 6 and choose how long a code stays valid.",
+    task:"Where in Supabase Auth do I configure the email OTP length (6 digits) and expiry time?",
+    help:`<ol>
+<li>Go to <strong>Authentication → Sign In / Providers → Email</strong> (sometimes under Email provider settings).</li>
+<li>Find <strong>Email OTP Expiration</strong> — 3600 seconds (1 hour) is fine; shorter is more secure.</li>
+<li>Confirm the OTP length is <strong>6</strong> (the default). The login form's code input is fixed at 6 digits, so keep it at 6.</li>
+</ol>
+<p>You do <em>not</em> need to disable "Confirm email" for OTP — verifying the code confirms the address.</p>`
+  },
+  {
+    id:"oauth",
+    tag:"opt",
+    title:"(Optional) Wire up Apple & Google sign-in",
+    desc:"The social buttons only render after you configure the provider and flip <code>NEXT_PUBLIC_APPLE_AUTH_ENABLED</code> / <code>NEXT_PUBLIC_GOOGLE_AUTH_ENABLED</code> to <code>true</code>.",
+    task:"How do I configure Google and Apple as OAuth providers in Supabase Auth and enable the buttons in this app with NEXT_PUBLIC_GOOGLE_AUTH_ENABLED and NEXT_PUBLIC_APPLE_AUTH_ENABLED? Include the redirect/callback URL setup.",
+    help:`<p>Skip this if you only want email codes for now.</p>
+<h3>Google</h3>
+<ol>
+<li>In <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a> create an OAuth 2.0 Client (Web). Add the redirect URI Supabase shows you (<code>https://YOUR-PROJECT.supabase.co/auth/v1/callback</code>).</li>
+<li>In <strong>Supabase → Authentication → Providers → Google</strong>, paste the Client ID + Secret and enable.</li>
+<li>Set <code>NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=true</code> in <code>.env.local</code>.</li>
+</ol>
+<h3>Apple</h3>
+<ol>
+<li>In the Apple Developer portal create a Services ID + key, add Supabase's callback URL.</li>
+<li>Fill the values in <strong>Supabase → Providers → Apple</strong>.</li>
+<li>Set <code>NEXT_PUBLIC_APPLE_AUTH_ENABLED=true</code>.</li>
+</ol>
+<p>Restart <code>npm run dev</code> after changing env vars so the buttons appear.</p>`
+  },
+  {
+    id:"seed",
+    tag:"req",
+    title:"Seed demo data (luca47hall@gmail.com)",
+    desc:"Run <code>npm run seed</code> to create the demo account + requests in every lifecycle state. The account is now your real inbox so the OTP actually arrives.",
+    task:"How do I run npm run seed for this project, and what does it do? It uses my email luca47hall@gmail.com as the demo account.",
+    help:`<pre><code>npm run seed</code></pre>
+<ol>
+<li>Make sure <code>.env.local</code> is filled in first (it needs the service-role key).</li>
+<li>Run the command above. It deletes any existing demo user, recreates <code>luca47hall@gmail.com</code>, and seeds requests across every status.</li>
+<li>It prints the sign-in email at the end.</li>
+</ol>
+<p><strong>Heads up:</strong> re-running <code>seed</code> wipes and recreates that demo user each time — that's intentional for a clean slate.</p>`
+  },
+  {
+    id:"test",
+    tag:"req",
+    title:"Test the full flow end-to-end",
+    desc:"Run the app, go to <code>/login</code>, enter the email, grab the code from your inbox, and land on the dashboard.",
+    task:"How do I test the passwordless OTP login flow locally? Walk me through running the dev server and signing in with the email code, and what to check (new vs returning email screens).",
+    help:`<pre><code>npm run dev</code></pre>
+<ol>
+<li>Open <strong>http://localhost:3000/login</strong>.</li>
+<li>Enter <code>luca47hall@gmail.com</code> → <strong>Continue</strong>. Since it's seeded, you should see the <em>"Enter your code"</em> screen.</li>
+<li>Check that inbox for the 6-digit code, type it in → you land on <code>/dashboard</code>.</li>
+<li>Now try a brand-new email → you should get the <em>"Create your account"</em> screen instead, then a code.</li>
+</ol>
+<p>If the email has a link but no number, revisit the templates step (<code>{{ .Token }}</code> missing).</p>`
+  },
+];
+
+/* ---------- render ---------- */
+const stepsEl = document.getElementById("steps");
+const DONE_KEY = "fk_otp_checklist_done";
+let done = JSON.parse(localStorage.getItem(DONE_KEY) || "{}");
+
+const check = `<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg>`;
+const sparkIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9z"/></svg>`;
+
+STEPS.forEach((s, i) => {
+  const el = document.createElement("div");
+  el.className = "step" + (done[s.id] ? " done" : "");
+  el.id = "step-" + s.id;
+  el.innerHTML = `
+    <div class="step-row">
+      <div class="check" data-toggle="${s.id}" role="checkbox" aria-checked="${!!done[s.id]}" tabindex="0">${check}</div>
+      <div class="step-main">
+        <div class="step-head">
+          <span class="num">${String(i+1).padStart(2,"0")}</span>
+          <span class="tag ${s.tag}">${s.tag === "req" ? "Required" : "Optional"}</span>
+        </div>
+        <h3>${s.title}</h3>
+        <p>${s.desc}</p>
+        <div class="actions">
+          <button class="btn primary" data-help="${s.id}">${sparkIco} Ask Haiku</button>
+          <button class="btn" data-toggle="${s.id}">Mark ${done[s.id] ? "undone" : "done"}</button>
+        </div>
+      </div>
+    </div>`;
+  stepsEl.appendChild(el);
+});
+
+document.getElementById("totalCount").textContent = STEPS.length;
+updateProgress();
+
+stepsEl.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-toggle]");
+  const h = e.target.closest("[data-help]");
+  if (t) toggle(t.dataset.toggle);
+  if (h) openHelp(h.dataset.help);
+});
+stepsEl.addEventListener("keydown", (e) => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.dataset.toggle){ e.preventDefault(); toggle(e.target.dataset.toggle); }
+});
+
+function toggle(id){
+  done[id] = !done[id];
+  localStorage.setItem(DONE_KEY, JSON.stringify(done));
+  const el = document.getElementById("step-"+id);
+  el.classList.toggle("done", done[id]);
+  el.querySelector(".check").setAttribute("aria-checked", !!done[id]);
+  el.querySelectorAll("[data-toggle]").forEach(b=>{ if(b.classList.contains("btn")) b.textContent = "Mark " + (done[id] ? "undone":"done"); });
+  updateProgress();
+}
+
+function updateProgress(){
+  const n = STEPS.filter(s=>done[s.id]).length;
+  document.getElementById("doneCount").textContent = n;
+  document.getElementById("barFill").style.width = (n/STEPS.length*100)+"%";
+  document.getElementById("doneMsg").classList.toggle("show", n === STEPS.length);
+}
+
+document.getElementById("resetBtn").onclick = () => {
+  if(!confirm("Reset all checkboxes?")) return;
+  done = {}; localStorage.setItem(DONE_KEY, "{}");
+  STEPS.forEach(s=>{ const el=document.getElementById("step-"+s.id); el.classList.remove("done"); el.querySelector(".check").setAttribute("aria-checked","false"); el.querySelectorAll(".btn[data-toggle]").forEach(b=>b.textContent="Mark done"); });
+  updateProgress();
+};
+
+/* ---------- settings / key ---------- */
+const apiKeyEl = document.getElementById("apiKey");
+const modelEl = document.getElementById("model");
+const keyDot = document.getElementById("keyDot");
+apiKeyEl.value = localStorage.getItem("fk_anthropic_key") || "";
+modelEl.value = localStorage.getItem("fk_anthropic_model") || "claude-haiku-4-5";
+function refreshKeyDot(){ keyDot.classList.toggle("ok", apiKeyEl.value.trim().length > 10); }
+refreshKeyDot();
+apiKeyEl.oninput = () => { localStorage.setItem("fk_anthropic_key", apiKeyEl.value.trim()); refreshKeyDot(); };
+modelEl.oninput = () => localStorage.setItem("fk_anthropic_model", modelEl.value.trim());
+
+/* ---------- modal ---------- */
+const overlay = document.getElementById("overlay");
+const mTitle = document.getElementById("mTitle");
+const mSub = document.getElementById("mSub");
+const mBody = document.getElementById("mBody");
+const mSrc = document.getElementById("mSrc");
+const mSrcText = document.getElementById("mSrcText");
+document.getElementById("modalClose").onclick = closeModal;
+overlay.onclick = (e) => { if(e.target === overlay) closeModal(); };
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeModal(); });
+function closeModal(){ overlay.classList.remove("show"); }
+
+async function openHelp(id){
+  const step = STEPS.find(s=>s.id===id);
+  mTitle.textContent = step.title;
+  mSub.textContent = "How to do this step";
+  overlay.classList.add("show");
+  const key = (localStorage.getItem("fk_anthropic_key")||"").trim();
+
+  if(!key){
+    renderStatic(step, "No API key set — showing the built-in guide. Add a key in settings for tailored, live help.");
+    return;
+  }
+
+  mBody.innerHTML = `<div class="loading"><span class="spin"></span> Asking Claude Haiku…</div>`;
+  setSrc(true, "Generated by Claude Haiku");
+  try{
+    const text = await askHaiku(step, key);
+    mBody.innerHTML = mdToHtml(text);
+  }catch(err){
+    renderStatic(step, "Couldn't reach Claude ("+ (err.message||err) +") — here's the built-in guide instead.");
+  }
+}
+
+function renderStatic(step, note){
+  mBody.innerHTML = (note ? `<div class="err">${note}</div>` : "") + step.help;
+  setSrc(false, "Built-in guide");
+}
+function setSrc(live, text){
+  mSrcText.textContent = text;
+  mSrc.querySelector(".pulse").classList.toggle("static", !live);
+}
+
+async function askHaiku(step, key){
+  const model = (localStorage.getItem("fk_anthropic_model")||"claude-haiku-4-5").trim();
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "content-type":"application/json",
+      "x-api-key": key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 900,
+      system: "You are a calm, expert pair-programmer helping a developer finish a setup step. Reply in short, friendly markdown: a one-line intro, then numbered steps, with code in fenced blocks. Be concrete and specific to their stack. Keep it under ~250 words. Don't restate the whole project.",
+      messages:[{ role:"user", content:
+        `Project context:\n${PROJECT_CONTEXT}\n\nI'm stuck on this checklist step: "${step.title}".\n\nQuestion: ${step.task}\n\nGive me clear step-by-step instructions to complete it.` }]
+    })
+  });
+  if(!res.ok){
+    let msg = "HTTP " + res.status;
+    try{ const j = await res.json(); if(j.error?.message) msg = j.error.message; }catch{}
+    throw new Error(msg);
+  }
+  const data = await res.json();
+  return (data.content||[]).map(b=>b.text||"").join("\n").trim() || "No response.";
+}
+
+/* ---------- tiny markdown renderer ---------- */
+function mdToHtml(md){
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const blocks = md.split(/```/);
+  let out = "";
+  blocks.forEach((blk, i) => {
+    if(i % 2 === 1){
+      const body = blk.replace(/^[a-zA-Z]*\n/, "");
+      out += `<pre><code>${esc(body.replace(/\n$/,""))}</code></pre>`;
+      return;
+    }
+    out += renderInlineBlock(blk, esc);
+  });
+  return out;
+}
+function renderInlineBlock(text, esc){
+  const lines = text.split("\n");
+  let html = "", list = null;
+  const inline = s => esc(s)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>');
+  const closeList = () => { if(list){ html += `</${list}>`; list = null; } };
+  lines.forEach(raw => {
+    const line = raw.trimEnd();
+    if(!line.trim()){ closeList(); return; }
+    let m;
+    if(m = line.match(/^#{3}\s+(.*)/)){ closeList(); html += `<h3>${inline(m[1])}</h3>`; }
+    else if(m = line.match(/^#{1,2}\s+(.*)/)){ closeList(); html += `<h2>${inline(m[1])}</h2>`; }
+    else if(m = line.match(/^\s*\d+\.\s+(.*)/)){ if(list!=="ol"){ closeList(); html+="<ol>"; list="ol"; } html += `<li>${inline(m[1])}</li>`; }
+    else if(m = line.match(/^\s*[-*]\s+(.*)/)){ if(list!=="ul"){ closeList(); html+="<ul>"; list="ul"; } html += `<li>${inline(m[1])}</li>`; }
+    else { closeList(); html += `<p>${inline(line)}</p>`; }
+  });
+  closeList();
+  return html;
+}
+</script>
+</body>
+</html>

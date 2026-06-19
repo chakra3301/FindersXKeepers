@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeepSeek Estimator · Finders × Keepers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ground:#FCFCFD; --card:#FFFFFF; --ink:#0B0B0F; --muted:#5B616E;
+    --line:#ECEDF1; --line-strong:#E0E2E8;
+    --accent:#1D4ED8; --accent-soft:#EEF3FF;
+    --success:#047857; --success-soft:#E8F5EF;
+    --warning:#B45309; --warning-soft:#FBF1E4;
+    --radius:16px;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --shadow:0 1px 2px rgba(11,11,15,.04),0 8px 30px rgba(11,11,15,.05);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:"Geist",system-ui,-apple-system,Segoe UI,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px}
+  .tnum{font-variant-numeric:tabular-nums}
+  code,.mono{font-family:var(--mono);font-size:.86em}
+
+  /* Hero */
+  header.hero{
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(1200px 400px at 80% -10%,rgba(29,78,216,.10),transparent 60%),
+      radial-gradient(900px 360px at 0% 0%,rgba(4,120,87,.08),transparent 55%),
+      var(--card);
+    border-bottom:1px solid var(--line);
+  }
+  .hero .wrap{padding-top:64px;padding-bottom:56px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);background:var(--accent-soft);
+    padding:7px 13px;border-radius:999px;border:1px solid rgba(29,78,216,.14);
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(29,78,216,.14)}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.06;letter-spacing:-.02em;margin:20px 0 14px;font-weight:700}
+  h1 .grad{background:linear-gradient(100deg,var(--accent),#3b82f6 60%,var(--success));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:18px;color:var(--muted);max-width:660px;margin:0}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;
+    background:var(--card);border:1px solid var(--line-strong);border-radius:999px;
+    padding:8px 14px;box-shadow:var(--shadow)
+  }
+  .pill svg{width:15px;height:15px}
+
+  /* Sections */
+  section{padding:46px 0}
+  .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  h2{font-size:24px;letter-spacing:-.01em;margin:0 0 22px;font-weight:600}
+
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:720px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease,border-color .18s
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(11,11,15,.05),0 14px 40px rgba(11,11,15,.08);border-color:var(--line-strong)}
+  .card .ic{
+    width:38px;height:38px;border-radius:11px;display:grid;place-items:center;margin-bottom:14px;
+    background:var(--accent-soft);color:var(--accent)
+  }
+  .card.ok .ic{background:var(--success-soft);color:var(--success)}
+  .card.warn .ic{background:var(--warning-soft);color:var(--warning)}
+  .card h3{margin:0 0 6px;font-size:16px;font-weight:600}
+  .card p{margin:0;font-size:14px;color:var(--muted)}
+  .ic svg{width:20px;height:20px}
+
+  /* Flow */
+  .flow{display:flex;flex-direction:column;gap:0}
+  .step{display:grid;grid-template-columns:44px 1fr;gap:18px;position:relative;padding-bottom:26px}
+  .step:last-child{padding-bottom:0}
+  .step .num{
+    width:44px;height:44px;border-radius:13px;display:grid;place-items:center;z-index:1;
+    font-weight:600;font-size:15px;background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(29,78,216,.28)
+  }
+  .step:not(:last-child)::before{content:"";position:absolute;left:21.5px;top:44px;bottom:0;width:2px;background:linear-gradient(var(--line-strong),var(--line))}
+  .step .body{padding-top:3px}
+  .step h3{margin:0 0 4px;font-size:16px;font-weight:600}
+  .step p{margin:0;font-size:14px;color:var(--muted)}
+  .step .body code{background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:6px}
+
+  /* Callout */
+  .callout{
+    border-radius:var(--radius);padding:20px 22px;display:flex;gap:14px;align-items:flex-start;
+    background:var(--success-soft);border:1px solid rgba(4,120,87,.18)
+  }
+  .callout .ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fff;color:var(--success)}
+  .callout h3{margin:0 0 4px;font-size:15px;font-weight:600;color:var(--success)}
+  .callout p{margin:0;font-size:14px;color:#0c5b43}
+
+  /* Files / code */
+  .filelist{display:grid;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .file{display:flex;align-items:center;gap:13px;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .file:last-child{border-bottom:0}
+  .file .fi{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:none}
+  .file .fi.new{background:var(--success-soft);color:var(--success)}
+  .file .fi svg{width:16px;height:16px}
+  .file .path{font-family:var(--mono);font-size:13px;font-weight:500}
+  .file .desc{font-size:13px;color:var(--muted);margin-left:auto;text-align:right}
+  @media(max-width:600px){.file .desc{display:none}}
+  .tag{font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+  .tag.new{background:var(--success-soft);color:var(--success)}
+  .tag.edit{background:var(--warning-soft);color:var(--warning)}
+
+  pre{
+    margin:0;background:#0d1117;color:#e6edf3;border-radius:var(--radius);
+    padding:20px 22px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.7;
+    border:1px solid #1b2230;box-shadow:var(--shadow)
+  }
+  pre .c{color:#8b949e}
+  pre .k{color:#79c0ff}
+  pre .s{color:#7ee787}
+
+  .env-note{font-size:13px;color:var(--muted);margin:12px 2px 0}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .accent{color:var(--accent);font-weight:500}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> New capability</span>
+    <h1>A <span class="grad">DeepSeek estimator</span><br/>for shipping &amp; escrow pricing.</h1>
+    <p class="lede">Before we source an item we now <strong>estimate</strong> the Japan&nbsp;→&nbsp;customer shipping
+      and the item's market value — sizing the displayed quote and the escrow hold. Wired behind a one-file
+      seam, with a deterministic fallback so checkout is never blocked.</p>
+    <div class="hero-meta">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M20 7L9 18l-5-5"/></svg> No new dependencies</span>
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2"><path d="M20 7L9 18l-5-5"/></svg> 101 tests green</span>
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg> Four pricing lines intact</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">The idea</p>
+    <h2>One env flag swaps a flat guess for a real model.</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M9 21V9"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+        <h3>Shipping estimate</h3>
+        <p>From item, condition &amp; destination country, DeepSeek estimates all-in tracked international shipping in yen.</p>
+      </div>
+      <div class="card ok">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Item-value estimate</h3>
+        <p>A second-hand market price (with a low/high range) to size the escrow hold — clamped to never exceed the budget cap.</p>
+      </div>
+      <div class="card warn">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Never blocks checkout</h3>
+        <p>Any network, parse or timeout failure silently falls back to the deterministic stub, tagged <code>fallback</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">How a quote is built</p>
+    <h2>From request to hold — same number, every time.</h2>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="body">
+        <h3>Customer opens checkout</h3>
+        <p>The server computes the shipping estimate once via <code>estimator.estimateShipping()</code> and hands it to the form.</p>
+      </div></div>
+      <div class="step"><div class="num">2</div><div class="body">
+        <h3>Four-line quote renders</h3>
+        <p>Item cost · finder's fee · shipping · tax — never collapsed. Rush re-prices the <em>fee</em> only, so the shipping line stays stable.</p>
+      </div></div>
+      <div class="step"><div class="num">3</div><div class="body">
+        <h3>Escrow hold is sized</h3>
+        <p><code>depositForRequest()</code> asks the <em>same</em> memoized estimator, so the displayed estimate and the hold are built from one input.</p>
+      </div></div>
+      <div class="step"><div class="num">4</div><div class="body">
+        <h3>Order locks &amp; reconciles</h3>
+        <p>On approval the real four-line order is written; the model figure is only the <em>pre-sourcing</em> estimate, reconciled as before.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="callout">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div>
+        <h3>The five non-negotiables stay intact</h3>
+        <p>Pricing is still four separate lines. Funds still flow only through the processor — the estimator only feeds
+          <em>inputs</em> to <code>computeQuote</code>, it never holds money or collapses the breakdown. The item-value
+          estimate can never authorise more than the customer's cap.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">What shipped</p>
+    <h2>A seam that mirrors <code>escrow</code> &amp; <code>email</code>.</h2>
+    <div class="filelist">
+      <div class="file"><div class="fi new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <span class="path">src/lib/estimator/types.ts</span><span class="tag new">new</span><span class="desc">Estimator interface &amp; shapes</span></div>
+      <div class="file"><div class="fi new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <span class="path">src/lib/estimator/stub.ts</span><span class="tag new">new</span><span class="desc">Deterministic default + fallback</span></div>
+      <div class="file"><div class="fi new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <span class="path">src/lib/estimator/deepseek.ts</span><span class="tag new">new</span><span class="desc">OpenAI-compatible fetch · clamps · timeout</span></div>
+      <div class="file"><div class="fi new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <span class="path">src/lib/estimator/env.ts</span><span class="tag new">new</span><span class="desc">zod-validated DEEPSEEK_* config</span></div>
+      <div class="file"><div class="fi new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <span class="path">src/lib/estimator/index.ts</span><span class="tag new">new</span><span class="desc">Factory · singleton · memoizer</span></div>
+      <div class="file"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+        <span class="path">src/lib/requests/operations.ts</span><span class="tag edit">edit</span><span class="desc">deposit + approve use estimator</span></div>
+      <div class="file"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+        <span class="path">…/checkout/page.tsx + checkout-form.tsx</span><span class="tag edit">edit</span><span class="desc">passes server estimate to the form</span></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="kicker">Turn it on</p>
+    <h2>Two lines in <code>.env.local</code>.</h2>
+<pre><span class="c"># Route shipping + item-value estimates through DeepSeek</span>
+<span class="k">ESTIMATOR_PROVIDER</span>=<span class="s">deepseek</span>
+<span class="k">DEEPSEEK_API_KEY</span>=<span class="s">sk-...</span>
+
+<span class="c"># Optional — these are the defaults</span>
+<span class="c"># DEEPSEEK_BASE_URL=https://api.deepseek.com/v1</span>
+<span class="c"># DEEPSEEK_MODEL=deepseek-chat</span></pre>
+    <p class="env-note">Leave it unset (or <code>=stub</code>) and everything runs on the deterministic estimator — no key, no network. Same way <span class="accent">escrow</span> and <span class="accent">email</span> already work.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span><strong>Finders × Keepers</strong> · DeepSeek estimator</span>
+    <span>Stub by default · DeepSeek behind one flag · four lines, always.</span>
+  </div>
+</footer>
+
+</body>
+</html>

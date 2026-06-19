@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShieldCheck, PackageSearch, ReceiptText } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { LoginForm } from "@/components/auth/login-form";
+import { LoginOrbit } from "@/components/auth/login-orbit";
 
 export const metadata = {
   title: "Sign in — Finders Keepers",
@@ -34,6 +35,7 @@ export default function LoginPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,oklch(0.52_0.2_25_/_0.18),transparent_55%)]"
         />
+        <LoginOrbit />
         <Link href="/" className="relative">
           <Logo />
         </Link>
@@ -75,9 +77,12 @@ export default function LoginPage() {
             <Logo />
           </div>
           <div className="mb-8">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">Welcome back</h2>
+            <h2 className="font-display text-2xl font-semibold tracking-tight">
+              Sign in or create an account
+            </h2>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Sign in to post requests and track your escrow.
+              Enter your email — we&rsquo;ll send a one-time code. New here? We&rsquo;ll
+              set you up in the same step.
             </p>
           </div>
           <Suspense>

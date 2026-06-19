@@ -41,8 +41,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # server-only, never commit
 ```
 
-> **Tip:** In **Authentication → Providers → Email**, turn **off** "Confirm
-> email" so new sign-ups (and the demo user) can log in immediately.
+> **Tip:** Login is passwordless — email one-time codes (OTP). In
+> **Authentication → Email Templates**, edit **Magic Link** and **Confirm
+> signup** so the body includes the 6-digit code via `{{ .Token }}` (otherwise
+> Supabase only sends a magic *link*, not a code). Ready-to-paste templates are
+> in [`docs/auth-otp-email-templates.md`](docs/auth-otp-email-templates.md).
 
 ### 3. Apply database migrations
 
@@ -53,6 +56,9 @@ order (paste file contents, run):
 2. [`supabase/migrations/0002_escrow_settlement.sql`](supabase/migrations/0002_escrow_settlement.sql)
 3. [`supabase/migrations/0003_staff_role.sql`](supabase/migrations/0003_staff_role.sql)
 4. [`supabase/migrations/0004_storage_proofs.sql`](supabase/migrations/0004_storage_proofs.sql)
+5. [`supabase/migrations/0005_profile_avatars_addresses.sql`](supabase/migrations/0005_profile_avatars_addresses.sql)
+6. [`supabase/migrations/0006_notification_prefs.sql`](supabase/migrations/0006_notification_prefs.sql)
+7. [`supabase/migrations/0007_profile_email.sql`](supabase/migrations/0007_profile_email.sql)
 
 Or, with the Supabase CLI linked: `supabase db push`.
 
@@ -64,11 +70,12 @@ npm run seed
 
 This creates a demo user and requests in **every lifecycle state** (waiting,
 action-needed, in transit, completed, refunded, cancelled). Uses the escrow
-**stub** regardless of `ESCROW_PROVIDER` in `.env.local`. Sign in with:
+**stub** regardless of `ESCROW_PROVIDER` in `.env.local`. Login is passwordless,
+so sign in by entering the demo email at `/login` and using the one-time code
+Supabase sends to that inbox:
 
 ```
-email:    demo@finderskeepers.test
-password: concierge123
+email: luca47hall@gmail.com
 ```
 
 ### 5. Run

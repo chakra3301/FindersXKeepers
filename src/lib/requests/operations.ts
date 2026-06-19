@@ -1,9 +1,15 @@
 import { createAdminClient, type AdminClient } from "@/lib/supabase/admin";
 import { escrow, type EscrowIntent } from "@/lib/escrow";
+import { estimator } from "@/lib/estimator";
 import { assertTransition, IllegalTransitionError } from "./state-machine";
 import type { PriceLines } from "@/lib/pricing";
-import { computeQuote, totalJpy, SHIPPING_ESTIMATE_JPY } from "@/lib/pricing";
-import type { RequestStatus, RushTier } from "@/lib/db/types";
+import { computeQuote, totalJpy } from "@/lib/pricing";
+import type { RequestStatus, RushTier, AddressSnapshot } from "@/lib/db/types";
+import {
+  notifyPaymentConfirmed,
+  notifyItemShipped,
+  notifyRefundIssued,
+} from "@/lib/email/notify";
 
 /**
  * Team/system operations on a request. These run with the service-role client
@@ -22,11 +28,14 @@ import type { RequestStatus, RushTier } from "@/lib/db/types";
 export async function depositForRequest(
   requestId: string,
   rushTier: RushTier,
+  shippingAddress: AddressSnapshot | null = null,
   admin: AdminClient = createAdminClient(),
 ): Promise<{ checkoutUrl?: string }> {
   const { data: req, error } = await admin
     .from("requests")
-    .select("status, budget_cap_jpy, rush_tier")
+    .select(
+      "status, budget_cap_jpy, rush_tier, title, description, min_condition, must_haves, nice_to_haves, shipping_address",
+    )
     .eq("id", requestId)
     .single();
   if (error || !req) throw new Error(`Request ${requestId} not found.`);
@@ -40,6 +49,14 @@ export async function depositForRequest(
       .update({ rush_tier: rushTier })
       .eq("id", requestId);
     if (rushErr) throw rushErr;
+  }
+
+  if (shippingAddress) {
+    const { error: addrErr } = await admin
+      .from("requests")
+      .update({ shipping_address: shippingAddress })
+      .eq("id", requestId);
+    if (addrErr) throw addrErr;
   }
 
   // Hosted checkout (Stripe): if the customer backed out mid-flow, resume the
@@ -66,9 +83,51 @@ export async function depositForRequest(
       .eq("id", pendingPayment.id);
   }
 
+  // Estimate shipping AND item value in parallel (so the deposit waits on the
+  // slower of the two, not the sum). Shipping feeds the hold + the checkout
+  // display (one input); the item-value estimate is advisory — persisted for the
+  // operator console, never changing what the customer is charged.
+  const [shippingEst, itemEst] = await Promise.all([
+    estimator.estimateShipping({
+      title: req.title,
+      description: req.description,
+      minCondition: req.min_condition,
+      destinationCountry:
+        req.shipping_address?.country ?? shippingAddress?.country,
+    }),
+    estimator
+      .estimateItemValue({
+        title: req.title,
+        description: req.description,
+        minCondition: req.min_condition,
+        mustHaves: req.must_haves,
+        niceToHaves: req.nice_to_haves,
+        budgetCapJpy: req.budget_cap_jpy,
+      })
+      .catch(() => null),
+  ]);
+  const shippingJpy = shippingEst.shippingJpy;
+
+  if (itemEst) {
+    const { error: estErr } = await admin
+      .from("requests")
+      .update({
+        est_value_jpy: itemEst.itemValueJpy,
+        est_value_low_jpy: itemEst.lowJpy,
+        est_value_high_jpy: itemEst.highJpy,
+        est_confidence: itemEst.confidence,
+        est_needs_review: itemEst.needsReview ?? false,
+        est_category: itemEst.category ?? null,
+        est_sources: itemEst.sources ?? [],
+        est_updated_at: new Date().toISOString(),
+      })
+      .eq("id", requestId);
+    if (estErr) console.warn(`[deposit] estimate persist failed: ${estErr.message}`);
+  }
+
   const lines = computeQuote({
     itemCostJpy: req.budget_cap_jpy ?? 0,
-    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    shippingJpy,
     rushTier,
   });
 
@@ -99,7 +158,9 @@ export async function approveCandidate(
 ): Promise<void> {
   const { data: req, error: reqErr } = await admin
     .from("requests")
-    .select("status, rush_tier, budget_cap_jpy")
+    .select(
+      "status, rush_tier, budget_cap_jpy, title, description, min_condition, shipping_address",
+    )
     .eq("id", requestId)
     .single();
   if (reqErr || !req) throw new Error(`Request ${requestId} not found.`);
@@ -122,9 +183,18 @@ export async function approveCandidate(
     );
   }
 
+  // Re-use the same estimator (memoized for the model provider) so the locked
+  // order's shipping line agrees with the estimate the hold was sized to.
+  const { shippingJpy } = await estimator.estimateShipping({
+    title: req.title,
+    description: req.description,
+    minCondition: req.min_condition,
+    destinationCountry: req.shipping_address?.country,
+  });
+
   const lines = computeQuote({
     itemCostJpy: cand.price_jpy ?? 0,
-    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    shippingJpy,
     rushTier: req.rush_tier,
   });
 
@@ -351,6 +421,13 @@ export async function createEscrowHold(
     status: intent.status,
   });
   if (error) throw error;
+
+  // Synchronous (stub) holds confirm here; async (Stripe Checkout) holds stay
+  // `pending` until the webhook flips them to held, which sends the receipt
+  // there instead. Gating on `held` keeps it exactly-once across both modes.
+  if (intent.status === "held") {
+    await notifyPaymentConfirmed(requestId, admin);
+  }
   return intent;
 }
 
@@ -413,6 +490,8 @@ export async function refundEscrow(
     .from("payments")
     .update({ status: intent.status })
     .eq("id", payment.id);
+
+  await notifyRefundIssued(requestId, admin);
 }
 
 /**
@@ -456,6 +535,7 @@ export async function recordShipment(
   if (params.trackingNumber) {
     await releaseEscrow(order.request_id, order.total_jpy, admin);
     await setRequestStatus(order.request_id, "shipped", admin);
+    await notifyItemShipped(order.request_id, admin);
   }
 
   return shipment;

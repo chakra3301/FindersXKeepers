@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, ExternalLink } from "lucide-react";
+import { ChevronLeft, ExternalLink, Sparkles, AlertTriangle } from "lucide-react";
 import { getOperatorRequestDetail } from "@/lib/requests/operator-queries";
 import { STATUS_META } from "@/lib/requests/status";
 import { formatJpy } from "@/lib/pricing";
+import { cn } from "@/lib/utils";
 import { resolveImageRefs } from "@/lib/storage";
 import { StatusBadge } from "@/components/requests/status-badge";
 import { ProofGallery, ProofImage } from "@/components/requests/proof-image";
@@ -67,6 +68,101 @@ export default async function OperatorRequestPage({
           {request.description}
         </p>
       ) : null}
+
+      {request.est_value_jpy != null && (
+        <section className="mt-6 rounded-2xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="flex items-center gap-2 text-[13px] font-[600] uppercase tracking-[.02em] text-muted-foreground">
+              <Sparkles size={14} className="text-primary" /> AI price estimate
+            </h2>
+            {request.est_needs_review && (
+              <span className="inline-flex items-center gap-1 rounded-md border border-warning-border bg-warning-muted px-2 py-0.5 text-[11px] font-[560] text-warning">
+                <AlertTriangle size={12} /> Needs review
+              </span>
+            )}
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-end gap-x-10 gap-y-4">
+            <div>
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Estimated value
+              </div>
+              <div className="tnum text-2xl font-[600]">
+                {formatJpy(request.est_value_jpy)}
+              </div>
+              {request.est_value_low_jpy != null &&
+                request.est_value_high_jpy != null && (
+                  <div className="tnum mt-0.5 text-[12.5px] text-muted-foreground">
+                    range {formatJpy(request.est_value_low_jpy)} –{" "}
+                    {formatJpy(request.est_value_high_jpy)}
+                  </div>
+                )}
+            </div>
+
+            {request.est_confidence != null && (
+              <div>
+                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Confidence
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${Math.round(request.est_confidence * 100)}%` }}
+                    />
+                  </div>
+                  <span
+                    className={cn(
+                      "tnum text-[12.5px] font-[560]",
+                      request.est_confidence >= 0.7
+                        ? "text-success"
+                        : request.est_confidence < 0.5
+                          ? "text-warning"
+                          : "text-foreground",
+                    )}
+                  >
+                    {Math.round(request.est_confidence * 100)}%
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {request.est_category && (
+              <div>
+                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Category
+                </div>
+                <div className="mt-1 text-[13px] font-[540] capitalize">
+                  {request.est_category.replace(/_/g, " ")}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {request.est_sources.length > 0 && (
+            <div className="mt-4">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Priced from
+              </div>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {request.est_sources.map((s) => (
+                  <span
+                    key={s}
+                    className="rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[11.5px] text-muted-foreground"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="mt-4 max-w-[52em] text-[11.5px] leading-relaxed text-muted-foreground">
+            Advisory only — a pre-sourcing estimate to guide your hunt. The customer
+            is charged the real four-line order total, never this figure.
+          </p>
+        </section>
+      )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         <section className="rounded-2xl border border-border bg-card p-5">

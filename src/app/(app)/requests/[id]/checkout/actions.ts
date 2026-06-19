@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { depositForRequest } from "@/lib/requests/operations";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import type { RushTier } from "@/lib/db/types";
+import { addressToSnapshot } from "@/lib/addresses/types";
+import type { RushTier, AddressSnapshot } from "@/lib/db/types";
 
 export type CheckoutState =
   | { status: "idle" }
@@ -25,10 +26,25 @@ export async function submitDeposit(
     .maybeSingle();
   if (!owned) return { status: "error", message: "Request not found." };
 
+  const addressId = String(formData.get("addressId") ?? "");
+  let shippingAddress: AddressSnapshot | null = null;
+  if (addressId) {
+    const { data: addr } = await supabase
+      .from("addresses")
+      .select("*")
+      .eq("id", addressId)
+      .maybeSingle();
+    if (addr) shippingAddress = addressToSnapshot(addr);
+  }
+
   const rushTier = (formData.get("rushTier") as RushTier) ?? "standard";
   let checkoutUrl: string | undefined;
   try {
-    ({ checkoutUrl } = await depositForRequest(requestId, rushTier));
+    ({ checkoutUrl } = await depositForRequest(
+      requestId,
+      rushTier,
+      shippingAddress,
+    ));
   } catch (e) {
     return { status: "error", message: (e as Error).message };
   }

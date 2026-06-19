@@ -30,10 +30,42 @@ export type MessageSender = "customer" | "team";
 
 export type Profile = {
   id: string;
+  email: string | null;
   shipping_country: string | null;
   currency_pref: string;
+  avatar_url: string | null;
   is_staff: boolean;
+  notify_action_needed: boolean;
+  notify_messages: boolean;
+  notify_shipped: boolean;
   created_at: string;
+}
+
+export type Address = {
+  id: string;
+  user_id: string;
+  recipient_name: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  region: string | null;
+  postal_code: string;
+  country: string;
+  phone: string | null;
+  is_default: boolean;
+  created_at: string;
+}
+
+/** Frozen address copy stored on a request at deposit time. */
+export type AddressSnapshot = {
+  recipient_name: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  region: string | null;
+  postal_code: string;
+  country: string;
+  phone: string | null;
 }
 
 export type Request = {
@@ -50,6 +82,15 @@ export type Request = {
   rush_tier: RushTier;
   status: RequestStatus;
   deadline_at: string | null;
+  shipping_address: AddressSnapshot | null;
+  est_value_jpy: number | null;
+  est_value_low_jpy: number | null;
+  est_value_high_jpy: number | null;
+  est_confidence: number | null;
+  est_needs_review: boolean;
+  est_category: string | null;
+  est_sources: string[];
+  est_updated_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -119,11 +160,39 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<Profile, Partial<Profile> & { id: string }>;
+      addresses: Table<
+        Address,
+        Omit<Address, "id" | "created_at"> & { id?: string }
+      >;
       requests: Table<
         Request,
-        Omit<Request, "id" | "created_at" | "updated_at" | "status"> & {
+        Omit<
+          Request,
+          | "id"
+          | "created_at"
+          | "updated_at"
+          | "status"
+          | "shipping_address"
+          | "est_value_jpy"
+          | "est_value_low_jpy"
+          | "est_value_high_jpy"
+          | "est_confidence"
+          | "est_needs_review"
+          | "est_category"
+          | "est_sources"
+          | "est_updated_at"
+        > & {
           id?: string;
           status?: RequestStatus;
+          shipping_address?: AddressSnapshot | null;
+          est_value_jpy?: number | null;
+          est_value_low_jpy?: number | null;
+          est_value_high_jpy?: number | null;
+          est_confidence?: number | null;
+          est_needs_review?: boolean;
+          est_category?: string | null;
+          est_sources?: string[];
+          est_updated_at?: string | null;
         }
       >;
       candidates: Table<Candidate, Omit<Candidate, "id" | "created_at">>;

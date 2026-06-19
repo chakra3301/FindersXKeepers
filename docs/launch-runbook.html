@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Finders × Keepers — Go-Live Runbook</title>
+<style>
+  :root {
+    --bg: #131316;
+    --panel: #1b1b1f;
+    --panel-2: #212127;
+    --ink: #ECECEE;
+    --muted: #9A9AA2;
+    --faint: #6E6E77;
+    --border: #2C2C33;
+    --gold: #C8A02A;
+    --gold-soft: #e7c75e;
+    --crimson: #E2566B;
+    --ok: #4FBE85;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--gold-soft); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(19,19,22,.85); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .head-inner { max-width: 860px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 14px; }
+  .brand { font-weight: 650; letter-spacing: -.01em; font-size: 15px; white-space: nowrap; }
+  .brand .x { color: var(--gold); }
+  .progress-track { flex: 1; height: 7px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--gold), var(--gold-soft)); transition: width .35s ease; }
+  .progress-label { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--muted); min-width: 92px; text-align: right; }
+
+  /* Hero */
+  .hero { padding: 56px 0 28px; border-bottom: 1px solid var(--border); }
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0 0 14px; }
+  h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.08; letter-spacing: -.02em; margin: 0 0 16px; font-weight: 680; }
+  .lede { font-size: 17px; color: var(--muted); max-width: 64ch; margin: 0; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .pill { font-size: 12.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 99px; padding: 5px 12px; background: var(--panel); }
+  .pill b { color: var(--ink); font-weight: 600; }
+
+  /* TOC / order */
+  .order { margin: 30px 0 8px; padding: 18px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
+  .order h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; }
+  .order ol { margin: 0; padding-left: 0; counter-reset: o; list-style: none; }
+  .order li { display: flex; align-items: baseline; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--border); }
+  .order li:last-child { border-bottom: 0; }
+  .order .num { font-family: var(--mono); color: var(--gold); font-size: 13px; min-width: 22px; }
+  .order .t { flex: 1; }
+  .order .tag { font-size: 11.5px; color: var(--faint); font-family: var(--mono); }
+
+  /* Sections */
+  section.step { margin-top: 40px; scroll-margin-top: 78px; }
+  .step-head { display: flex; align-items: flex-start; gap: 16px; }
+  .badge {
+    flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
+    display: grid; place-items: center; font-family: var(--mono); font-weight: 600; font-size: 17px;
+    background: linear-gradient(160deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--border); color: var(--gold);
+  }
+  .step-head h2 { margin: 4px 0 2px; font-size: 23px; letter-spacing: -.01em; }
+  .why { color: var(--muted); margin: 4px 0 0; font-size: 15px; }
+  .meta-line { margin-top: 8px; font-size: 12.5px; color: var(--faint); font-family: var(--mono); }
+  .meta-line .danger { color: var(--crimson); }
+
+  .body { margin: 18px 0 0 58px; }
+  @media (max-width: 620px) { .body { margin-left: 0; } }
+
+  /* Checklist items */
+  .task { display: flex; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); margin-bottom: 10px; align-items: flex-start; }
+  .task input { appearance: none; -webkit-appearance: none; margin: 3px 0 0; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--faint); background: transparent; cursor: pointer; flex-shrink: 0; position: relative; transition: .15s; }
+  .task input:checked { background: var(--gold); border-color: var(--gold); }
+  .task input:checked::after { content: "✓"; position: absolute; inset: 0; display: grid; place-items: center; color: #1b1b1f; font-size: 13px; font-weight: 800; }
+  .task .task-body { flex: 1; min-width: 0; }
+  .task .task-body > :first-child { margin-top: 0; }
+  .task.done .task-body { opacity: .5; }
+  .task.done .task-body strong { text-decoration: line-through; }
+  .task strong { font-weight: 600; }
+  .task p { margin: 4px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  /* Code */
+  pre { margin: 12px 0 0; background: #101013; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; }
+  code { font-family: var(--mono); font-size: 13px; }
+  p code, li code, .task code { background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; font-size: 12.5px; color: var(--gold-soft); }
+  pre code { color: #d6d6da; background: none; border: 0; padding: 0; }
+  .cmt { color: var(--faint); }
+  .tok { color: var(--gold-soft); }
+
+  /* Callouts */
+  .note { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 14px; border: 1px solid; display: flex; gap: 10px; }
+  .note .ic { flex-shrink: 0; }
+  .note.tip { background: rgba(79,190,133,.07); border-color: rgba(79,190,133,.3); }
+  .note.warn { background: rgba(226,86,107,.07); border-color: rgba(226,86,107,.32); }
+  .note.info { background: rgba(200,160,42,.07); border-color: rgba(200,160,42,.3); }
+  .note b { color: var(--ink); }
+
+  .done-when { margin-top: 14px; font-size: 14px; color: var(--ok); display: flex; gap: 8px; align-items: baseline; }
+  .done-when b { color: var(--ink); }
+
+  hr.sep { border: 0; border-top: 1px solid var(--border); margin: 8px 0 0; }
+  footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--border); color: var(--faint); font-size: 13px; }
+  .reset { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 12px; font-size: 12.5px; cursor: pointer; font-family: var(--sans); }
+  .reset:hover { border-color: var(--gold); color: var(--gold); }
+
+  @media print {
+    header { position: static; } .task input { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .reset { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-inner">
+    <span class="brand">Finders <span class="x">×</span> Keepers</span>
+    <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+    <span class="progress-label" id="plabel">0 / 0 done</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <p class="kicker">Go-Live Runbook · real money</p>
+    <h1>The 5 things only you can do before launch</h1>
+    <p class="lede">The code is built, tested, and committed. What's left are account, key, and policy
+      steps that live outside the repo — Supabase, Stripe, Resend, your legal entity, and monitoring.
+      Work top to bottom; each box remembers itself on this device.</p>
+    <div class="pill-row">
+      <span class="pill"><b>Est. time:</b> ~half a day</span>
+      <span class="pill"><b>Touches code:</b> just the shipping figure (step 4)</span>
+      <span class="pill"><b>Cost:</b> no paid tools required</span>
+    </div>
+  </div>
+
+  <div class="order">
+    <h2>Recommended order</h2>
+    <ol>
+      <li><span class="num">1</span><span class="t">Database migration + transactional email (Resend)</span><span class="tag">~45 min</span></li>
+      <li><span class="num">2</span><span class="t">Live Stripe — keys + webhook</span><span class="tag">~60 min</span></li>
+      <li><span class="num">3</span><span class="t">Supabase Auth email (signup confirmation)</span><span class="tag">~20 min</span></li>
+      <li><span class="num">4</span><span class="t">Legal review + shipping estimate</span><span class="tag">human / counsel</span></li>
+      <li><span class="num">5</span><span class="t">Error visibility — free (Vercel logs)</span><span class="tag">~20 min</span></li>
+    </ol>
+    <div class="note tip" style="margin-top:14px"><span class="ic">✓</span><span><b>Stripe already validated in test mode</b> — step 2 now covers wiring the <b>live</b> keys + production webhook. Real keys live only in Vercel / <code>.env.local</code>, never in this committed file.</span></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <section class="step" id="s1">
+    <div class="step-head">
+      <div class="badge">1</div>
+      <div>
+        <h2>Database migration + transactional email</h2>
+        <p class="why">Switches notification preferences from in-memory to real, and turns on the
+          payment / shipped / refund emails. Without this, buyers paying real money get no receipts.</p>
+        <p class="meta-line">files · <code>supabase/migrations/0006_notification_prefs.sql</code> · <code>.env.local</code> · provider: <a href="https://resend.com" target="_blank" rel="noopener">Resend</a></p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="task"><input type="checkbox" data-id="1a" /><div class="task-body">
+        <strong>Apply migration 0006 to your production Supabase project</strong>
+        <p>Supabase dashboard → <b>SQL Editor</b> → paste the contents of the file below → <b>Run</b>.
+        (If your prod DB is fresh, run <code>0001</code>→<code>0006</code> in order first.)</p>
+        <pre><code><span class="cmt"># the file to paste:</span>
+supabase/migrations/0006_notification_prefs.sql
+
+<span class="cmt"># …or, if you use the Supabase CLI linked to prod:</span>
+supabase db push</code></pre>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="1b" /><div class="task-body">
+        <strong>Create a Resend account &amp; verify your sending domain</strong>
+        <p>At <a href="https://resend.com" target="_blank" rel="noopener">resend.com</a>: add your domain, then add the
+          <b>DNS records</b> they give you (SPF, DKIM, and a return-path) at your DNS host. Verification
+          can take a few minutes to an hour. A verified domain is required to send from
+          <code>@yourdomain.com</code>.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="1c" /><div class="task-body">
+        <strong>Create an API key</strong>
+        <p>Resend → <b>API Keys</b> → <b>Create</b> (Sending access is enough). Copy the <code>re_…</code> value — you only see it once.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="1d" /><div class="task-body">
+        <strong>Set the email env vars</strong>
+        <p>Locally in <code>.env.local</code>, and in <b>Vercel → Project → Settings → Environment Variables</b> (Production):</p>
+        <pre><code>EMAIL_PROVIDER=<span class="tok">resend</span>
+RESEND_API_KEY=<span class="tok">re_…</span>
+EMAIL_FROM=<span class="tok">Finders Keepers &lt;hello@yourdomain.com&gt;</span>   <span class="cmt"># must be on the verified domain</span></code></pre>
+        <div class="note info"><span class="ic">◆</span><span>Leaving <code>EMAIL_PROVIDER=stub</code> (the default) is safe — it just logs emails to the server console and sends nothing. That's how dev works with no key.</span></div>
+      </div></div>
+
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> a deposit (verified in step 2) produces a real “Deposit confirmed” email in your inbox, and the <code>/account</code> notification toggles save and persist on reload.</span></div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" id="s2">
+    <div class="step-head">
+      <div class="badge">2</div>
+      <div>
+        <h2>Live Stripe — keys + webhook</h2>
+        <p class="why">Turns the escrow seam from the in-memory stub onto real Stripe. You are the
+          <b>merchant of record</b> (plain Stripe, no Connect) — standard PaymentIntents settle to your one account.</p>
+        <p class="meta-line">route · <code>/api/stripe/webhook</code> · full reference: <code>docs/stripe-setup.md</code></p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="note tip"><span class="ic">✓</span><span><b>Test mode validated.</b> The flow works against test keys, so the remaining work is wiring the <b>live</b> credentials. From here on this is real money — every charge is real.</span></div>
+
+      <div class="task"><input type="checkbox" data-id="2a" /><div class="task-body">
+        <strong>Switch Stripe to Live mode &amp; copy the live keys</strong>
+        <p><a href="https://dashboard.stripe.com" target="_blank" rel="noopener">dashboard.stripe.com</a> → toggle <b>Test mode OFF</b> (you're now in Live). Developers → API keys → copy the <b>live</b> Secret (<code>sk_live_…</code>) and Publishable (<code>pk_live_…</code>).</p>
+        <div class="note warn"><span class="ic">▲</span><span>Live activation requires a completed Stripe business profile (entity, bank account, identity). If the dashboard shows "activate your account," finish that first — live keys won't charge until it's approved.</span></div>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="2b" /><div class="task-body">
+        <strong>Register the production webhook endpoint (Live)</strong>
+        <p>Still in Live mode → Developers → <b>Webhooks</b> → <b>Add endpoint</b>:</p>
+        <pre><code>URL:    <span class="tok">https://your-domain.com/api/stripe/webhook</span>
+Events: <span class="tok">checkout.session.completed</span>,
+        <span class="tok">payment_intent.payment_failed</span>,
+        <span class="tok">charge.refunded</span></code></pre>
+        <p>Open the new endpoint → reveal its <b>Signing secret</b> and copy the live <code>whsec_…</code>. This is the production webhook secret (different from the CLI one you used in test).</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="2c" /><div class="task-body">
+        <strong>Set the live env vars in Vercel Production &amp; redeploy</strong>
+        <p><b>Vercel → Project → Settings → Environment Variables</b>, scope = <b>Production</b>. Paste your real values in place of these placeholders, then redeploy:</p>
+        <pre><code>ESCROW_PROVIDER=<span class="tok">stripe</span>
+STRIPE_SECRET_KEY=<span class="tok">sk_live_…</span>
+STRIPE_WEBHOOK_SECRET=<span class="tok">whsec_…</span>           <span class="cmt"># the LIVE endpoint's signing secret</span>
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<span class="tok">pk_live_…</span>
+NEXT_PUBLIC_SITE_URL=<span class="tok">https://your-domain.com</span>   <span class="cmt"># must match the webhook URL host</span></code></pre>
+        <div class="note warn"><span class="ic">▲</span><span>Put real keys <b>only</b> in Vercel (and local <code>.env.local</code>) — never in committed files. This runbook is in git; keep the placeholders here.</span></div>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="2d" /><div class="task-body">
+        <strong>Verify with one real transaction</strong>
+        <p>On the live site, fund a small real deposit. Confirm: the request moves <code>open → sourcing</code>,
+          the payment flips to <code>held</code>, the deposit email arrives, the webhook shows a <b>2xx</b> delivery
+          in the Stripe dashboard, and the funds appear held in your Stripe balance. (You can refund it after.)</p>
+      </div></div>
+
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> a real live transaction holds funds, the production webhook reports 2xx, and the deposit email lands.</span></div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" id="s3">
+    <div class="step-head">
+      <div class="badge">3</div>
+      <div>
+        <h2>Supabase Auth email (signup confirmation)</h2>
+        <p class="why">New email/password signups need a confirmation email to be delivered, or accounts
+          can't verify. This is separate from the Resend transactional email in step 1 — it's Supabase's own auth mail.</p>
+        <p class="meta-line">Supabase dashboard → Authentication</p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="task"><input type="checkbox" data-id="3a" /><div class="task-body">
+        <strong>Decide: confirm-on-signup or instant sign-in</strong>
+        <p>Authentication → <b>Providers → Email</b>. For real users, keep <b>“Confirm email”</b> ON
+          (recommended). If you'd rather skip confirmation, turn it off — but then anyone can sign up with any address.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="3b" /><div class="task-body">
+        <strong>Configure a custom SMTP sender (recommended for production)</strong>
+        <p>Authentication → <b>Emails → SMTP Settings</b>. Supabase's built-in email is rate-limited and
+          not meant for production volume. Point it at Resend's SMTP (or another provider) so confirmation
+          mail actually lands. Set the same <code>From</code> domain you verified in step 1.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="3c" /><div class="task-body">
+        <strong>Set the redirect URLs</strong>
+        <p>Authentication → <b>URL Configuration</b>. Add your production <b>Site URL</b> and allow
+          <code>https://your-domain.com/auth/callback</code> as a redirect — that's the route the app uses after confirmation/OAuth.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="3d" /><div class="task-body">
+        <strong>(Optional) Apple sign-in</strong>
+        <p>It's intentionally hidden in production until configured. To enable: add Apple as an OAuth
+          provider in Supabase Auth, then set <code>NEXT_PUBLIC_APPLE_AUTH_ENABLED=true</code> in Vercel. Email auth works without this.</p>
+      </div></div>
+
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> a brand-new signup receives a confirmation email and can verify, landing back on the app via <code>/auth/callback</code>.</span></div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step" id="s4">
+    <div class="step-head">
+      <div class="badge">4</div>
+      <div>
+        <h2>Legal review + shipping estimate</h2>
+        <p class="why">The legal pages exist as scaffolding. Before taking real money they must reflect
+          your real business entity, and the placeholder shipping figure must become honest.</p>
+        <p class="meta-line">routes · <code>/legal/terms</code> · <code>/legal/privacy</code> · <code>/legal/tokushoho</code> (特商法)</p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="task"><input type="checkbox" data-id="4a" /><div class="task-body">
+        <strong>Fill in 特商法 (Tokushoho) disclosure with real details</strong>
+        <p>The <a href="">Specified Commercial Transactions Act</a> page (<code>src/app/legal/tokushoho</code>)
+          legally must carry your real trading name, address, contact, pricing terms, and return/refund policy.
+          Have counsel confirm completeness for selling into your target markets.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="4b" /><div class="task-body">
+        <strong>Review Terms &amp; Privacy with your entity</strong>
+        <p><code>src/app/legal/terms</code> and <code>src/app/legal/privacy</code> — confirm the agency model
+          (you charge a disclosed finder's fee; item cost is pass-through), data handling, and dispute terms
+          match your actual operation and jurisdiction.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="4c" /><div class="task-body">
+        <strong>Replace the hardcoded shipping estimate</strong>
+        <p>Shipping is currently a flat placeholder. Buyers are quoted and charged this in the four-line price,
+          so it must be defensible. Update the constant (or wire a real carrier quote) at:</p>
+        <pre><code>src/lib/pricing.ts<span class="cmt">:29</span>
+export const SHIPPING_ESTIMATE_JPY = <span class="tok">4_000</span>;  <span class="cmt"># ← set to a real figure</span></code></pre>
+        <div class="note info"><span class="ic">◆</span><span>This one <i>is</i> a one-line code change. Tell me the real number (or a per-country table) and I'll wire it.</span></div>
+      </div></div>
+
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> all three legal pages are accurate for your entity and counsel-approved, and the shipping figure reflects real cost.</span></div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="step" id="s5">
+    <div class="step-head">
+      <div class="badge">5</div>
+      <div>
+        <h2>Error visibility — the free path</h2>
+        <p class="why">When a payment, webhook, or release silently fails in production, you want to find out
+          fast — not from a confused customer three days later. No paid tool needed: the app already logs every
+          money path to the console, and Vercel surfaces those for free.</p>
+        <p class="meta-line">free · Vercel Logs + Observability · optional free-tier log drain</p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="note tip"><span class="ic">✓</span><span>The code already logs the risky paths — <code>[notify] …</code>, <code>[email:resend] …</code>, escrow/webhook failures. Steps below just make those visible and alertable for $0.</span></div>
+
+      <div class="task"><input type="checkbox" data-id="5a" /><div class="task-body">
+        <strong>Confirm Vercel Runtime Logs (built-in, free)</strong>
+        <p>Vercel → your project → <b>Logs</b>. This streams server/function output, including the app's
+          <code>console.error</code> from the webhook and lifecycle operations. After a live transaction,
+          check there are no unexpected errors around <code>/api/stripe/webhook</code>.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="5b" /><div class="task-body">
+        <strong>Turn on Vercel Observability</strong>
+        <p>Vercel → project → <b>Observability</b>. The free tier charts function error rates and lets you
+          spot a spike on the webhook or checkout routes without any code change.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="5c" /><div class="task-body">
+        <strong>(Optional) Add a free-tier log drain with alerts</strong>
+        <p>Runtime logs are ephemeral. For retained logs + email/Slack alerts at $0, connect a free-tier
+          drain — e.g. <a href="https://betterstack.com" target="_blank" rel="noopener">Better Stack</a> or
+          <a href="https://axiom.co" target="_blank" rel="noopener">Axiom</a> — via Vercel → project →
+          <b>Integrations</b>. Set an alert on log lines matching <code>[notify]</code>, <code>[email:resend]</code>,
+          or <code>webhook</code> errors.</p>
+      </div></div>
+
+      <div class="task"><input type="checkbox" data-id="5d" /><div class="task-body">
+        <strong>Verify the money paths are observable</strong>
+        <p>Trigger a deliberate failure (e.g. a Stripe test event the handler rejects) and confirm it shows
+          up in Vercel Logs / your drain. That's your safety net for real-money issues.</p>
+        <div class="note info"><span class="ic">◆</span><span>If you later want richer error grouping for free, Sentry's own free tier and the open-source <b>GlitchTip</b> are drop-in options — but Vercel's built-ins are enough to launch.</span></div>
+      </div></div>
+
+      <div class="done-when"><span>✓</span><span><b>Done when:</b> a deliberately triggered error is visible in Vercel Logs (and fires your drain alert, if you set one up).</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Generated for Finders × Keepers · launch prep on branch <code>feat/launch-prep</code>.
+      Progress is saved in your browser only.
+      <button class="reset" id="reset">Reset checklist</button></p>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "fk-launch-runbook-v1";
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.task input[type=checkbox]'));
+    var fill = document.getElementById('fill');
+    var label = document.getElementById('plabel');
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+
+    function render() {
+      var done = 0;
+      boxes.forEach(function (b) {
+        if (b.checked) done++;
+        b.closest('.task').classList.toggle('done', b.checked);
+      });
+      var pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
+      fill.style.width = pct + "%";
+      label.textContent = done + " / " + boxes.length + " done";
+    }
+
+    boxes.forEach(function (b) {
+      var id = b.getAttribute('data-id');
+      if (saved[id]) b.checked = true;
+      b.addEventListener('change', function () {
+        saved[id] = b.checked;
+        try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+        render();
+      });
+    });
+
+    document.getElementById('reset').addEventListener('click', function () {
+      saved = {};
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      boxes.forEach(function (b) { b.checked = false; });
+      render();
+    });
+
+    render();
+  })();
+</script>
+</body>
+</html>

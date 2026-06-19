@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, AlertCircle, ShieldCheck } from "lucide-react";
+import { ChevronLeft, AlertCircle, ShieldCheck, Share2, Sparkles } from "lucide-react";
 import { getRequestDetail } from "@/lib/requests/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth";
+import { listAddresses } from "@/lib/addresses/queries";
+import { AddressSelect } from "@/components/addresses/address-select";
+import { attachRequestAddress } from "./address-actions";
 import { syncStripeCheckoutReturn } from "@/lib/escrow/sync-checkout-return";
 import { STATUS_META } from "@/lib/requests/status";
 import { RUSH_LABEL, formatJpy } from "@/lib/pricing";
@@ -58,6 +63,16 @@ export default async function RequestDetailPage({
   // Real escrow state from payment rows
   const escrowState = escrowStateFromPayments(payments);
   const settledPayment = payments.find((p) => p.status === "released") ?? null;
+
+  // Saved addresses for the "collect shipping address later" affordance.
+  const user = await requireUser();
+  const supabase = await createClient();
+  const addresses = await listAddresses(user.id, supabase);
+  const defaultAddressId = addresses.find((a) => a.is_default)?.id ?? null;
+  const needsShippingAddress =
+    escrowState === "held" &&
+    request.shipping_address === null &&
+    addresses.length > 0;
 
   // Neutral caption label derived from same order→candidate→budget precedence
   const capLabel: string = latestOrder
@@ -135,6 +150,20 @@ export default async function RequestDetailPage({
             {conditionLabel(request.min_condition)} · {RUSH_LABEL[request.rush_tier]}
           </p>
 
+          {/* Light market estimate — only while still hunting (no candidate/order yet) */}
+          {request.est_value_jpy != null && !latestCandidate && !latestOrder && (
+            <p className="flex items-center gap-1.5 text-[12.5px] text-muted-foreground">
+              <Sparkles size={12} className="text-primary" />
+              Est. market value{" "}
+              <span className="tnum font-[540] text-foreground">
+                {request.est_value_low_jpy != null &&
+                request.est_value_high_jpy != null
+                  ? `${formatJpy(request.est_value_low_jpy)}–${formatJpy(request.est_value_high_jpy)}`
+                  : formatJpy(request.est_value_jpy)}
+              </span>
+            </p>
+          )}
+
           {/* Progress bar */}
           <div className="flex max-w-[420px] gap-[3px]">
             {Array.from({ length: progress.total }).map((_, i) => (
@@ -168,6 +197,25 @@ export default async function RequestDetailPage({
         </div>
       </header>
 
+      {/* Share completed find — holographic trophy card */}
+      {(request.status === "shipped" || request.status === "released") && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-card px-5 py-4">
+          <div className="text-[13.5px]">
+            <div className="font-[560]">Your find is complete 🎉</div>
+            <div className="text-[12.5px] text-muted-foreground">
+              Share a holographic card of this find to social.
+            </div>
+          </div>
+          <Link
+            href={`/finds/${request.id}`}
+            className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+          >
+            <Share2 size={15} />
+            Share your find
+          </Link>
+        </div>
+      )}
+
       {/* Deposit confirmed after Stripe return */}
       {checkout === "complete" &&
         request.status === "sourcing" &&
@@ -198,6 +246,25 @@ export default async function RequestDetailPage({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Collect shipping address after funding (optional-at-checkout path) */}
+      {needsShippingAddress && (
+        <form
+          action={attachRequestAddress.bind(null, request.id)}
+          className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-card px-5 py-4"
+        >
+          <div className="text-[13.5px] font-[560]">
+            Where should we ship this?
+          </div>
+          <AddressSelect addresses={addresses} defaultId={defaultAddressId} />
+          <button
+            type="submit"
+            className={cn(buttonVariants({ size: "sm" }), "w-fit")}
+          >
+            Save shipping address
+          </button>
+        </form>
       )}
 
       {/* Unfunded open request → deposit CTA */}

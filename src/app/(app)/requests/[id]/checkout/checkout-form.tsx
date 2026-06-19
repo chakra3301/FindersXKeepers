@@ -8,12 +8,12 @@ import {
   computeQuote,
   totalJpy,
   formatJpy,
-  SHIPPING_ESTIMATE_JPY,
 } from "@/lib/pricing";
 import { formatLocalApprox } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { RushTier } from "@/lib/db/types";
+import { AddressSelect } from "@/components/addresses/address-select";
+import type { RushTier, Address } from "@/lib/db/types";
 
 /** Indicative hunt window per tier — display copy only (mirrors the prototype). */
 const RUSH_WINDOW: Record<RushTier, string> = {
@@ -27,20 +27,27 @@ export function CheckoutForm({
   budgetCapJpy,
   initialRush,
   currencyPref,
+  shippingEstimateJpy,
   chargesNow = false,
   resuming = false,
   cancelled = false,
+  addresses,
+  defaultAddressId,
 }: {
   requestId: string;
   budgetCapJpy: number | null;
   initialRush: RushTier;
   currencyPref: string;
+  /** Server-computed Japan→you shipping estimate; equals the hold's input. */
+  shippingEstimateJpy: number;
   /** Stripe captures the cap immediately; the stub only holds. Drives the copy. */
   chargesNow?: boolean;
   /** A pending payment already exists — customer is finishing hosted checkout. */
   resuming?: boolean;
   /** Returned from Stripe cancel_url. */
   cancelled?: boolean;
+  addresses: Address[];
+  defaultAddressId: string | null;
 }) {
   const initial: CheckoutState = { status: "idle" };
   const action = submitDeposit.bind(null, requestId);
@@ -59,7 +66,7 @@ export function CheckoutForm({
   const cap = budgetCapJpy ?? 0;
   const quote = computeQuote({
     itemCostJpy: cap,
-    shippingJpy: SHIPPING_ESTIMATE_JPY,
+    shippingJpy: shippingEstimateJpy,
     rushTier: rush,
   });
   const total = totalJpy(quote);
@@ -133,14 +140,14 @@ export function CheckoutForm({
             const tierTotal = totalJpy(
               computeQuote({
                 itemCostJpy: cap,
-                shippingJpy: SHIPPING_ESTIMATE_JPY,
+                shippingJpy: shippingEstimateJpy,
                 rushTier: t,
               }),
             );
             const delta = tierTotal - totalJpy(
               computeQuote({
                 itemCostJpy: cap,
-                shippingJpy: SHIPPING_ESTIMATE_JPY,
+                shippingJpy: shippingEstimateJpy,
                 rushTier: "standard",
               }),
             );
@@ -198,6 +205,17 @@ export function CheckoutForm({
           )}
         </p>
       </div>
+
+      <fieldset className="flex flex-col gap-2.5">
+        <legend className="mb-1 text-[11px] font-[600] uppercase tracking-[0.04em] text-muted-foreground">
+          Ship to
+        </legend>
+        <AddressSelect addresses={addresses} defaultId={defaultAddressId} />
+        <p className="text-[11.5px] text-muted-foreground">
+          Optional now — you can confirm where it ships any time before it leaves
+          Japan.
+        </p>
+      </fieldset>
 
       <label className="flex items-start gap-2.5 text-[13px]">
         <span

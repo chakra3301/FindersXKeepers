@@ -77,9 +77,9 @@
   --popover: oklch(0.2 0.01 280);
   --popover-foreground: var(--foreground);
 
-  /* Crimson accent — single trust / action color */
-  --primary: oklch(0.52 0.2 25);
-  --primary-foreground: oklch(0.99 0.002 280);
+  /* Yellow accent — single trust / action color (preview) */
+  --primary: oklch(0.84 0.16 96);
+  --primary-foreground: oklch(0.2 0.03 96);
 
   --secondary: oklch(0.22 0.012 280);
   --secondary-foreground: oklch(0.88 0.01 280);
@@ -94,7 +94,7 @@
 
   --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 11%);
-  --ring: oklch(0.52 0.2 25);
+  --ring: oklch(0.84 0.16 96);
 
   /* escrow / trust — muted emerald on dark */
   --success: oklch(0.72 0.11 155);
@@ -133,12 +133,12 @@
     background-image:
       radial-gradient(
         80% 55% at 50% -15%,
-        oklch(0.52 0.2 25 / 0.12) 0%,
+        oklch(0.84 0.16 96 / 0.12) 0%,
         transparent 55%
       ),
       radial-gradient(
         60% 45% at 100% 50%,
-        oklch(0.3 0.06 25 / 0.08) 0%,
+        oklch(0.55 0.1 96 / 0.08) 0%,
         transparent 50%
       );
     background-attachment: fixed;
@@ -196,6 +196,327 @@
   .rise {
     animation: fk-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  /* --- Glitch / instrument-panel motif language ------------------------ */
+
+  /* Registration dot-grid texture — echoes the dot-art word. */
+  .dot-grid {
+    background-image: radial-gradient(oklch(1 0 0 / 0.05) 1px, transparent 1.4px);
+    background-size: 22px 22px;
+  }
+  .dot-grid-dense {
+    background-image: radial-gradient(oklch(1 0 0 / 0.06) 1px, transparent 1.2px);
+    background-size: 14px 14px;
+  }
+
+  /* Faint CRT scanlines for atmosphere on dark panels. */
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      oklch(1 0 0 / 0.022) 0px,
+      oklch(1 0 0 / 0.022) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  /* Mono instrument label: [ 01 ] SECTION — brackets handled in markup. */
+  .mono-label {
+    @apply font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground;
+  }
+
+  /* Animated divider: dotted hairline + a slow crimson signal sweep. */
+  .glitch-rule {
+    position: relative;
+    height: 1px;
+    width: 100%;
+    background-image: repeating-linear-gradient(
+      90deg,
+      oklch(1 0 0 / 0.16) 0 2px,
+      transparent 2px 7px
+    );
+    overflow: hidden;
+  }
+  .glitch-rule::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(0.52 0.2 25 / 0.9),
+      transparent
+    );
+    width: 28%;
+    transform: translateX(-120%);
+    animation: fk-sweep 5.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  }
+  @keyframes fk-sweep {
+    0% { transform: translateX(-120%); }
+    60%, 100% { transform: translateX(460%); }
+  }
+
+  /* Marquee ticker track (content duplicated 2x → translate -50%). */
+  .marquee-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: fk-marquee 42s linear infinite;
+  }
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  }
+  @keyframes fk-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Terminal block cursor blink. */
+  .term-cursor {
+    animation: fk-blink 1.1s steps(1) infinite;
+  }
+  @keyframes fk-blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* --- Holographic interactive card -------------------------------------- */
+  .holo-perspective {
+    perspective: 1300px;
+  }
+  .holo-card {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 50%;
+    --s: 1;
+    position: relative;
+    border-radius: 5% / 3.6%;
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
+    transform-style: preserve-3d;
+    transition:
+      transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 0.5s ease;
+    box-shadow:
+      0 18px 50px -16px oklch(0 0 0 / 0.75),
+      0 0 0 1px oklch(1 0 0 / 0.04) inset;
+    cursor: grab;
+    will-change: transform;
+  }
+  .holo-card.is-active {
+    --s: 1.04;
+    transition:
+      transform 0.1s ease-out,
+      box-shadow 0.3s ease;
+    box-shadow:
+      0 30px 70px -18px oklch(0.84 0.16 96 / 0.45),
+      0 22px 55px -16px oklch(0 0 0 / 0.85),
+      0 0 0 1px oklch(1 0 0 / 0.08) inset;
+  }
+  .holo-card__img {
+    border-radius: inherit;
+    object-fit: cover;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  .holo-card__foil,
+  .holo-card__glitter,
+  .holo-card__sheen,
+  .holo-card__glare {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+  }
+  /* foil + glitter are part of the card surface → faint even at rest */
+  .holo-card__foil { opacity: 0.28; }
+  .holo-card__glitter { opacity: 0.18; }
+  .holo-card__sheen { opacity: 0; }
+  .holo-card__glare { opacity: 0; }
+  .holo-card.is-active .holo-card__foil { opacity: 0.42; }
+  .holo-card.is-active .holo-card__glitter { opacity: 0.5; }
+  .holo-card.is-active .holo-card__sheen { opacity: 0.55; }
+  .holo-card.is-active .holo-card__glare { opacity: 1; }
+  .holo-card.is-ambient { cursor: default; }
+  .holo-card.is-ambient.is-active .holo-card__foil { opacity: 0.5; }
+  .holo-card.is-ambient.is-active .holo-card__glitter { opacity: 0.55; }
+  .holo-card.is-ambient.is-active .holo-card__sheen { opacity: 0.42; }
+  .holo-card.is-ambient.is-active .holo-card__glare { opacity: 0.7; }
+
+  /* Etched cross-hatch foil — the Japanese SAR "brushed" directional texture. */
+  .holo-card__foil {
+    background-image:
+      repeating-linear-gradient(58deg, oklch(1 0 0 / 0.1) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(-58deg, oklch(1 0 0 / 0.08) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(
+        90deg,
+        oklch(0.72 0.2 20 / 0.12) 0 2px,
+        oklch(0.74 0.2 160 / 0.12) 2px 4px,
+        oklch(0.72 0.2 260 / 0.12) 4px 6px,
+        transparent 6px 10px
+      );
+    background-size: auto, auto, 200% 100%;
+    background-position: 0 0, 0 0, var(--mx) 0;
+    mix-blend-mode: overlay;
+  }
+  /* --- Holographic trophy (completed-find share) card -------------------- */
+  .trophy-card {
+    border-radius: 1.4rem;
+    background:
+      linear-gradient(165deg, oklch(0.22 0.014 280), oklch(0.165 0.01 280));
+    cursor: default;
+  }
+  /* quieter foil over the text-heavy trophy so stats stay legible */
+  .trophy-card .holo-card__foil { opacity: 0.14; }
+  .trophy-card .holo-card__glitter { opacity: 0.08; }
+  .trophy-card.is-active .holo-card__foil { opacity: 0.32; }
+  .trophy-card.is-active .holo-card__glitter { opacity: 0.3; }
+  .trophy-card.is-active .holo-card__sheen { opacity: 0.32; }
+  .trophy-card.is-active .holo-card__glare { opacity: 0.55; }
+
+  /* --- Login 3D asset orbit ---------------------------------------------- */
+  .login-orbit {
+    perspective: 1300px;
+    overflow: hidden;
+  }
+  .login-orbit__tilt {
+    position: absolute;
+    left: 52%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotateX(-14deg);
+    transform-style: preserve-3d;
+  }
+  .login-orbit__ring {
+    position: relative;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    animation: orbit-spin 38s linear infinite;
+  }
+  @keyframes orbit-spin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  .login-orbit__slot {
+    position: absolute;
+    width: 150px;
+    height: 202px;
+    margin: -101px 0 0 -75px;
+    transform: rotateY(var(--a)) translateZ(var(--r));
+    transform-style: preserve-3d;
+  }
+  .login-orbit__card {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0.45;
+    box-shadow:
+      0 24px 55px -18px oklch(0 0 0 / 0.85),
+      0 0 0 1px oklch(1 0 0 / 0.05) inset;
+    animation: orbit-float 7s ease-in-out infinite;
+  }
+  @keyframes orbit-float {
+    0%, 100% { transform: translateY(-7px); }
+    50% { transform: translateY(7px); }
+  }
+  .login-orbit__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--card) 0%,
+      color-mix(in oklab, var(--card) 55%, transparent) 42%,
+      transparent 78%
+    );
+  }
+
+  /* --- Coverflow 3D finds carousel --------------------------------------- */
+  .finds-stage {
+    perspective: 1500px;
+  }
+  .finds-card {
+    transform-origin: center center;
+    backface-visibility: hidden;
+    transition:
+      transform 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.5s ease,
+      filter 0.5s ease,
+      box-shadow 0.4s ease;
+    box-shadow: 0 16px 44px -18px oklch(0 0 0 / 0.7);
+  }
+  .finds-card.is-active {
+    box-shadow:
+      0 34px 80px -22px oklch(0 0 0 / 0.85),
+      0 0 0 1px oklch(1 0 0 / 0.06) inset;
+  }
+
+  /* Sparkle / glitter — fractal-noise specks that travel as the card tilts. */
+  .holo-card__glitter {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 230px 230px;
+    background-position: var(--mx) var(--my);
+    mix-blend-mode: color-dodge;
+    filter: brightness(0.7) contrast(2.6);
+  }
+
+  /* Holographic foil — diagonal rainbow band that travels with the pointer. */
+  .holo-card__sheen {
+    background-image:
+      repeating-linear-gradient(
+        110deg,
+        transparent 0%,
+        oklch(0.72 0.2 20 / 0.5) 7%,
+        oklch(0.78 0.18 90 / 0.45) 12%,
+        oklch(0.74 0.2 165 / 0.5) 17%,
+        oklch(0.72 0.2 260 / 0.45) 22%,
+        transparent 29%
+      );
+    background-size: 280% 280%;
+    background-position: var(--mx) var(--my);
+    mix-blend-mode: color-dodge;
+    filter: brightness(0.85) contrast(1.15);
+  }
+  /* Specular glare that follows the cursor. */
+  .holo-card__glare {
+    background: radial-gradient(
+      circle at var(--mx) var(--my),
+      oklch(1 0 0 / 0.5),
+      oklch(1 0 0 / 0.12) 22%,
+      transparent 48%
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* Scroll-reveal — toggled by IntersectionObserver via [data-show]. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal[data-show="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch-rule::after,
+  .marquee-track,
+  .term-cursor { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .holo-card { transform: none !important; transition: none; }
+  .holo-card__foil,
+  .holo-card__glitter,
+  .holo-card__sheen,
+  .holo-card__glare { display: none; }
+  .finds-card { transition: none; }
+  .login-orbit__ring,
+  .login-orbit__card { animation: none; }
 }
 
 @keyframes fkpulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }

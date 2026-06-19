@@ -13,14 +13,24 @@ import {
 import {
   Avatar,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/ui/avatar";
 
-export function UserMenu({ email }: { email: string }) {
+export function UserMenu({
+  email,
+  avatarUrl,
+}: {
+  email: string;
+  avatarUrl: string | null;
+}) {
   const initial = email.charAt(0).toUpperCase();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2 rounded-full outline-none ring-ring/50 focus-visible:ring-2">
         <Avatar className="size-9 border border-border">
+          {avatarUrl ? (
+            <AvatarImage src={avatarUrl} alt="Your profile picture" />
+          ) : null}
           <AvatarFallback className="bg-primary/10 text-sm font-medium text-primary">
             {initial}
           </AvatarFallback>
