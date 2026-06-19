@@ -69,6 +69,8 @@ export interface ItemValueEstimate {
   category?: string;
   /** Trusted marketplaces the model reasoned from (e.g. TCGplayer, Grailed). */
   sources?: string[];
+  /** True when confidence is low enough to warrant a human price check. */
+  needsReview?: boolean;
   rationale?: string;
 }
 

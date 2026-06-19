@@ -2,6 +2,7 @@ import { StubEstimator } from "./stub";
 import type { DeepseekEnv } from "./env";
 import { itemValueSkill, shippingSkill } from "./pricing-skill";
 import { gatherWebContext } from "./web-grounding";
+import { getFxToJpy, fxLine } from "./fx";
 import type {
   Estimator,
   ItemValueEstimate,
@@ -14,6 +15,20 @@ import type {
 const SHIPPING_MIN_JPY = 500;
 const SHIPPING_MAX_JPY = 60_000;
 const ITEM_VALUE_MAX_JPY = 5_000_000;
+
+/** Below this confidence we escalate to the reasoner model (if configured). */
+const ESCALATE_BELOW = 0.6;
+/** Below this FINAL confidence we flag the item for a human price check. */
+const REVIEW_BELOW = 0.5;
+
+interface ParsedItemValue {
+  itemValueJpy: number;
+  lowJpy: number;
+  highJpy: number;
+  confidence: number;
+  sources?: string[];
+  rationale?: string;
+}
 
 const clamp = (n: number, lo: number, hi: number) =>
   Math.min(hi, Math.max(lo, n));
@@ -38,12 +53,14 @@ export class DeepseekEstimator implements Estimator {
   ): Promise<ShippingEstimate> {
     const skill = shippingSkill(input);
     try {
+      const fx = await getFxToJpy();
       const comps = await gatherWebContext(
         `international parcel shipping cost from Japan to ${input.destinationCountry ?? "USA"} small parcel courier`,
         skill.domains,
         this.env.exaApiKey,
+        fx,
       );
-      const user = withComps(skill.user, comps);
+      const user = withFx(withComps(skill.user, comps), fx);
       const data = await this.ask(skill.system, user);
       const shippingJpy = clamp(
         Math.round(Number(data.shippingJpy)),
@@ -74,43 +91,46 @@ export class DeepseekEstimator implements Estimator {
     const cap = input.budgetCapJpy ?? 0;
     const skill = itemValueSkill(input);
     try {
+      const fx = await getFxToJpy();
       const comps = await gatherWebContext(
         `${input.title} ${input.description ?? ""} sold price`.trim(),
         skill.domains,
         this.env.exaApiKey,
+        fx,
       );
-      const user = withComps(skill.user, comps);
-      const data = await this.ask(skill.system, user);
-      let itemValueJpy = clamp(
-        Math.round(Number(data.itemValueJpy)),
-        1,
-        ITEM_VALUE_MAX_JPY,
-      );
-      let lowJpy = clamp(Math.round(Number(data.lowJpy)), 1, itemValueJpy);
-      let highJpy = clamp(
-        Math.round(Number(data.highJpy)),
-        itemValueJpy,
-        ITEM_VALUE_MAX_JPY,
-      );
-      // The estimate can never authorise more than the customer's cap.
-      if (cap > 0) {
-        itemValueJpy = Math.min(itemValueJpy, cap);
-        lowJpy = Math.min(lowJpy, itemValueJpy);
-        highJpy = Math.min(highJpy, cap);
+      const user = withFx(withComps(skill.user, comps), fx);
+
+      let parsed = parseItemValue(await this.ask(skill.system, user), cap);
+
+      // Escalate ONLY low-confidence items to the stronger reasoner model.
+      if (parsed.confidence < ESCALATE_BELOW && this.env.reasonerModel) {
+        try {
+          const better = parseItemValue(
+            await this.ask(skill.system, user, this.env.reasonerModel),
+            cap,
+          );
+          parsed = better;
+        } catch (e) {
+          console.warn(`[estimator:deepseek] reasoner escalation failed: ${asText(e)}`);
+        }
       }
-      if (!Number.isFinite(itemValueJpy) || itemValueJpy <= 0) {
-        throw new Error("non-positive itemValueJpy");
+
+      const needsReview = parsed.confidence < REVIEW_BELOW;
+      if (needsReview) {
+        console.warn(
+          `[estimator] low-confidence price (${parsed.confidence}) for "${input.title}" — flag for human review`,
+        );
       }
-      const confidence = clamp(Number(data.confidence) || 0.4, 0, 1);
       return {
-        itemValueJpy,
-        lowJpy,
-        highJpy,
-        confidence,
+        itemValueJpy: parsed.itemValueJpy,
+        lowJpy: parsed.lowJpy,
+        highJpy: parsed.highJpy,
+        confidence: parsed.confidence,
         source: "deepseek",
         category: skill.category,
-        sources: asStringArray(data.sources) ?? skill.sources,
-        rationale: asText(data.rationale),
+        sources: parsed.sources ?? skill.sources,
+        needsReview,
+        rationale: parsed.rationale,
       };
     } catch (e) {
       console.warn(`[estimator:deepseek] item value fell back: ${asText(e)}`);
@@ -128,14 +148,15 @@ export class DeepseekEstimator implements Estimator {
   private async ask(
     system: string,
     user: string,
+    model: string = this.env.model,
   ): Promise<Record<string, unknown>> {
     let content: string;
     try {
-      content = await this.complete(system, user, true);
+      content = await this.complete(system, user, true, model);
     } catch (e) {
       // Some gateways 400/422 on response_format — retry without JSON mode.
       if (/\b4\d\d\b/.test(asText(e) ?? "")) {
-        content = await this.complete(system, user, false);
+        content = await this.complete(system, user, false, model);
       } else {
         throw e;
       }
@@ -147,9 +168,10 @@ export class DeepseekEstimator implements Estimator {
     system: string,
     user: string,
     jsonMode: boolean,
+    model: string = this.env.model,
   ): Promise<string> {
     const body: Record<string, unknown> = {
-      model: this.env.model,
+      model,
       temperature: 0,
       messages: [
         { role: "system", content: system },
@@ -165,8 +187,8 @@ export class DeepseekEstimator implements Estimator {
         Authorization: `Bearer ${this.env.apiKey}`,
       },
       body: JSON.stringify(body),
-      // Never let a slow model wedge checkout.
-      signal: AbortSignal.timeout(15_000),
+      // Never let a slow model wedge checkout (reasoner models can be slower).
+      signal: AbortSignal.timeout(30_000),
     });
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}: ${await res.text()}`);
@@ -215,4 +237,46 @@ function withComps(user: string, comps: string | undefined): string {
 
 LIVE WEB COMPS (recent listings from trusted sources — weigh these heavily over memory):
 ${comps}`;
+}
+
+/** Append the current FX table so the model converts non-JPY figures correctly. */
+function withFx(user: string, fx: import("./fx").FxToJpy): string {
+  return `${user}
+
+CURRENT FX (use these to convert ANY non-JPY figure to JPY — do not use a remembered rate): ${fxLine(fx)}.`;
+}
+
+/** Clamp + cap a raw item-value JSON reply into a safe ParsedItemValue. */
+function parseItemValue(
+  data: Record<string, unknown>,
+  cap: number,
+): ParsedItemValue {
+  let itemValueJpy = clamp(
+    Math.round(Number(data.itemValueJpy)),
+    1,
+    ITEM_VALUE_MAX_JPY,
+  );
+  let lowJpy = clamp(Math.round(Number(data.lowJpy)), 1, itemValueJpy);
+  let highJpy = clamp(
+    Math.round(Number(data.highJpy)),
+    itemValueJpy,
+    ITEM_VALUE_MAX_JPY,
+  );
+  // The estimate can never authorise more than the customer's cap.
+  if (cap > 0) {
+    itemValueJpy = Math.min(itemValueJpy, cap);
+    lowJpy = Math.min(lowJpy, itemValueJpy);
+    highJpy = Math.min(highJpy, cap);
+  }
+  if (!Number.isFinite(itemValueJpy) || itemValueJpy <= 0) {
+    throw new Error("non-positive itemValueJpy");
+  }
+  return {
+    itemValueJpy,
+    lowJpy,
+    highJpy,
+    confidence: clamp(Number(data.confidence) || 0.4, 0, 1),
+    sources: asStringArray(data.sources),
+    rationale: asText(data.rationale),
+  };
 }

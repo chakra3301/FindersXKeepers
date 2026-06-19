@@ -9,6 +9,9 @@
  * `undefined` and the estimator simply proceeds with its category skill prompt.
  * Grounding must never block or slow checkout past its own short timeout.
  */
+import { extractPrices, summarizePrices } from "./price-parse";
+import type { FxToJpy } from "./fx";
+
 const EXA_SEARCH_URL = "https://api.exa.ai/search";
 const GROUNDING_TIMEOUT_MS = 10_000;
 
@@ -115,6 +118,7 @@ export async function gatherWebContext(
   query: string,
   domains: string[],
   apiKey: string | undefined,
+  fx?: FxToJpy,
 ): Promise<string | undefined> {
   if (!apiKey) return undefined;
   try {
@@ -126,7 +130,13 @@ export async function gatherWebContext(
       signal: AbortSignal.timeout(GROUNDING_TIMEOUT_MS),
     });
     const block = formatComps(comps);
-    return block || undefined;
+    if (!block) return undefined;
+    // Hand the model a structured JPY min/median/max alongside the raw text.
+    const summary = summarizePrices(
+      comps.flatMap((c) => extractPrices(c.text)),
+      fx,
+    );
+    return summary ? `${summary}\n\n${block}` : block;
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.warn(`[estimator:exa] grounding skipped: ${msg}`);
