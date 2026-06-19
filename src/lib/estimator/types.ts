@@ -36,6 +36,12 @@ export interface ShippingEstimate {
   /** Estimated Japan→customer shipping in whole yen. Always > 0. */
   shippingJpy: number;
   source: EstimateSource;
+  /** Classified item category that picked the weight band. */
+  category?: string;
+  /** Carrier the model anchored on (e.g. "DHL Express"). */
+  carrier?: string;
+  /** Trusted references the model reasoned from. */
+  sources?: string[];
   /** Optional one-line human rationale (model output), for the team console. */
   rationale?: string;
 }
@@ -59,6 +65,10 @@ export interface ItemValueEstimate {
   /** 0..1 model confidence; the stub reports a fixed low confidence. */
   confidence: number;
   source: EstimateSource;
+  /** Classified item category (e.g. "trading_card"). */
+  category?: string;
+  /** Trusted marketplaces the model reasoned from (e.g. TCGplayer, Grailed). */
+  sources?: string[];
   rationale?: string;
 }
 

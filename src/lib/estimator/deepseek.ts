@@ -1,5 +1,6 @@
 import { StubEstimator } from "./stub";
 import type { DeepseekEnv } from "./env";
+import { itemValueSkill, shippingSkill } from "./pricing-skill";
 import type {
   Estimator,
   ItemValueEstimate,
@@ -34,20 +35,9 @@ export class DeepseekEstimator implements Estimator {
   async estimateShipping(
     input: ShippingEstimateInput,
   ): Promise<ShippingEstimate> {
+    const skill = shippingSkill(input);
     try {
-      const data = await this.ask(
-        "You estimate parcel shipping cost from Japan to an overseas buyer.",
-        [
-          `Item: ${input.title}`,
-          input.description ? `Details: ${input.description}` : null,
-          `Minimum condition: ${input.minCondition}`,
-          `Destination country: ${input.destinationCountry ?? "unknown"}`,
-          "",
-          "Estimate the all-in international shipping cost in Japanese yen,",
-          "including protective packaging and tracked courier.",
-          'Respond as JSON: {"shippingJpy": number, "rationale": string}.',
-        ],
-      );
+      const data = await this.ask(skill.system, skill.user);
       const shippingJpy = clamp(
         Math.round(Number(data.shippingJpy)),
         SHIPPING_MIN_JPY,
@@ -59,6 +49,9 @@ export class DeepseekEstimator implements Estimator {
       return {
         shippingJpy,
         source: "deepseek",
+        category: skill.category,
+        carrier: asText(data.carrier),
+        sources: asStringArray(data.sources),
         rationale: asText(data.rationale),
       };
     } catch (e) {
@@ -72,26 +65,9 @@ export class DeepseekEstimator implements Estimator {
     input: ItemValueEstimateInput,
   ): Promise<ItemValueEstimate> {
     const cap = input.budgetCapJpy ?? 0;
+    const skill = itemValueSkill(input);
     try {
-      const data = await this.ask(
-        "You estimate the second-hand market price of an item in Japan.",
-        [
-          `Item: ${input.title}`,
-          input.description ? `Details: ${input.description}` : null,
-          `Minimum condition: ${input.minCondition}`,
-          input.mustHaves?.length
-            ? `Must have: ${input.mustHaves.join(", ")}`
-            : null,
-          input.niceToHaves?.length
-            ? `Nice to have: ${input.niceToHaves.join(", ")}`
-            : null,
-          "",
-          "Estimate the typical Japanese second-hand price in yen and a",
-          "plausible low/high range.",
-          'Respond as JSON: {"itemValueJpy": number, "lowJpy": number,',
-          '"highJpy": number, "confidence": number, "rationale": string}.',
-        ],
-      );
+      const data = await this.ask(skill.system, skill.user);
       let itemValueJpy = clamp(
         Math.round(Number(data.itemValueJpy)),
         1,
@@ -119,6 +95,8 @@ export class DeepseekEstimator implements Estimator {
         highJpy,
         confidence,
         source: "deepseek",
+        category: skill.category,
+        sources: asStringArray(data.sources) ?? skill.sources,
         rationale: asText(data.rationale),
       };
     } catch (e) {
@@ -131,7 +109,7 @@ export class DeepseekEstimator implements Estimator {
   /** One JSON round-trip to the chat-completions endpoint. */
   private async ask(
     system: string,
-    userLines: (string | null)[],
+    user: string,
   ): Promise<Record<string, unknown>> {
     const res = await fetch(`${this.env.baseUrl}/chat/completions`, {
       method: "POST",
@@ -145,10 +123,7 @@ export class DeepseekEstimator implements Estimator {
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: system },
-          {
-            role: "user",
-            content: userLines.filter(Boolean).join("\n"),
-          },
+          { role: "user", content: user },
         ],
       }),
       // Never let a slow model wedge checkout.
@@ -169,4 +144,10 @@ export class DeepseekEstimator implements Estimator {
 function asText(v: unknown): string | undefined {
   if (v == null) return undefined;
   return v instanceof Error ? v.message : String(v);
+}
+
+function asStringArray(v: unknown): string[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const out = v.filter((x): x is string => typeof x === "string");
+  return out.length ? out : undefined;
 }
