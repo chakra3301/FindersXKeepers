@@ -266,6 +266,8 @@
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
   }
+  /* Pause the ticker while the user is interacting with a card. */
+  .marquee-row:hover .marquee-track { animation-play-state: paused; }
   @keyframes fk-marquee {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
