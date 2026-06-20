@@ -7,13 +7,21 @@ import { SUGGESTIONS, type Suggestion } from "@/lib/suggestions";
 import { useHoloTilt } from "@/components/finds/use-holo-tilt";
 import { cn } from "@/lib/utils";
 
-function SuggestionCard({ item }: { item: Suggestion }) {
+function SuggestionCard({
+  item,
+  duplicate = false,
+}: {
+  item: Suggestion;
+  duplicate?: boolean;
+}) {
   const { ref, active, handlers } = useHoloTilt(16);
   return (
     <Link
       href={`/requests/new?title=${encodeURIComponent(item.prefill)}`}
       aria-label={`Request ${item.title}`}
-      className="holo-perspective block w-[176px] shrink-0 snap-start"
+      aria-hidden={duplicate}
+      tabIndex={duplicate ? -1 : undefined}
+      className="holo-perspective mx-2 block w-[176px] shrink-0"
     >
       <div
         ref={ref}
@@ -98,18 +106,18 @@ export function SuggestionsBanner() {
         </Link>
       </div>
 
-      {/* 3D card row */}
-      <div className="relative -mx-5 mt-5 sm:-mx-6">
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-1 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {SUGGESTIONS.map((item) => (
-            <SuggestionCard key={item.title} item={item} />
+      {/* Auto-scrolling 3D card marquee (pauses on hover). Items duplicated
+          once so the -50% translate loops seamlessly. */}
+      <div className="marquee-row marquee-mask relative -mx-5 mt-5 overflow-hidden py-2 sm:-mx-6">
+        <div className="marquee-track py-2" style={{ animationDuration: "38s" }}>
+          {[...SUGGESTIONS, ...SUGGESTIONS].map((item, i) => (
+            <SuggestionCard
+              key={`${item.title}-${i}`}
+              item={item}
+              duplicate={i >= SUGGESTIONS.length}
+            />
           ))}
         </div>
-        {/* edge fades hint scrollability */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-card to-transparent"
-        />
       </div>
     </section>
   );
