@@ -43,11 +43,11 @@ function SuggestionCard({
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
         {/* overlaying item info */}
-        <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-3">
+        <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 whitespace-normal p-3">
           <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/65">
             {item.category}
           </span>
-          <span className="text-[13.5px] font-semibold leading-tight tracking-tight text-white">
+          <span className="line-clamp-2 text-[13px] font-semibold leading-snug tracking-tight text-white">
             {item.title}
           </span>
           <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-white/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
