@@ -14,7 +14,7 @@ export const SUGGESTIONS: Suggestion[] = [
   {
     title: "Nissan Skyline R34",
     category: "JDM · cars",
-    image: "/suggestions/r34-skyline.png",
+    image: "/suggestions/r34-skyline.jpg",
     prefill: "1998 Nissan Skyline R34 GT-R",
   },
   {
@@ -26,44 +26,44 @@ export const SUGGESTIONS: Suggestion[] = [
   {
     title: "One Piece OP-05 Booster Box",
     category: "TCG · sealed",
-    image: "/suggestions/op05-booster-box.png",
+    image: "/suggestions/op05-booster-box.jpg",
     prefill: "One Piece OP-05 Awakening of the New Era Booster Box (JP)",
   },
   {
     title: "Platinum 3776 Century",
     category: "Stationery",
-    image: "/suggestions/platinum-3776.png",
+    image: "/suggestions/platinum-3776.jpg",
     prefill: "Platinum 3776 Century fountain pen",
   },
   {
     title: "Kagayaki CarboNext Gyuto",
     category: "Kitchen · knives",
-    image: "/suggestions/carbonext-gyuto.png",
+    image: "/suggestions/carbonext-gyuto.jpg",
     prefill: "JCK Original Kagayaki CarboNext Series Gyuto",
   },
   {
     title: "Sayaka / Ikuyo Matcha",
     category: "Matcha · food",
-    image: "/suggestions/sayaka-ikuyo-matcha.png",
+    image: "/suggestions/sayaka-ikuyo-matcha.jpg",
     prefill: "Sayaka-no-mukashi 100g / Ikuyo-no-mukashi 100g matcha",
   },
   {
     title: "Lion Pair Acne Cream W",
     category: "Beauty · health",
-    image: "/suggestions/pair-acne-cream.png",
+    image: "/suggestions/pair-acne-cream.jpg",
     prefill: "Lion Pair Acne Cream W 14g",
   },
   {
     title: "ILLIT — I Got Your Back",
     category: "K-pop · J-release",
-    image: "/suggestions/illit-i-got-your-back.png",
+    image: "/suggestions/illit-i-got-your-back.jpg",
     prefill:
       "ILLIT Japan 2nd Single: I Got Your Back × FRUITS Special Edition",
   },
   {
     title: "Sugar Cane × Hinoya Denim",
     category: "Denim · apparel",
-    image: "/suggestions/sugar-cane-hinoya-denim.png",
+    image: "/suggestions/sugar-cane-hinoya-denim.jpg",
     prefill: "Sugar Cane Hinoya 16.25oz denim",
   },
   {
