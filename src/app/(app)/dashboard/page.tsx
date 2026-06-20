@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { RequestCard } from "@/components/dashboard/request-card";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { SuggestionsBanner } from "@/components/dashboard/suggestions-banner";
 
 export const metadata = { title: "Dashboard — Finders Keepers" };
 
@@ -50,6 +51,8 @@ export default async function DashboardPage() {
           New request
         </Link>
       </header>
+
+      <SuggestionsBanner />
 
       {requests.length === 0 ? (
         <div className="mt-10">
