@@ -35,9 +35,6 @@ export default function InStockPage() {
               className="mb-3 flex items-center gap-2.5 border-l-[3px] pl-3"
               style={{ borderColor: cat.color }}
             >
-              <span className="text-base leading-none" aria-hidden>
-                {cat.emoji}
-              </span>
               <h2 className="m-0 text-[13px] font-[600] uppercase tracking-[0.04em]">
                 {cat.label}
               </h2>

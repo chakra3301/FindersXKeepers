@@ -14,7 +14,6 @@ export type InventoryItem = {
 export type InventoryCategory = {
   key: string;
   label: string;
-  emoji: string;
   /** Accent color from the source inventory sheet. */
   color: string;
   items: InventoryItem[];
@@ -24,7 +23,6 @@ export const INVENTORY: InventoryCategory[] = [
   {
     key: "baseball",
     label: "Baseball",
-    emoji: "⚾",
     color: "#B8860B",
     items: [
       {
@@ -38,7 +36,6 @@ export const INVENTORY: InventoryCategory[] = [
   {
     key: "football",
     label: "Football",
-    emoji: "🏈",
     color: "#16A34A",
     items: [
       {
@@ -58,7 +55,6 @@ export const INVENTORY: InventoryCategory[] = [
   {
     key: "basketball",
     label: "Basketball",
-    emoji: "🏀",
     color: "#9333EA",
     items: [
       {
@@ -78,7 +74,6 @@ export const INVENTORY: InventoryCategory[] = [
   {
     key: "pokemon",
     label: "Pokémon",
-    emoji: "🎴",
     color: "#2563EB",
     items: [
       {
