@@ -53,4 +53,35 @@ export const SUGGESTIONS: Suggestion[] = [
     image: "/suggestions/pair-acne-cream.png",
     prefill: "Lion Pair Acne Cream W 14g",
   },
+  {
+    title: "ILLIT — I Got Your Back",
+    category: "K-pop · J-release",
+    image: "/suggestions/illit-i-got-your-back.png",
+    prefill:
+      "ILLIT Japan 2nd Single: I Got Your Back × FRUITS Special Edition",
+  },
+  {
+    title: "Sugar Cane × Hinoya Denim",
+    category: "Denim · apparel",
+    image: "/suggestions/sugar-cane-hinoya-denim.png",
+    prefill: "Sugar Cane Hinoya 16.25oz denim",
+  },
+  {
+    title: "Kinoko no Yama",
+    category: "Snacks · food",
+    image: "/suggestions/kinoko-no-yama.jpg",
+    prefill: "Meiji Kinoko no Yama chocolate biscuits",
+  },
+  {
+    title: "Black Thunder",
+    category: "Snacks · food",
+    image: "/suggestions/black-thunder.jpg",
+    prefill: "Black Thunder chocolate bar (Japan)",
+  },
+  {
+    title: "Jagarico",
+    category: "Snacks · food",
+    image: "/suggestions/jagarico.jpg",
+    prefill: "Calbee Jagarico potato sticks",
+  },
 ];
