@@ -4,6 +4,8 @@
  * price); claiming an item still runs through the normal request flow.
  */
 export type InventoryItem = {
+  /** Stable URL/lookup key. */
+  slug: string;
   name: string;
   qty: number;
   priceUsd: number;
@@ -29,6 +31,7 @@ export const INVENTORY: InventoryCategory[] = [
     color: "#B8860B",
     items: [
       {
+        slug: "topps-series1-japan-case",
         name: "2026 Topps Series 1 Japan Edition — Sealed Case",
         qty: 2,
         priceUsd: 1500,
@@ -43,6 +46,7 @@ export const INVENTORY: InventoryCategory[] = [
     color: "#16A34A",
     items: [
       {
+        slug: "topps-chrome-football",
         name: "2025 Topps Chrome Football — Fanatics Exclusive Mega Box",
         qty: 19,
         priceUsd: 120,
@@ -50,6 +54,7 @@ export const INVENTORY: InventoryCategory[] = [
         image: "/inventory/topps-chrome-football.jpg",
       },
       {
+        slug: "topps-finest-football",
         name: "2025 Topps Finest Football — Hobby Box (Fanatics)",
         qty: 18,
         priceUsd: 700,
@@ -64,6 +69,7 @@ export const INVENTORY: InventoryCategory[] = [
     color: "#9333EA",
     items: [
       {
+        slug: "bowman-nba-lot",
         name: "2025 Bowman NBA — Blaster Box (lot of 30)",
         qty: 30,
         priceUsd: 900,
@@ -72,6 +78,7 @@ export const INVENTORY: InventoryCategory[] = [
         bundle: true,
       },
       {
+        slug: "signature-class-basketball",
         name: "2025-26 Topps Signature Class Basketball — Mega Case",
         qty: 20,
         priceUsd: 1600,
@@ -86,6 +93,7 @@ export const INVENTORY: InventoryCategory[] = [
     color: "#2563EB",
     items: [
       {
+        slug: "chaos-rising-etb",
         name: "Chaos Rising — Pokémon Center ETB",
         qty: 2,
         priceUsd: 180,
@@ -93,6 +101,7 @@ export const INVENTORY: InventoryCategory[] = [
         image: "/inventory/chaos-rising-etb.jpg",
       },
       {
+        slug: "chaos-rising-booster-box",
         name: "Chaos Rising — Booster Box",
         qty: 1,
         priceUsd: 230,
@@ -107,6 +116,14 @@ export const INVENTORY_COUNT = INVENTORY.reduce(
   (n, c) => n + c.items.length,
   0,
 );
+
+export function findInventoryItem(slug: string): InventoryItem | undefined {
+  for (const cat of INVENTORY) {
+    const hit = cat.items.find((i) => i.slug === slug);
+    if (hit) return hit;
+  }
+  return undefined;
+}
 
 export function formatUsd(n: number): string {
   return new Intl.NumberFormat("en-US", {
