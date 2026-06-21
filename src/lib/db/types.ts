@@ -82,6 +82,7 @@ export type Request = {
   rush_tier: RushTier;
   status: RequestStatus;
   deadline_at: string | null;
+  in_stock: boolean;
   shipping_address: AddressSnapshot | null;
   est_value_jpy: number | null;
   est_value_low_jpy: number | null;
@@ -172,6 +173,7 @@ export type Database = {
           | "created_at"
           | "updated_at"
           | "status"
+          | "in_stock"
           | "shipping_address"
           | "est_value_jpy"
           | "est_value_low_jpy"
@@ -184,6 +186,7 @@ export type Database = {
         > & {
           id?: string;
           status?: RequestStatus;
+          in_stock?: boolean;
           shipping_address?: AddressSnapshot | null;
           est_value_jpy?: number | null;
           est_value_low_jpy?: number | null;

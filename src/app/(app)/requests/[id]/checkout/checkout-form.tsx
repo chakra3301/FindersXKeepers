@@ -24,6 +24,7 @@ const RUSH_WINDOW: Record<RushTier, string> = {
 
 export function CheckoutForm({
   requestId,
+  inStock = false,
   budgetCapJpy,
   initialRush,
   currencyPref,
@@ -35,6 +36,8 @@ export function CheckoutForm({
   defaultAddressId,
 }: {
   requestId: string;
+  /** In-stock store purchase: no finder's fee, "purchase & receive" framing. */
+  inStock?: boolean;
   budgetCapJpy: number | null;
   initialRush: RushTier;
   currencyPref: string;
@@ -68,13 +71,22 @@ export function CheckoutForm({
     itemCostJpy: cap,
     shippingJpy: shippingEstimateJpy,
     rushTier: rush,
+    waiveFee: inStock,
   });
   const total = totalJpy(quote);
   const local = formatLocalApprox(total, currencyPref);
 
   const lines = [
-    { label: "Item cost", note: "Up to your cap", value: quote.itemCostJpy },
-    { label: "Finder's fee", note: "Our service fee", value: quote.finderFeeJpy },
+    {
+      label: "Item cost",
+      note: inStock ? "In-stock price" : "Up to your cap",
+      value: quote.itemCostJpy,
+    },
+    {
+      label: "Finder's fee",
+      note: inStock ? "Waived — in stock" : "Our service fee",
+      value: quote.finderFeeJpy,
+    },
     { label: "Shipping", note: "Estimated", value: quote.shippingJpy },
     { label: "Tax", note: "Consumption tax", value: quote.taxJpy },
   ];
@@ -119,7 +131,11 @@ export function CheckoutForm({
         ))}
         <div className="flex items-baseline justify-between pt-3">
           <span className="text-sm font-[600]">
-            {chargesNow ? "Charged today (refundable)" : "Held in escrow today"}
+            {inStock
+              ? "You pay today"
+              : chargesNow
+                ? "Charged today (refundable)"
+                : "Held in escrow today"}
           </span>
           <span className="tnum text-[19px] font-[600]">{formatJpy(total)}</span>
         </div>
@@ -130,7 +146,9 @@ export function CheckoutForm({
         )}
       </dl>
 
-      {/* Hunt speed — surcharges our finder's fee, re-prices the estimate live. */}
+      {/* Hunt speed — surcharges our finder's fee, re-prices the estimate live.
+          Not shown for in-stock store purchases. */}
+      {!inStock && (
       <fieldset className="flex flex-col gap-2.5">
         <legend className="mb-1 text-[11px] font-[600] uppercase tracking-[0.04em] text-muted-foreground">
           Hunt speed
@@ -176,15 +194,27 @@ export function CheckoutForm({
           })}
         </div>
       </fieldset>
+      )}
 
       {/* Trust framing — honest about whether this is a real charge. */}
       <div className="rounded-2xl border border-success-border bg-success-muted px-5 py-4">
         <div className="flex items-center gap-2 text-[12.5px] font-[560] text-success">
           <ShieldCheck size={16} />
-          {chargesNow ? "Charged now, refunded at ship" : "Held, not charged"}
+          {inStock
+            ? "In hand — ships on payment"
+            : chargesNow
+              ? "Charged now, refunded at ship"
+              : "Held, not charged"}
         </div>
         <p className="mt-2 text-[12.5px] leading-relaxed text-success">
-          {chargesNow ? (
+          {inStock ? (
+            <>
+              This item is sealed and already in hand —{" "}
+              <strong className="font-[600]">no finder&apos;s fee, no sourcing wait</strong>.
+              Pay the four-line total and we ship it straight to you; payment
+              releases to us only once it&apos;s in transit with tracking.
+            </>
+          ) : chargesNow ? (
             <>
               We charge your budget cap now and the processor holds it in escrow.
               When your item ships we keep only the real four-line total and{" "}
@@ -235,10 +265,10 @@ export function CheckoutForm({
         />
         <span className="text-muted-foreground">
           I authorise Finders Keepers to{" "}
-          {chargesNow ? "charge" : "hold"}{" "}
+          {inStock || chargesNow ? "charge" : "hold"}{" "}
           <span className="tnum font-[560] text-foreground">{formatJpy(total)}</span>{" "}
-          {chargesNow ? "now (refundable)" : "in escrow"} and agree to the Terms
-          and escrow policy.
+          {inStock ? "for this in-stock purchase" : chargesNow ? "now (refundable)" : "in escrow"} and agree to the Terms
+          {inStock ? "." : " and escrow policy."}
         </span>
       </label>
 
@@ -255,11 +285,15 @@ export function CheckoutForm({
         )}
         {isPending || state.status === "redirect"
           ? "Redirecting to Stripe…"
-          : chargesNow
-            ? resuming
-              ? `Resume payment · ${formatJpy(total)}`
-              : `Continue to payment · ${formatJpy(total)}`
-            : `Deposit ${formatJpy(total)} into escrow`}
+          : inStock
+            ? chargesNow
+              ? `Purchase · ${formatJpy(total)}`
+              : `Purchase · ${formatJpy(total)}`
+            : chargesNow
+              ? resuming
+                ? `Resume payment · ${formatJpy(total)}`
+                : `Continue to payment · ${formatJpy(total)}`
+              : `Deposit ${formatJpy(total)} into escrow`}
       </Button>
 
       {!accepted && cap > 0 && !isPending && (
@@ -275,7 +309,7 @@ export function CheckoutForm({
       ) : (
         <p className="flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
           <Lock size={12} />{" "}
-          {chargesNow ? "Secured by Stripe" : "Funds held in escrow"}
+          {inStock ? "Secure checkout" : chargesNow ? "Secured by Stripe" : "Funds held in escrow"}
         </p>
       )}
     </form>

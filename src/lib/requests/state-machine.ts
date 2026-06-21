@@ -15,7 +15,10 @@ import type { RequestStatus } from "@/lib/db/types";
  * tracking number, never a manual status flip.
  */
 export const TRANSITIONS: Record<RequestStatus, readonly RequestStatus[]> = {
-  open: ["sourcing", "cancelled"],
+  // "purchased" is the in-stock store-purchase edge (item already in hand);
+  // normal hunts go open → sourcing. Only operations.depositForRequest uses it,
+  // and only when requests.in_stock is true.
+  open: ["sourcing", "purchased", "cancelled"],
   sourcing: ["candidate_sent", "cancelled"],
   // candidate rejected → back to sourcing; approved → forward.
   candidate_sent: ["approved", "sourcing", "cancelled"],

@@ -120,6 +120,7 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
             {request.status === "candidate_sent" ? "Review candidate →"
               : request.status === "received" ? "Final check →"
               : request.escrowState === "pending" ? "Complete payment →"
+              : request.in_stock ? "Complete purchase →"
               : "Deposit into escrow →"}
           </div>
         )}
