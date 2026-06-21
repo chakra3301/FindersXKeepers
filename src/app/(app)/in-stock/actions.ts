@@ -46,6 +46,7 @@ export async function claimInventory(formData: FormData): Promise<void> {
       budget_cap_jpy: budgetCapJpy,
       rush_tier: "standard",
       deadline_at: null,
+      in_stock: true,
       status: "open",
     })
     .select("id")

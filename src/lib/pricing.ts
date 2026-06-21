@@ -70,11 +70,12 @@ export function computeQuote(input: {
   itemCostJpy: number;
   shippingJpy: number;
   rushTier?: RushTier;
+  /** In-stock store purchase: no service fee (and therefore no fee tax). */
+  waiveFee?: boolean;
 }): PriceLines {
-  const finderFeeJpy = computeFinderFee(
-    input.itemCostJpy,
-    input.rushTier ?? "standard",
-  );
+  const finderFeeJpy = input.waiveFee
+    ? 0
+    : computeFinderFee(input.itemCostJpy, input.rushTier ?? "standard");
   // Consumption tax is charged on our service fee (the taxable supply).
   const taxJpy = Math.round(finderFeeJpy * CONSUMPTION_TAX_RATE);
   return {

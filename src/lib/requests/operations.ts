@@ -34,7 +34,7 @@ export async function depositForRequest(
   const { data: req, error } = await admin
     .from("requests")
     .select(
-      "status, budget_cap_jpy, rush_tier, title, description, min_condition, must_haves, nice_to_haves, shipping_address",
+      "status, budget_cap_jpy, rush_tier, title, description, min_condition, must_haves, nice_to_haves, shipping_address, in_stock",
     )
     .eq("id", requestId)
     .single();
@@ -123,6 +123,34 @@ export async function depositForRequest(
       })
       .eq("id", requestId);
     if (estErr) console.warn(`[deposit] estimate persist failed: ${estErr.message}`);
+  }
+
+  // In-stock store purchase: no finder's fee, the four-line order is locked now
+  // (item price is known), and the request jumps straight to "purchased" — the
+  // item is already in hand, so the operator only needs to receive + ship it.
+  if (req.in_stock) {
+    const lines = computeQuote({
+      itemCostJpy: req.budget_cap_jpy ?? 0,
+      shippingJpy,
+      waiveFee: true,
+    });
+
+    const { error: orderErr } = await admin.from("orders").insert({
+      request_id: requestId,
+      candidate_id: null,
+      item_cost_jpy: lines.itemCostJpy,
+      finder_fee_jpy: lines.finderFeeJpy,
+      shipping_jpy: lines.shippingJpy,
+      tax_jpy: lines.taxJpy,
+      received_image_urls: [],
+      receipt_status: "pending",
+    });
+    if (orderErr) throw orderErr;
+
+    const intent = await createEscrowHold(requestId, lines, admin);
+    if (intent.checkoutUrl) return { checkoutUrl: intent.checkoutUrl };
+    await setRequestStatus(requestId, "purchased", admin);
+    return {};
   }
 
   const lines = computeQuote({

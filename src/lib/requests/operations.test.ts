@@ -50,6 +50,30 @@ describe("depositForRequest", () => {
     expect(tables.payments[0].amount_jpy).toBe(expected);
   });
 
+  it("in-stock: waives the finder's fee, locks the order, and moves open → purchased", async () => {
+    const { tables, client } = createFakeAdmin({
+      requests: [
+        baseRequest({ status: "open", budget_cap_jpy: 135_000, in_stock: true }),
+      ],
+      orders: [],
+      payments: [],
+    });
+
+    await depositForRequest("req_seed", "standard", null, client);
+
+    const lines = computeQuote({
+      itemCostJpy: 135_000,
+      shippingJpy: SHIPPING_ESTIMATE_JPY,
+      waiveFee: true,
+    });
+    expect(tables.requests[0].status).toBe("purchased");
+    expect(tables.orders).toHaveLength(1);
+    expect(tables.orders[0].finder_fee_jpy).toBe(0);
+    expect(tables.orders[0].tax_jpy).toBe(0);
+    expect(tables.orders[0].item_cost_jpy).toBe(135_000);
+    expect(tables.payments[0].amount_jpy).toBe(totalJpy(lines));
+  });
+
   it("persists a changed rush tier before sizing the hold", async () => {
     const { tables, client } = createFakeAdmin({
       requests: [baseRequest({ status: "open", rush_tier: "standard" })],

@@ -63,12 +63,13 @@ export default async function CheckoutPage({
         <ChevronLeft size={15} /> Back to request
       </Link>
       <h1 className="mt-6 text-2xl font-semibold tracking-tight">
-        Deposit into escrow
+        {request.in_stock ? "Purchase" : "Deposit into escrow"}
       </h1>
       <p className="mt-1.5 text-sm text-muted-foreground">{request.title}</p>
       <div className="mt-7">
         <CheckoutForm
           requestId={id}
+          inStock={request.in_stock}
           budgetCapJpy={request.budget_cap_jpy}
           initialRush={request.rush_tier}
           currencyPref={profile?.currency_pref ?? "JPY"}
