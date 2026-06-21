@@ -11,6 +11,7 @@ import {
   Clock,
   Settings,
   Wrench,
+  Package,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { buttonVariants } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/in-stock", label: "In stock", icon: Package },
   { href: "/messages", label: "Messages", icon: MessageSquare },
   { href: "/history", label: "Order history", icon: Clock },
   { href: "/account", label: "Account", icon: Settings },
