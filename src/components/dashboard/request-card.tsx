@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { DashboardRequest } from "@/lib/requests/queries";
 import { STATUS_META } from "@/lib/requests/status";
 import { formatJpy } from "@/lib/pricing";
@@ -17,6 +18,12 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
   const needsAction = meta.bucket === "action_needed";
   const progress = railProgress(request.status);
   const chip = deadlineChip(request.deadline_at, request.status);
+
+  // Render the item image directly when it's a public/external ref (in-stock
+  // claims, seed); storage-path refs would need signing, so fall back to thumb.
+  const ref = request.reference_image_url ?? "";
+  const imageUrl =
+    ref.startsWith("http") || ref.startsWith("/") ? ref : null;
 
   // Direct action route for cards that need the customer to act.
   const actionHref =
@@ -37,7 +44,20 @@ export function RequestCard({ request }: { request: DashboardRequest }) {
         needsAction ? "border-warning-border" : "border-border",
       )}
     >
-      <PlaceholderThumb label="card" className="h-[84px] w-[62px] shrink-0" />
+      {imageUrl ? (
+        <div className="relative h-[84px] w-[62px] shrink-0 overflow-hidden rounded-[10px] border border-border bg-secondary">
+          <Image
+            src={imageUrl}
+            alt={request.title}
+            fill
+            sizes="62px"
+            className="object-cover"
+            unoptimized
+          />
+        </div>
+      ) : (
+        <PlaceholderThumb label="card" className="h-[84px] w-[62px] shrink-0" />
+      )}
 
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <div className="flex min-w-0 items-center gap-2.5">

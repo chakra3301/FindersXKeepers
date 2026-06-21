@@ -39,7 +39,7 @@ export async function claimInventory(formData: FormData): Promise<void> {
       title: item.name,
       description: "In-stock claim — sealed and in hand, ready to ship.",
       reference_url: null,
-      reference_image_url: null,
+      reference_image_url: item.image,
       min_condition: "new",
       must_haves: [],
       nice_to_haves: [],

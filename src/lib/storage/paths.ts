@@ -5,9 +5,17 @@ export type ProofCategory = "reference" | "listing" | "received";
 
 const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
 
-/** True when the stored value is already a public/external URL (seed, legacy). */
+/**
+ * True when the stored value is already a renderable URL — an absolute
+ * http(s) URL (seed, legacy) or a root-relative public asset like
+ * `/inventory/foo.jpg` (in-stock claims). These never need signing.
+ */
 export function isExternalImageRef(ref: string): boolean {
-  return ref.startsWith("http://") || ref.startsWith("https://");
+  return (
+    ref.startsWith("http://") ||
+    ref.startsWith("https://") ||
+    ref.startsWith("/")
+  );
 }
 
 /** Map a MIME type to a file extension for object paths. */
