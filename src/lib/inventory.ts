@@ -7,8 +7,11 @@ export type InventoryItem = {
   name: string;
   qty: number;
   priceUsd: number;
-  /** Pricing unit, e.g. "ea" or "case of 20". */
+  /** Pricing unit, e.g. "ea" or "lot of 30". */
   unit: string;
+  image: string;
+  /** Sold only as a single lot/bundle (not per-unit). */
+  bundle?: boolean;
 };
 
 export type InventoryCategory = {
@@ -30,6 +33,7 @@ export const INVENTORY: InventoryCategory[] = [
         qty: 2,
         priceUsd: 1500,
         unit: "ea",
+        image: "/inventory/topps-series1-japan-case.jpg",
       },
     ],
   },
@@ -43,12 +47,14 @@ export const INVENTORY: InventoryCategory[] = [
         qty: 19,
         priceUsd: 120,
         unit: "ea",
+        image: "/inventory/topps-chrome-football.jpg",
       },
       {
         name: "2025 Topps Finest Football — Hobby Box (Fanatics)",
         qty: 18,
         priceUsd: 700,
         unit: "ea",
+        image: "/inventory/topps-finest-football.jpg",
       },
     ],
   },
@@ -58,16 +64,19 @@ export const INVENTORY: InventoryCategory[] = [
     color: "#9333EA",
     items: [
       {
-        name: "2025 Bowman NBA — Blaster Box",
+        name: "2025 Bowman NBA — Blaster Box (lot of 30)",
         qty: 30,
-        priceUsd: 30,
-        unit: "ea",
+        priceUsd: 900,
+        unit: "lot of 30",
+        image: "/inventory/bowman-nba-blaster.jpg",
+        bundle: true,
       },
       {
         name: "2025-26 Topps Signature Class Basketball — Mega Case",
         qty: 20,
         priceUsd: 1600,
         unit: "case of 20",
+        image: "/inventory/signature-class-basketball.jpg",
       },
     ],
   },
@@ -81,12 +90,14 @@ export const INVENTORY: InventoryCategory[] = [
         qty: 2,
         priceUsd: 180,
         unit: "ea",
+        image: "/inventory/chaos-rising-etb.jpg",
       },
       {
         name: "Chaos Rising — Booster Box",
         qty: 1,
         priceUsd: 230,
         unit: "ea",
+        image: "/inventory/chaos-rising-booster-box.jpg",
       },
     ],
   },
